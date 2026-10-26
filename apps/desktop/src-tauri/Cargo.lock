@@ -2881,7 +2881,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "onethu"
-version = "0.11.3"
+version = "0.11.4"
 dependencies = [
  "aes",
  "base64 0.22.1",
@@ -2890,10 +2890,12 @@ dependencies = [
  "chrono",
  "cookie_store",
  "encoding_rs",
+ "flate2",
  "futures-util",
  "imap",
  "jni",
  "lettre",
+ "libc",
  "mail-parser",
  "md-5",
  "objc2",
@@ -2917,6 +2919,7 @@ dependencies = [
  "tauri-plugin-onethu-tts",
  "tauri-plugin-opener",
  "tauri-plugin-single-instance",
+ "time",
  "tokio",
  "tokio-tungstenite",
  "url",

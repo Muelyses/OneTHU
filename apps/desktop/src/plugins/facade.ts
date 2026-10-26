@@ -15,6 +15,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
 import { currentThemeIsDark } from "../state/theme.js";
 import { refreshExtHw } from "../state/exthw.js";
+import { queryYuketang } from "../lib/yuketangQuery.js";
+import { buildAppFeatures } from "./appFeatures.js";
 import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
 import { AuthRequiredError } from "@onethu/core";
 import type { FormField } from "../lib/formModal.js";
@@ -77,6 +79,7 @@ const TOP_PAGES = new Set([
   "homepage", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
   "mail", "cloud", "gitlab", "thubook", "xiaoda", "tasks", "services", "favs", "boards", "board",
   "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
+  "contacts", "org", "vault",
 ]);
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
@@ -90,7 +93,7 @@ import {
 import { getLearnSnapshot } from "../state/data.js";
 import { getExtHwSnapshot, toHomework } from "../state/exthw.js";
 import { parseLearnTime } from "@onethu/core";
-import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
+import { ensureSeafileLoaded, getSeafileToken, getSeafileCredentialVersion } from "../state/seafile.js";
 import type { GitlabIssueState } from "../state/gitlab.js";
 import { ohAuthorized, requireCloudConsent } from "../state/privacyConsent.js";
 import { computeSkill, readSkill, runSkill, searchSkills } from "../lib/skills.js";
@@ -168,7 +171,19 @@ async function buildSpec(kind: string, payload: unknown): Promise<import("../sta
   return null;
 }
 
-export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
+/** Only these remote mutations carry the per-call guard through async setup. */
+export const CLI_GUARDED_MUTATIONS = new Set([
+  "learn.post", "learn.reply", "mail.send", "cloud.share", "cal.add", "cal.edit", "cal.remove",
+  "gitlab.createIssue", "gitlab.comment", "gitlab.updateComment", "gitlab.reply", "gitlab.deleteComment",
+  "gitlab.resolveDiscussion", "gitlab.assignees", "gitlab.react", "gitlab.unreact",
+  "gitlab.createMergeRequest", "gitlab.mergeMergeRequest", "gitlab.setState",
+  "xiaoda.importSkill", "xiaoda.enableSkill",
+  "vault.create", "vault.rename", "vault.addText", "vault.addAtom", "vault.removeItem", "vault.share", "vault.importCode",
+  "vault.addFile", "xiaoda.ask", "organizations.create", "organizations.update", "organizations.saveProject", "organizations.removeProject", "organizations.saveAnnouncement", "organizations.removeAnnouncement",
+  "xiaoda.removeSkill",
+]);
+export function buildApi(pluginId: string, perms: Set<string>, options: { beforeWrite?: () => Promise<void> } = {}): OnethuApi {
+  const beforeWrite = options.beforeWrite;
   const storageNs = {
     get<T = string>(key: string): T | null {
       gate(perms, "storage", "storage.get");
@@ -274,16 +289,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           onethuSource: "manual",
         };
         const toLocal = opts?.local === true || !getCloudCalConfig();
-        if (toLocal) await putLocalEvent(ev);
-        else await putCloudEvent(ev);
+        if (toLocal) await putLocalEvent(ev, beforeWrite);
+        else await putCloudEvent(ev, beforeWrite);
         return { uid, where: toLocal ? "local" : "cloud" };
       })();
     },
     remove(uid: string): Promise<{ removed: true }> {
       gate(perms, "cal:write", "cal.remove");
       return (async () => {
-        if (getCloudEvents().some((e) => e.uid === uid)) await deleteCloudEvent(uid);
-        else if (getLocalEvents().some((e) => e.uid === uid)) await deleteLocalEvent(uid);
+        if (getCloudEvents().some((e) => e.uid === uid)) await deleteCloudEvent(uid, undefined, beforeWrite);
+        else if (getLocalEvents().some((e) => e.uid === uid)) await deleteLocalEvent(uid, beforeWrite);
         else throw new Error(i18n("plugins.facade.f6746a5629b0", { uid: String(uid) }));
         return { removed: true as const };
       })();
@@ -332,7 +347,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           description: ch.note !== undefined ? (ch.note.trim() || undefined) : src.description,
         };
         const toCloud = ch.toCloud ?? originalCloud;
-        await saveCalendarEvent(ev, { cloud: toCloud, originalCloud });
+        await saveCalendarEvent(ev, { cloud: toCloud, originalCloud }, beforeWrite);
         return { uid, where: toCloud ? "cloud" : "local" };
       })();
     },
@@ -344,7 +359,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       const cap = Math.min(Math.max(limit, 1), 50);
       return { total: mailFolderTotal(folder), mails: heads.slice(0, cap) };
     },
-    read: async (folder: string, uid: number) => readMail(folder, uid),
+    read: async (folder: string, uid: number) => readMail(folder, uid, { markSeen: false }),
     search: async (folder: string, query: string) => mailSearch(folder, query),
   }, perms, "mail:read");
   const cloudToken = async (): Promise<string> => {
@@ -362,7 +377,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   }, perms, "cloud:read");
   const cloudWrite = wrap({
     upload: async (repoId: string, parentDir: string, localPath: string, replace: boolean) => invoke("seafile_upload", { token: await cloudToken(), repoId, parentDir, localPath, replace }) as Promise<{ size: number }>,
-    share: async (repoId: string, path: string, expireDays: number) => invoke("seafile_share", { token: await cloudToken(), repoId, path, expireDays, password: "" }) as Promise<{ link: string; token: string }>,
+    share: async (repoId: string, path: string, expireDays: number) => {
+      const token = await cloudToken();
+      const credentialVersion = getSeafileCredentialVersion();
+      await beforeWrite?.();
+      requireCloudConsent();
+      if (credentialVersion !== getSeafileCredentialVersion() || token !== getSeafileToken()) {
+        throw Object.assign(new Error(i18n("state.seafile.accountChanged")), { code: "CLOUD_ACCOUNT_CHANGED" });
+      }
+      return invoke("seafile_share", { token, repoId, path, expireDays, password: "" }) as Promise<{ link: string; token: string }>;
+    },
   }, perms, "cloud:write");
 
   // 记忆（OH-Memory 镜像引擎；写操作的两段式确认由 harness 工具层负责，facade 只做权限闸）
@@ -388,7 +412,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
 
   const mailWrite = wrap({
     send: async (to: string, cc: string, subject: string, body: string) => {
-      await sendMail(to, cc, subject, body);
+      await sendMail(to, cc, subject, body, beforeWrite);
       return { sent: true as const };
     },
   }, perms, "mail:write");
@@ -427,34 +451,34 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   }, perms, "gitlab:read");
   const gitlabWrite = wrap({
     createIssue: async (id: number, title: string, description: string) =>
-      (await import("../state/gitlab.js")).gitlabCreateIssue(Number(id), String(title ?? ""), String(description ?? "")),
+      (await import("../state/gitlab.js")).gitlabCreateIssue(Number(id), String(title ?? ""), String(description ?? ""), beforeWrite),
     comment: async (kind: "issue" | "mr", id: number, iid: number, body: string) =>
-      (await import("../state/gitlab.js")).gitlabAddNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(body ?? "")),
+      (await import("../state/gitlab.js")).gitlabAddNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(body ?? ""), beforeWrite),
     updateComment: async (kind: "issue" | "mr", id: number, iid: number, noteId: number, body: string) =>
-      (await import("../state/gitlab.js")).gitlabUpdateNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(noteId), String(body ?? "")),
+      (await import("../state/gitlab.js")).gitlabUpdateNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(noteId), String(body ?? ""), beforeWrite),
     reply: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string) =>
-      (await import("../state/gitlab.js")).gitlabReply(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), String(body ?? "")),
+      (await import("../state/gitlab.js")).gitlabReply(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), String(body ?? ""), beforeWrite),
     deleteComment: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, noteId: number) => {
-      await (await import("../state/gitlab.js")).gitlabDeleteNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), Number(noteId));
+      await (await import("../state/gitlab.js")).gitlabDeleteNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), Number(noteId), beforeWrite);
     },
     resolveDiscussion: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, resolved: boolean) => {
-      await (await import("../state/gitlab.js")).gitlabResolveDiscussion(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), resolved !== false);
+      await (await import("../state/gitlab.js")).gitlabResolveDiscussion(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), resolved !== false, beforeWrite);
     },
     assignees: async (kind: "issue" | "mr", id: number, iid: number, userIds: number[]) => {
       const ids = (Array.isArray(userIds) ? userIds : []).map((n) => Number(n)).filter((n) => Number.isFinite(n));
-      await (await import("../state/gitlab.js")).gitlabAssign(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), ids);
+      await (await import("../state/gitlab.js")).gitlabAssign(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), ids, beforeWrite);
     },
     react: async (kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number) =>
-      (await import("../state/gitlab.js")).gitlabAddAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(name ?? ""), noteId === undefined ? undefined : Number(noteId)),
+      (await import("../state/gitlab.js")).gitlabAddAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(name ?? ""), noteId === undefined ? undefined : Number(noteId), beforeWrite),
     unreact: async (kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number) => {
-      await (await import("../state/gitlab.js")).gitlabRemoveAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(awardId), noteId === undefined ? undefined : Number(noteId));
+      await (await import("../state/gitlab.js")).gitlabRemoveAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(awardId), noteId === undefined ? undefined : Number(noteId), beforeWrite);
     },
     createMergeRequest: async (id: number, sourceBranch: string, targetBranch: string, title: string, description: string) =>
-      (await import("../state/gitlab.js")).gitlabCreateMergeRequest(Number(id), String(sourceBranch ?? ""), String(targetBranch ?? ""), String(title ?? ""), String(description ?? "")),
+      (await import("../state/gitlab.js")).gitlabCreateMergeRequest(Number(id), String(sourceBranch ?? ""), String(targetBranch ?? ""), String(title ?? ""), String(description ?? ""), beforeWrite),
     mergeMergeRequest: async (id: number, iid: number) =>
-      (await import("../state/gitlab.js")).gitlabMerge(Number(id), Number(iid)),
+      (await import("../state/gitlab.js")).gitlabMerge(Number(id), Number(iid), beforeWrite),
     setState: async (kind: "issue" | "mr", id: number, iid: number, state: "close" | "reopen") => {
-      await (await import("../state/gitlab.js")).gitlabSetState(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), state === "reopen" ? "reopen" : "close");
+      await (await import("../state/gitlab.js")).gitlabSetState(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), state === "reopen" ? "reopen" : "close", beforeWrite);
     },
   }, perms, "gitlab:write");
 
@@ -547,11 +571,11 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
       reply: (wlkcid: string, threadId: string, content: string) => {
         gate(perms, "learn:write", "learn.reply");
-        return learn.postBbsReply(wlkcid, threadId, content);
+        return learn.postBbsReply(wlkcid, threadId, content, undefined, undefined, beforeWrite);
       },
       post: (wlkcid: string, bqid: string, title: string, html: string) => {
         gate(perms, "learn:write", "learn.post");
-        return learn.postBbsThread(wlkcid, { bqid, title, html });
+        return learn.postBbsThread(wlkcid, { bqid, title, html }, beforeWrite);
       },
       bbsBoards: (wlkcid: string) => learn.getBbsBoards(wlkcid),
       bbsThreads: (wlkcid: string, opts?: { bqid?: string; kind?: "yb" | "jh" | "cy"; start?: number; length?: number }) =>
@@ -1672,6 +1696,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         return client;
       },
     },
+    yuketang: {
+      status: () => queryYuketang("status", [], () => gate(perms, "exthw:read", "yuketang.status")),
+      courses: () => queryYuketang("courses", [], () => gate(perms, "exthw:read", "yuketang.courses")),
+      contents: (classroomId) => queryYuketang("contents", [classroomId], () => gate(perms, "exthw:read", "yuketang.contents")),
+      homework: (classroomId, days) => queryYuketang("homework", [classroomId, days], () => gate(perms, "exthw:read", "yuketang.homework")),
+      homeworkDetail: (classroomId, leafTypeId) => queryYuketang("homeworkDetail", [classroomId, leafTypeId], () => gate(perms, "exthw:read", "yuketang.homeworkDetail")),
+      leafDetail: (classroomId, leafId) => queryYuketang("leafDetail", [classroomId, leafId], () => gate(perms, "exthw:read", "yuketang.leafDetail")),
+      noticeDetail: (classroomId, noticeIds) => queryYuketang("noticeDetail", [classroomId, noticeIds], () => gate(perms, "exthw:read", "yuketang.noticeDetail")),
+    },
+    ...buildAppFeatures(perms, beforeWrite),
     exthw: {
       snapshot: async () => {
         gate(perms, "exthw:read", "exthw.snapshot");
@@ -1810,6 +1844,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           }
           // OH MCP **服务器**开关（用户 2026-10-15）：把 OneTHU 自己暴露成本机 MCP server。
           // sidecar 每次 activate/run 读一次这个值，决定 127.0.0.1 上起不起 listener。
+          out["mcpServerRequested"] = userExtSnapshot().mcpServer ? "true" : "false";
+          out["ohAuthorized"] = ohAuthorized() ? "true" : "false";
           out["mcpServer"] = ohAuthorized() && userExtSnapshot().mcpServer ? "true" : "false";
           // 创造模式（2026-10-13）：userext 的开关随 settings 泵进 OH 引擎——
           // Rust Config::from_settings 每轮 run 实时读 creativeMode，切按钮 = 下轮对话生效。
@@ -1882,7 +1918,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     }
   }
   /* 用户主题监听挂一次（模块级幂等在函数内用 started 守卫） */
-  startUserThemeWatch();
+  if (!beforeWrite) startUserThemeWatch();
   /** 用户扩展执行器：步骤里 "ns.method" 调用插件门面自身（单对象参数） */
   const execTool = (tool: string, args: Record<string, unknown> | unknown[]): Promise<unknown> => {
     const dot = tool.indexOf(".");
@@ -1896,7 +1932,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   };
   /* OneFlow 执行器只由 harness 注册：谁先 build 谁注册会让步骤用错插件的权限/门面。
      调度器同理只由 harness 起一次（startScheduler 内部 started 幂等）。 */
-  if (pluginId === "onethu.harness") {
+  if (pluginId === "onethu.harness" && !beforeWrite) {
     registerFlowExecutor(execTool);
     startScheduler(execTool);
   }

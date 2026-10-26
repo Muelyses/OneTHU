@@ -24,6 +24,9 @@ export function explainLoginError(error: unknown): string | null {
     return t("login.error.cooldown", { seconds });
   }
   if (e.code === "AUTH_IN_PROGRESS") return t("login.error.inProgress");
+  const sharedCode = e.code ?? e.message ?? (typeof error === "string" ? error : "");
+  if (/CLI_(?:SHARED_SESSION_CHANGED|ACCOUNT_CHANGED)|AUTH_HANDOFF_LOGGED_OUT/.test(sharedCode)) return t("login.error.sessionChanged");
+  if (/CLI_(?:DAEMON|BRIDGE|PENDING_LOGOUT)|AUTH_HANDOFF_UNVERIFIED/.test(sharedCode)) return t("cli.server.error");
   if (e.code === "AUTH_SESSION_CONFLICT") return t("login.error.sessionConflict");
   if (e.code === "AUTH_SESSION_CHANGED" || e.message === "AUTH_SESSION_CHANGED") return t("login.error.sessionChanged");
   if (e.code === "AUTH_2FA_RESTART") return t("login.error.restartVerification");

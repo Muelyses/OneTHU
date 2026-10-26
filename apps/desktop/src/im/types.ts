@@ -63,6 +63,11 @@ export interface ChannelAdapter {
   start(onInbound: (msg: InboundMessage) => void): Promise<void>;
   /** 回复某条入站消息（适配器内部处理平台上下文/分片/限速/重试） */
   send(orig: InboundMessage, text: string): Promise<void>;
+  /** Proactive task delivery: resolves only after the server response. The
+   * caller supplies a recipient-scoped final guard and stable idempotency key. */
+  notify?(recipient: string, text: string, idempotencyKey: string, beforeWrite: () => Promise<void>, signal: AbortSignal): Promise<void>;
+  /** Private local bridge for an already bound outbound recipient. */
+  notificationContext?(recipient: string): string | undefined;
   /** 停止并释放（幂等） */
   stop(): Promise<void>;
   /** 把平台附件引用翻译成可执行下载指令（需要 token 等鉴权的通道实现；缺省则 ref 直接用） */

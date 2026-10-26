@@ -141,7 +141,7 @@ export function NoticeDetailPage() {
     if (!n || isExt || attState !== "idle") return;
     setAttState("loading");
     learn
-      .getNotificationPageDetail(courseId, n.id)
+      .getNotificationPageDetail(courseId, n.id, n.attachmentName)
       .then((d) => {
         setAtt(d.attachment ?? null);
         setAttState("ok");

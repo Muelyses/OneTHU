@@ -42,6 +42,9 @@ export class ImStorage<T extends object> {
   private snapshotValue: T | null = null;
   private loading: Promise<T> | null = null;
   private readonly listeners = new Set<() => void>();
+  private loadFailed = false;
+  /** Failed decryption must not be interpreted as an intentional disconnect. */
+  readable(): boolean { return !this.loadFailed; }
 
   constructor(
     private readonly key: string,
@@ -74,7 +77,7 @@ export class ImStorage<T extends object> {
     if (this.saltBytes && this.saltBytes.length >= 8) return this.saltBytes;
     // ① 持久文件里的 salt（随 save 写入）
     try {
-      const raw = await fileRead(this.fileName());
+      const raw = await fileRead(this.fileName(), { strict: true });
       if (raw) {
         const parsed = JSON.parse(raw) as { salt?: string; env?: unknown };
         if (parsed.salt) {
@@ -109,8 +112,10 @@ export class ImStorage<T extends object> {
 
   /** 持久文件名（app 数据目录 state/ 下，与 session/credentials 同目录） */
   private fileName(): string {
-    // key 形如 onethu.im.v1 → 文件 im.cfg；saltKey 同文件，不需要第二个文件
-    return "im.cfg";
+    // Keep the existing channel-credential file for upgrades. Every other
+    // encrypted store needs its own file and salt, including task reply context.
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,120}$/.test(this.key)) throw new Error("Invalid encrypted store key");
+    return this.key === "onethu.im.v1" ? "im.cfg" : `${this.key}.cfg`;
   }
 
   private async deriveKey(salt: Uint8Array): Promise<CryptoKey> {
@@ -159,7 +164,7 @@ export class ImStorage<T extends object> {
       let saltSource: "file" | "legacy" | "none" = "none";
       // ① 持久文件（新）
       try {
-        const raw = await fileRead(this.fileName());
+        const raw = await fileRead(this.fileName(), { strict: true });
         if (raw) {
           const parsed = JSON.parse(raw) as { salt?: string; env?: Envelope | null };
           if (parsed.salt) {
@@ -169,10 +174,12 @@ export class ImStorage<T extends object> {
           if (parsed.env && parsed.env.v === 1 && parsed.env.iv && parsed.env.ct) {
             value = await this.decrypt(parsed.env);
             saltSource = "file";
-          }
+          } else this.loadFailed = true;
         }
       } catch {
-        /* 坏信封/解密失败：按未配置对待（凭据可重填，不至于卡死启动） */
+        this.loadFailed = true;
+        /* Keep the unreadable file for recovery; callers must not revoke the
+         * resident channel configuration based on this fallback. */
       }
       // ② localStorage 旧数据迁移（一次；成功后清掉旧键，防再次被清缓存丢配置）
       if (saltSource === "none") {
@@ -207,7 +214,8 @@ export class ImStorage<T extends object> {
   async save(next: T): Promise<void> {
     const salt = await this.getOrCreateSalt();
     const env = await this.encrypt(next);
-    await fileWrite(this.fileName(), JSON.stringify({ salt: b64encode(salt), env }));
+    await fileWrite(this.fileName(), JSON.stringify({ salt: b64encode(salt), env }), { strict: true });
+    this.loadFailed = false;
     this.snapshotValue = next;
     this.emit();
   }

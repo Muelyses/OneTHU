@@ -35,8 +35,8 @@ function shareId(): string {
   return "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-async function ensureRepo(token: string): Promise<string> {
-  const repo = await ensureOwnedCloudRepo(token, REPO_NAME);
+async function ensureRepo(token: string, beforeCreate?: () => Promise<void>): Promise<string> {
+  const repo = await ensureOwnedCloudRepo(token, REPO_NAME, undefined, beforeCreate);
   if (token !== getSeafileToken()) throw new Error(i18n("state.seafile.accountChanged"));
   return repo.id;
 }
@@ -47,24 +47,32 @@ async function writeTemp(name: string, text: string): Promise<string> {
 }
 
 /** 所有交换类型共用上传、七天分享与撤销记录。 */
-async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = [], expireDays = EXPIRE_DAYS, keyRepoId?:string): Promise<VaultCloudRef> {
+async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = [], expireDays = EXPIRE_DAYS, keyRepoId?:string, beforeWrite?: () => Promise<void>): Promise<VaultCloudRef> {
   const localPath = await writeTemp("manifest.json", manifest);
   const manifestPath = `${dir}/manifest.json`;
+  await beforeWrite?.();
   await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
   let path = dir;
   try {
+    await beforeWrite?.();
     const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays, password: "" });
+    await beforeWrite?.();
     const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
     rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt, keyRepoId });
     return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt, keyRepoId };
   } catch (error) {
     if (shareFiles.length) throw new Error(i18n("state.vaultcloud.ac986af5f7b3", { value: String(String(error)) }));
+    // A timeout/5xx may follow a successful share creation. Only an explicit
+    // directory-policy rejection permits a different file-share request.
+    if (!/\b(?:400|403|405|422)\b/.test(String(error))) throw error;
     /* 目录分享被云盘策略拒绝：退化为分享清单文件（文件条目不可直接下载） */
     path = manifestPath;
   }
+  await beforeWrite?.();
   const share = await invoke<ShareOut>("seafile_share", {
     token, repoId, path, expireDays, password: "",
   });
+  await beforeWrite?.();
   const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
   rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path: dir, manifestName: "manifest.json", files: shareFiles, expiresAt, keyRepoId });
   return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt, keyRepoId };
@@ -102,12 +110,17 @@ export async function updateExchangeManifest(repoId: string, dir: string, code: 
 }
 
 const adapter: VaultCloudAdapter = {
-  async upload(payload: VaultSharePayload): Promise<VaultCloudRef> {
+  async upload(payload: VaultSharePayload, beforeWrite?: () => Promise<void>): Promise<VaultCloudRef> {
     const token = tokenOrThrow();
-    const repoId = await ensureRepo(token);
+    const request = async <T = unknown>(command: string, args: Record<string, unknown>): Promise<T> => {
+      await beforeWrite?.();
+      if (getSeafileToken() !== token) throw new Error(i18n("state.seafile.accountChanged"));
+      return invoke<T>(command, args);
+    };
+    const repoId = await ensureRepo(token, beforeWrite);
     const id = shareId();
     const dir = `${ROOT}/${id}`;
-    await invoke("seafile_mkdir", { token, repoId, path: dir });
+    await request("seafile_mkdir", { token, repoId, path: dir });
     /* 文件条目先上传到分享目录（同一目录一起分享）；清单里只留相对路径。 */
     const cloud = JSON.parse(JSON.stringify(payload)) as VaultSharePayload;
     const key=payload.allowEmail?await newShareKey(token,payload.allowEmail):undefined;
@@ -119,22 +132,22 @@ const adapter: VaultCloudAdapter = {
       const f = it.file;
       if (!f) continue;
       let data: string;
-      if (f.stagedPath) data = await invoke<string>("read_file_base64", { path:f.stagedPath, maxBytes:128*1024*1024 });
+      if (f.stagedPath) data = await request<string>("read_file_base64", { path:f.stagedPath, maxBytes:128*1024*1024 });
       else if (f.shareUrl && f.cloudPath) {
         const path = await materializeSharedFile({provider:"seafile",path:"",shareUrl:f.shareUrl,keyRepoId:f.shareKeyRepoId}, f.cloudPath, f.name);
-        data = await invoke<string>("read_file_base64", {path,maxBytes:128*1024*1024});
+        data = await request<string>("read_file_base64", {path,maxBytes:128*1024*1024});
       } else if (f.cloudPath?.startsWith("/")) {
-        data = await invoke<string>("seafile_read_bytes", {token,repoId:f.cloudRepoId ?? repoId,path:f.cloudPath,maxBytes:128*1024*1024});
+        data = await request<string>("seafile_read_bytes", {token,repoId:f.cloudRepoId ?? repoId,path:f.cloudPath,maxBytes:128*1024*1024});
       } else throw new Error(i18n("state.vaultcloud.aae73c7a3e65", { name: String(f.name) }));
       if (!filesReady) {
-        await invoke("seafile_mkdir", { token, repoId, path: filesDir });
+        await request("seafile_mkdir", { token, repoId, path: filesDir });
         filesReady = true;
       }
       const safe = crypto.randomUUID()+ (key?".enc":"-"+f.name.replace(/[\\/:*?"<>|]+/g,"_").slice(0,120));
       const bytes=Uint8Array.from(atob(data),c=>c.charCodeAt(0));
       const output=key?new TextEncoder().encode(JSON.stringify(await sealBytes(bytes,key))):bytes;
-      const localPath=await invoke<string>("write_temp_file",{name:safe,dataBase64:bytesToBase64(output)});
-      await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath, replace: true });
+      const localPath=await request<string>("write_temp_file",{name:safe,dataBase64:bytesToBase64(output)});
+      await request("seafile_upload", { token, repoId, parentDir: filesDir, localPath, replace: true });
       f.cloudPath = `files/${safe}`;
       delete f.stagedPath;
       delete f.cloudRepoId;
@@ -142,10 +155,10 @@ const adapter: VaultCloudAdapter = {
       delete f.shareKeyRepoId;
       shareFiles.push({ hash: f.hash || safe, path: `files/${safe}` });
     }
-    return await uploadSharedManifest(token,repoId,dir,key?JSON.stringify(await sealBytes(new TextEncoder().encode(JSON.stringify(cloud)),key)):JSON.stringify(cloud),shareFiles,EXPIRE_DAYS,key?.repoId);
+    return await uploadSharedManifest(token,repoId,dir,key?JSON.stringify(await sealBytes(new TextEncoder().encode(JSON.stringify(cloud)),key)):JSON.stringify(cloud),shareFiles,EXPIRE_DAYS,key?.repoId,beforeWrite);
     } catch (error) {
-      if (key) await invoke("seafile_delete_repo", {token,repoId:key.repoId}).catch(() => undefined);
-      await invoke("seafile_delete", {token,repoId,path:dir,kind:"dir"}).catch(() => undefined);
+      if (key) await request("seafile_delete_repo", {token,repoId:key.repoId}).catch(() => undefined);
+      await request("seafile_delete", {token,repoId,path:dir,kind:"dir"}).catch(() => undefined);
       throw error;
     }
   },
@@ -250,7 +263,7 @@ export async function cleanupExpiredVaultShares(): Promise<number> {
 let installed = false;
 
 /** 启动/进入暂存箱时调用：有 token 才注册；无 token 保持 inline 模式。 */
-export async function installVaultCloudAdapter(): Promise<boolean> {
+export async function installVaultCloudAdapter(options: { cleanup?: boolean } = {}): Promise<boolean> {
   await ensureSeafileLoaded();
   if (!getSeafileToken()) {
     registerVaultCloudAdapter(null);
@@ -259,7 +272,7 @@ export async function installVaultCloudAdapter(): Promise<boolean> {
   }
   if (!installed) registerVaultCloudAdapter(adapter);
   installed = true;
-  void cleanupExpiredVaultShares().catch(() => undefined);
+  if (options.cleanup !== false) void cleanupExpiredVaultShares().catch(() => undefined);
   return true;
 }
 

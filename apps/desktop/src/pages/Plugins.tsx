@@ -1,3 +1,4 @@
+import { CliServerSettings } from "../components/CliServerSettings.js";
 import { getLocale as getUiLocale } from "../i18n/index.js";
 import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 /**
@@ -36,7 +37,6 @@ import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage } from "../components/OhSettingsPage.js";
-import { mcpServerEnabled, setMcpServer } from "../state/userext.js";
 import { openImageViewer } from "../components/ImageViewer.js";
 import { isThemeEntry, resolveAssetUrl } from "../lib/market.js";
 import { useExitHold } from "../lib/motion.js";
@@ -800,27 +800,7 @@ function PluginSheet({
  *  开 = harness 在 127.0.0.1:8787 起本机 MCP server（POST /mcp，Streamable-HTTP），
  *  别的 agent / 脚本 / 编辑器插件能直接调 OneTHU 的接口；关 = 连接一律 403。
  *  跟着 MCP 面板走：高级档就地渲染与 Sheet 形态共用这一份实现，不复制第二处。 */
-function McpSwitchRow(): ReactNode {
-  const uiLocale = useUiLocale();
-
-  const [on, setOn] = useState(() => mcpServerEnabled());
-  return (
-    <SettingsRow id="row-oh-mcp-server"
-      title={i18n("pages.plugins.af7a3fa54da7")}
-      sub={on ? i18n("pages.plugins.09c7b2e4141f") : i18n("pages.plugins.ee0b1c901dad")}
-      control={
-        <Switch
-          checked={on}
-          aria-label={i18n("pages.plugins.307ebc489657")}
-          onChange={(v) => {
-            setMcpServer(v);
-            setOn(v);
-          }}
-        />
-      }
-    />
-  );
-}
+function McpSwitchRow(): ReactNode { return <CliServerSettings/>; }
 
 /** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
 export function McpBody(): ReactNode {

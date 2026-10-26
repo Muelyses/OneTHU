@@ -1,6 +1,7 @@
 /* ⚠️ 必须第一条：认领父窗口的 Tauri 桥（竖屏取景框是同源 iframe，Tauri 只注入主 frame）。
    放在最前，后面所有模块 import 时的 `"__TAURI_INTERNALS__" in window` 判定才是对的。 */
 import "./lib/tauriBridge.js";
+import { isPluginRuntimeOwner } from "./plugins/windowOwner.js";
 import { initPrivacyConsent, ohAuthorized, subscribePrivacy } from "./state/privacyConsent.js";
 const privacyReady = initPrivacyConsent();
 import { StrictMode } from "react";
@@ -39,7 +40,7 @@ installTextContrast();
 installRipple();
 /* 悬浮球默认开：原生端不会自己 show，启动时按偏好真正显示一次（用户「本次关闭」则跳过） */
 import { syncOverlayPreference } from "./lib/overlay.js";
-void syncOverlayPreference();
+if (isPluginRuntimeOwner()) void syncOverlayPreference();
 
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
@@ -65,11 +66,13 @@ installOneGUI({
 });
 // 旧通道（主题明暗 / 玻璃档位）→ OneGUI 轴；用户现有选择立刻在 OneGUI 上生效
 installOneGUIBridge();
-installAuthWatchdog();
-installKeepalive();   // 10 分钟会话保活探针：死会话在用户点击前就透明重建
+if (isPluginRuntimeOwner()) {
+  installAuthWatchdog();
+  installKeepalive();   // 主窗口统一维持会话；悬浮窗口不另起登录链。
+}
 // 系统日历自动跟随：订阅云/本日程与课表变更（未开启时零开销）
 import { initSystemCalAutoSync } from "./state/systemCal.js";
-initSystemCalAutoSync();
+if (isPluginRuntimeOwner()) initSystemCalAutoSync();
 // 玻璃程度档位：读档落到 <html data-glass>（默认档不落属性）
 import { initGlassLevel } from "./lib/glassLevel.js";
 initGlassLevel();
@@ -151,7 +154,10 @@ watchDynamicColor();
 
 // 恢复已装插件（异步，失败只落日志）
 void (async () => {
+  if (!isPluginRuntimeOwner()) return;
   await privacyReady;
+  const { initYuketangRuntimeSync } = await import("./state/yuketangRuntime.js");
+  initYuketangRuntimeSync();
   await seedBuiltinHarness();
   await activateInstalledPlugins();
   let ohAllowed = ohAuthorized();

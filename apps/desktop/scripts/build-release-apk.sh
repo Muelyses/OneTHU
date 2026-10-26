@@ -140,7 +140,7 @@ LOG="$OUT_DIR/apk-build.log"
 # Rust 的增量指纹不总能感知 dist 变化；强制重展开 generate_context!，避免把旧前端
 # （例如上一版的导览图片）嵌入新 APK。只更新时间，不改变源码内容。
 touch "$TAURI_DIR/src/lib.rs"
-if ! npx tauri android build --apk --target aarch64 > "$LOG" 2>&1; then
+if ! ONETHU_MOBILE_BUILD=1 npx tauri android build --apk --target aarch64 > "$LOG" 2>&1; then
   echo "✗ 构建失败，错误摘要："
   sed -n '/What went wrong/,/^\* Try:/p' "$LOG" | head -20
   echo "（完整日志：${LOG}）"

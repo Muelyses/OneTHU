@@ -20,15 +20,20 @@ type Pending = {
   /** 次按钮（否定项）文案：默认「取消」；二选一场景把它说成用户实际得到的结果（如「忽略」） */
   cancelText?: UiText;
 };
-let pending: Pending | null = null;
-const listeners = new Set<() => void>();
+// Plugin callbacks can outlive a Vite HMR module instance. Keep the request and
+// subscribers on this window's global so old callbacks reach the current host.
+// Each native window has its own JS global; confirmations never cross windows.
+type ConfirmStore = { pending: Pending | null; listeners: Set<() => void> };
+const CONFIRM_STORE_KEY = Symbol.for("onethu.confirm.store.v1");
+const shared = globalThis as typeof globalThis & { [CONFIRM_STORE_KEY]?: ConfirmStore };
+const store = shared[CONFIRM_STORE_KEY] ??= { pending: null, listeners: new Set<() => void>() };
 
 export function confirmOk(msg: UiText): Promise<boolean> {
   return new Promise((resolve) => {
     // 新请求顶掉旧请求（旧者按取消结算，防悬挂）
-    pending?.resolve(false);
-    pending = { msg, resolve };
-    listeners.forEach((l) => l());
+    store.pending?.resolve(false);
+    store.pending = { msg, resolve };
+    store.listeners.forEach((l) => l());
   });
 }
 
@@ -44,15 +49,15 @@ export function confirmDanger(
   opts: { title?: UiText; confirmText?: UiText } = {},
 ): Promise<boolean> {
   return new Promise((resolve) => {
-    pending?.resolve(false);
-    pending = {
+    store.pending?.resolve(false);
+    store.pending = {
       msg,
       resolve,
       danger: true,
       title: opts.title ?? uiMessage("confirm.dangerTitle"),
       confirmText: opts.confirmText ?? uiMessage("confirm.execute"),
     };
-    listeners.forEach((l) => l());
+    store.listeners.forEach((l) => l());
   });
 }
 
@@ -64,18 +69,25 @@ export function confirmDanger(
  */
 export function confirmChoice(
   msg: UiText,
-  opts: { title?: UiText; confirmText: UiText; cancelText: UiText },
+  opts: { title?: UiText; confirmText: UiText; cancelText: UiText; signal?: AbortSignal },
 ): Promise<boolean> {
   return new Promise((resolve) => {
-    pending?.resolve(false);
-    pending = {
+    if (opts.signal?.aborted) { resolve(false); return; }
+    store.pending?.resolve(false);
+    const request: Pending = {
       msg,
-      resolve,
+      resolve: (value) => { opts.signal?.removeEventListener("abort", abort); resolve(value); },
       title: opts.title,
       confirmText: opts.confirmText,
       cancelText: opts.cancelText,
     };
-    listeners.forEach((l) => l());
+    const abort = () => {
+      if (store.pending === request) { store.pending = null; store.listeners.forEach((l) => l()); }
+      request.resolve(false);
+    };
+    store.pending = request;
+    opts.signal?.addEventListener("abort", abort, { once: true });
+    store.listeners.forEach((l) => l());
   });
 }
 
@@ -89,9 +101,10 @@ export const CONFIRM_IGNORE_HW = { title: uiMessage("confirm.ignoreHomeworkTitle
 export const CONFIRM_IMG_RELOGIN = { title: uiMessage("confirm.imageReloginTitle"), confirmText: uiMessage("confirm.relogin"), cancelText: uiMessage("confirm.ignore") } as const;
 
 export function answerConfirm(v: boolean): void {
-  pending?.resolve(v);
-  pending = null;
-  listeners.forEach((l) => l());
+  const request = store.pending;
+  store.pending = null;
+  request?.resolve(v);
+  store.listeners.forEach((l) => l());
 }
 
 /* ---------- 文本输入弹层（云盘新建资料库/文件夹等命名场景） ----------
@@ -169,8 +182,8 @@ function PromptHost(): React.ReactNode {
 }
 
 function subscribe(l: () => void): () => void {
-  listeners.add(l);
-  return () => listeners.delete(l);
+  store.listeners.add(l);
+  return () => store.listeners.delete(l);
 }
 
 export function ConfirmHost(): React.ReactNode {
@@ -182,7 +195,7 @@ export function ConfirmHost(): React.ReactNode {
 
 function ConfirmBody(): React.ReactNode {
   useLocale();
-  const cur = useSyncExternalStore(subscribe, () => pending);
+  const cur = useSyncExternalStore(subscribe, () => store.pending);
   const last = useRef<Pending | null>(null);
   if (cur) last.current = cur;
   const shown = cur ?? last.current;

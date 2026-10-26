@@ -1,7 +1,902 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultworkspace.21b57ecf4c6a",
+      "source": "长按内容后拖到箱子；电脑也可以直接拖入文件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.21b57ecf4c6a\")}"
+        }
+      ],
+      "translation": "Press and hold content, then drag it into a box; on a computer you can also drag files in directly.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.29636e43fdb4",
+      "source": "复制文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "label: i18n(\"components.vault.vaultworkspace.29636e43fdb4\")"
+        }
+      ],
+      "translation": "Copy text",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.2a6304d5346d",
+      "source": "先放进来，稍后再处理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.017799558da2\") : i18n(\"components.vault.vaultworkspace.2a6304d5346d\")"
+        }
+      ],
+      "translation": "Put it here first, deal with it later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.31fe3c2b0bba",
+      "source": "移到其他箱子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 93,
+          "context": "label: i18n(\"components.vault.vaultworkspace.31fe3c2b0bba\")"
+        }
+      ],
+      "translation": "Move to another box",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.38d4ac4ea494",
+      "source": "已从暂存箱移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 102,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.38d4ac4ea494\"))"
+        }
+      ],
+      "translation": "Removed from Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.39932f24fe11",
+      "source": "文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 24,
+          "context": "return i18n(\"components.vault.vaultworkspace.39932f24fe11\");"
+        }
+      ],
+      "translation": "Files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.42e970981c31",
+      "source": "{length} 项",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "visible.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18nRich(\"components.vault.vaultworkspace.42e970981c31\", { length: visible.length })}"
+        }
+      ],
+      "translation": "{length} items",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.45548176eb84",
+      "source": "文件、文字和页面入口，都可以收在一起。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
+        }
+      ],
+      "translation": "Files, text, and page entries can all be stashed together.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.496b211080c6",
+      "source": "删除「{name}」及其中的内容？已发出的口令需单独撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(box.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 84,
+          "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.496b211080c6\", { name: String(box.name) }))"
+        }
+      ],
+      "translation": "Delete “{name}” and its contents? Issued share codes must be revoked separately.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4b409085c396",
+      "source": "已移动到所选暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 98,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.4b409085c396\"))"
+        }
+      ],
+      "translation": "Moved to the selected Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4dc6d8e7a87a",
+      "source": "新暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 74,
+          "context": "default: i18n(\"components.vault.vaultworkspace.4dc6d8e7a87a\")"
+        }
+      ],
+      "translation": "New Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4f17124dd970",
+      "source": "暂存箱操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 114,
+          "context": "{i18n(\"components.vault.vaultworkspace.4f17124dd970\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "{i18n(\"components.vault.vaultworkspace.4f17124dd970\")}"
+        }
+      ],
+      "translation": "Stash actions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.51d8ab62786e",
+      "source": "已放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.added ? i18nMsg(\"components.vault.vaultworkspace.51d8ab62786e\") : result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "Placed on Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.5259cc54976d",
+      "source": "删除此箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 84,
+          "context": "label: i18n(\"components.vault.vaultworkspace.5259cc54976d\")"
+        }
+      ],
+      "translation": "Delete this box",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.5560decc5a07",
+      "source": "放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 87,
+          "context": "label: i18n(\"components.vault.vaultworkspace.5560decc5a07\")"
+        }
+      ],
+      "translation": "Place on Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.564ff4ed9876",
+      "source": "先收好，需要时再打开、分享或交给小OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 111,
+          "context": "{i18n(\"components.vault.vaultworkspace.564ff4ed9876\")}"
+        }
+      ],
+      "translation": "Stash it first; open, share, or hand it to OH later when needed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.57588aea6e6a",
+      "source": "这些文件已经在箱子里了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 69,
+          "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
+        }
+      ],
+      "translation": "These files are already in the box",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.6135d4159e89",
+      "source": "移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 102,
+          "context": "label: i18n(\"components.vault.vaultworkspace.6135d4159e89\")"
+        }
+      ],
+      "translation": "Remove",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.61924286426a",
+      "source": "把想留住的内容放进来",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "box.items.length ? i18n(\"components.vault.vaultworkspace.105a1b5daf4b\", { length: String(box.items.length) }) : i18n(\"components.vault.vaultworkspace.61924286426a\")"
+        }
+      ],
+      "translation": "Put the content you want to keep in here",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.6726270958a4",
+      "source": "切换暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 114,
+          "context": "{i18n(\"components.vault.vaultworkspace.6726270958a4\")}"
+        }
+      ],
+      "translation": "Switch Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.69cb3fb1fdd6",
+      "source": "文件读取失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 70,
+          "context": "error instanceof Error ? error.message : i18nMsg(\"components.vault.vaultworkspace.69cb3fb1fdd6\")"
+        }
+      ],
+      "translation": "Failed to read files; please try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.704da93b664d",
+      "source": "清空「{name}」的 {length} 项内容？已发出的口令需单独撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(box.name)"
+        },
+        {
+          "name": "length",
+          "expression": "String(box.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 83,
+          "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.704da93b664d\", { name: String(box.name), length: String(box.items.length) }))"
+        }
+      ],
+      "translation": "Clear the {length} items in “{name}”? Issued share codes must be revoked separately.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.7548dfb917ce",
+      "source": "我的箱子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.vault.vaultworkspace.7548dfb917ce\")}"
+        }
+      ],
+      "translation": "My boxes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.75d248782548",
+      "source": "连接云盘以分享文件与口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.vault.vaultworkspace.75d248782548\")}"
+        }
+      ],
+      "translation": "Connect the cloud drive to share files and share codes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.81ded76ddc48",
+      "source": "我的暂存箱列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 108,
+          "context": "{i18n(\"components.vault.vaultworkspace.81ded76ddc48\")}"
+        }
+      ],
+      "translation": "My Stash list",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.918d44cf93b2",
+      "source": "暂时无法放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "Cannot be placed on Home right now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.9797d33f081b",
+      "source": "重命名暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 78,
+          "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.9797d33f081b\"), [{ key: \"name\", label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\"), required: true, default: box.name }])"
+        }
+      ],
+      "translation": "Rename Stash",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ab70eecb29dc",
+      "source": "试试其他关键词，或查看箱内全部内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
+        }
+      ],
+      "translation": "Try other keywords, or view everything in the box.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.abf541ded48d",
+      "source": "复制失败，请打开内容后手动复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.abf541ded48d\"))"
+        }
+      ],
+      "translation": "Copy failed; open the content and copy it manually",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ad9daebe00dc",
+      "source": "添加文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 116,
+          "context": "{i18n(\"components.vault.vaultworkspace.ad9daebe00dc\")}"
+        }
+      ],
+      "translation": "Add files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.b96760b70dab",
+      "source": "首页已经有这一项了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "This item is already on Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.bc3dd14b898a",
+      "source": "清空内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 83,
+          "context": "label: i18n(\"components.vault.vaultworkspace.bc3dd14b898a\")"
+        }
+      ],
+      "translation": "Clear contents",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.c05d4e484881",
+      "source": "移动暂存项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 95,
+          "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.c05d4e484881\"), [{ key: \"box\", label: i18nMsg(\"components.vault.vaultworkspace.13a5f3ed956e\"), kind: \"select\", options: doc.boxes.filter(entry => entry.id !== target.boxId).map(entry => ({ value: entry.id, label: entry.name })) }])"
+        }
+      ],
+      "translation": "Move stash item",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.c95ed9f3eec2",
+      "source": "箱子名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 74,
+          "context": "label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 78,
+          "context": "label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\")"
+        }
+      ],
+      "translation": "Box name",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.cd78767c92e6",
+      "source": "文字已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.cd78767c92e6\"))"
+        }
+      ],
+      "translation": "Text copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d1cb5866d979",
+      "source": "更多操作：{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(item.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.d1cb5866d979\", { title: String(item.title) })}"
+        }
+      ],
+      "translation": "More actions: {title}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d7ff9e26df0d",
+      "source": "已将 {added} 个文件放入「{targetName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "added",
+          "expression": "String(added)"
+        },
+        {
+          "name": "targetName",
+          "expression": "String(targetName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 69,
+          "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
+        }
+      ],
+      "translation": "Added {added} files to “{targetName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d9d455b6afd7",
+      "source": "暂存箱内容管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 107,
+          "context": "{i18n(\"components.vault.vaultworkspace.d9d455b6afd7\")}"
+        }
+      ],
+      "translation": "Manage Stash contents",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.dad3c42e9d64",
+      "source": "暂存箱操作菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 128,
+          "context": "{i18n(\"components.vault.vaultworkspace.dad3c42e9d64\")}"
+        }
+      ],
+      "translation": "Stash action menu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.e2d666e87d74",
+      "source": "查找箱内内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        }
+      ],
+      "translation": "Search box contents",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.e4bbf7bc2d7e",
+      "source": "松手放入「{name}」",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "box.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 124,
+          "context": "{i18nRich(\"components.vault.vaultworkspace.e4bbf7bc2d7e\", { name: box.name })}"
+        }
+      ],
+      "translation": "Release to drop into “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ee32f25f7050",
+      "source": "清除搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.ee32f25f7050\")}"
+        }
+      ],
+      "translation": "Clear search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.03e731b6fbf6",
+      "source": "{value}。可在系统设置 → 无障碍/语言 → 文字转语音 里安装或启用引擎与中文语音数据，再回来点「重新检查」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "desc: i18n(\"components.voicesettingssection.03e731b6fbf6\", { value: String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")) })"
+        }
+      ],
+      "translation": "{value}. You can install or enable a text-to-speech engine and Chinese voice data in System settings → Accessibility / Language → Text-to-speech, then come back and tap “Recheck”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.06c47ff40845",
+      "source": "　可选音色 {length} 个。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "voices.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 173,
+          "context": "{i18nRich(\"components.voicesettingssection.06c47ff40845\", { length: voices.length })}"
+        }
+      ],
+      "translation": "  {length} voices available.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.08ceb2822aa1",
+      "source": "系统没有可用的文字转语音引擎",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")"
+        }
+      ],
+      "translation": "The system has no available text-to-speech engine",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.0c278a68af8a",
+      "source": "引擎尚未初始化",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 64,
+          "context": "title: i18n(\"components.voicesettingssection.0c278a68af8a\")"
+        }
+      ],
+      "translation": "Engine not initialized",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.1aa0e6cae35c",
+      "source": "稍等一下，初始化完成后试听与朗读才会出声。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 50,
+          "context": "desc: i18n(\"components.voicesettingssection.1aa0e6cae35c\")"
+        }
+      ],
+      "translation": "Wait a moment; preview and reading only produce sound after initialization finishes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.1ead396a0d02",
+      "source": "正在朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 57,
+          "context": "title: i18n(\"components.voicesettingssection.1ead396a0d02\")"
+        }
+      ],
+      "translation": "Reading",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.20e403134d07",
+      "source": "当前平台是否支持语音合成 / 重新检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
+        }
+      ],
+      "translation": "Whether the current platform supports speech synthesis / Recheck",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.2a015c420014",
+      "source": "音色、语速、音高全部回到原声，并关闭自动朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
+        }
+      ],
+      "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3b6c48ce496b",
+      "source": "全部恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
+        }
+      ],
+      "translation": "Restore all defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.voicesettingssection.3e3b45ef84ac",
       "source": "引擎状态",
@@ -497,897 +1392,6 @@
         }
       ],
       "translation": "  Preview ignores the “Auto-read” switch and can be tapped anytime.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.cd97a36868f3",
-      "source": "语速",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 73,
-          "context": "return i18n(\"components.voicesettingssection.cd97a36868f3\");"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 200,
-          "context": "{i18n(\"components.voicesettingssection.cd97a36868f3\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 209,
-          "context": "{i18n(\"components.voicesettingssection.cd97a36868f3\")}"
-        }
-      ],
-      "translation": "Speech rate",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.dd73594225ff",
-      "source": "正在读取引擎状态…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 41,
-          "context": "title: i18n(\"components.voicesettingssection.dd73594225ff\")"
-        }
-      ],
-      "translation": "Reading engine status…",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.e54687f4ae5c",
-      "source": "语音合成走 Android 系统自带的文字转语音引擎（华为/荣耀小艺、小爱、Google TTS 等），桌面端没有这条通道。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 47,
-          "context": "desc: i18n(\"components.voicesettingssection.e54687f4ae5c\")"
-        }
-      ],
-      "translation": "Speech synthesis uses the text-to-speech engine built into Android (HUAWEI/HONOR Celia, Xiao AI, Google TTS, etc.); there is no such channel on the desktop.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.f4b29bf393be",
-      "source": "引擎未就绪",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 156,
-          "context": "lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")"
-        }
-      ],
-      "translation": "Engine not ready",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.f4feaf735d87",
-      "source": "朗读高低",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 74,
-          "context": "return i18n(\"components.voicesettingssection.f4feaf735d87\");"
-        }
-      ],
-      "translation": "Reading pitch",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.fb11aa6f2982",
-      "source": "检查中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 177,
-          "context": "busy ? i18n(\"components.voicesettingssection.fb11aa6f2982\") : i18n(\"components.voicesettingssection.c25fb86b1e96\")"
-        }
-      ],
-      "translation": "Checking…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.0b38085b73e4",
-      "source": "已恢复为「日程与 DDL」",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 217,
-          "context": "done(i18n(\"components.widgetbindmodal.0b38085b73e4\"))"
-        }
-      ],
-      "translation": "Restored to “Schedule & DDL”",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.0d59f4339593",
-      "source": "夹里的收藏项会以图标并列显示在这块小组件上（放不下的自动略过）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 231,
-          "context": "{i18n(\"components.widgetbindmodal.0d59f4339593\")}"
-        }
-      ],
-      "translation": "The favorite items in the folder are shown side by side as icons on this widget (ones that do not fit are skipped automatically).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.14b34146dee0",
-      "source": "{length} 个收藏项（放不下的自动略过）",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "f.items.filter((it) => it.t === \"a\").length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 238,
-          "context": "{i18nRich(\"components.widgetbindmodal.14b34146dee0\", { length: f.items.filter((it) => it.t === \"a\").length })}"
-        }
-      ],
-      "translation": "{length} favorite items (ones that do not fit are skipped automatically)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.17a0e39c6089",
-      "source": "日程与 DDL",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 70,
-          "context": "return i18n(\"components.widgetbindmodal.17a0e39c6089\");"
-        }
-      ],
-      "translation": "Schedule & DDL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.1d0050cf33ef",
-      "source": "当前显示：{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "bindingSummary(cur, favs.data)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 186,
-          "context": "{i18nRich(\"components.widgetbindmodal.1d0050cf33ef\", { value: bindingSummary(cur, favs.data) })}"
-        }
-      ],
-      "translation": "Currently showing: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.203497c15f75",
-      "source": "读取桌面上的小组件失败：应用刚更新时请先完全退出再打开一次。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 150,
-          "context": "{i18n(\"components.widgetbindmodal.203497c15f75\")}"
-        }
-      ],
-      "translation": "Failed to read the widgets on the home screen: if the app was just updated, quit it fully and reopen it once.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.28cea6fbdb23",
-      "source": "收藏夹图标组",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 72,
-          "context": "return i18n(\"components.widgetbindmodal.28cea6fbdb23\");"
-        }
-      ],
-      "translation": "Favorites icon group",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.2a5e99245dd8",
-      "source": "正在读取桌面上的小组件…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 152,
-          "context": "{i18n(\"components.widgetbindmodal.2a5e99245dd8\")}"
-        }
-      ],
-      "translation": "Reading the widgets on the home screen…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.378759fdd1e8",
-      "source": "点它",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 164,
-          "context": "{i18n(\"components.widgetbindmodal.378759fdd1e8\")}"
-        }
-      ],
-      "translation": "Tap it",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 145,
-          "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 183,
-          "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.40db44fd1071",
-      "source": "已绑定：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(bindingSummary(binding, favs.data))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 128,
-          "context": "done(i18n(\"components.widgetbindmodal.40db44fd1071\", { value: String(bindingSummary(binding, favs.data)) }))"
-        }
-      ],
-      "translation": "Bound: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.4b0011fadb3e",
-      "source": "课程、作业、洗衣机…显示它的详情，拉得越高行数越多",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 71,
-          "context": "return i18n(\"components.widgetbindmodal.4b0011fadb3e\");"
-        }
-      ],
-      "translation": "Courses, assignments, washers… shows their details; the more you stretch it, the more rows it has",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.567db422036f",
-      "source": "一个收藏项占满",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 71,
-          "context": "return i18n(\"components.widgetbindmodal.567db422036f\");"
-        }
-      ],
-      "translation": "One favorite item fills the whole widget",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.572cf45ba436",
-      "source": "返回",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 228,
-          "context": "{i18n(\"components.widgetbindmodal.572cf45ba436\")}"
-        }
-      ],
-      "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.57ba46d6a1b3",
-      "source": "桌面上还没有 OneTHU 小组件。长按桌面 → 小组件 → 选「OneTHU」，放好一块再回来。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 154,
-          "context": "{i18n(\"components.widgetbindmodal.57ba46d6a1b3\")}"
-        }
-      ],
-      "translation": "There are no OneTHU widgets on the home screen yet. Long-press the home screen → Widgets → pick “OneTHU”, place one, then come back.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.5aaf3005e398",
-      "source": "这块小组件显示什么？",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 182,
-          "context": "{i18n(\"components.widgetbindmodal.5aaf3005e398\")}"
-        }
-      ],
-      "translation": "What should this widget show?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.5ae60d0c946d",
-      "source": "当前：{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: \"today\" }, favs.data)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 162,
-          "context": "{i18nRich(\"components.widgetbindmodal.5ae60d0c946d\", { value: bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: \"today\" }, favs.data) })}"
-        }
-      ],
-      "translation": "Current: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.5d4640f1dbd2",
-      "source": "把某个收藏夹嵌到桌面：若干收藏项图标并列，各自可点",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 72,
-          "context": "return i18n(\"components.widgetbindmodal.5d4640f1dbd2\");"
-        }
-      ],
-      "translation": "Embed a favorites folder on the home screen: several favorite item icons side by side, each tappable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.6ab335864461",
-      "source": "快捷方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 73,
-          "context": "return i18n(\"components.widgetbindmodal.6ab335864461\");"
-        }
-      ],
-      "translation": "Shortcut",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.6ae61cd0b12a",
-      "source": "还没有收藏夹：先在收藏夹页建一个再放上桌面",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 199,
-          "context": "showToast(i18nMsg(\"components.widgetbindmodal.6ae61cd0b12a\"))"
-        }
-      ],
-      "translation": "No favorites folder yet: create one on the Favorites page first, then put it on the home screen",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.73795817b5de",
-      "source": "（已失效）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 57,
-          "context": "resolveAtom(binding.atom)?.title ?? i18n(\"components.widgetbindmodal.73795817b5de\")"
-        }
-      ],
-      "translation": "(No longer valid)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.widgetbindmodal.76d1caab2105",
-      "source": "恢复默认（日程与 DDL）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 218,
-          "context": "{i18n(\"components.widgetbindmodal.76d1caab2105\")}"
-        }
-      ],
-      "translation": "Restore default (Schedule & DDL)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.7aba37c0e712",
-      "source": "图标 + 名称，放成 1×1 就像桌面快捷方式。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 252,
-          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
-        }
-      ],
-      "translation": "Icon + name; placed at 1×1 it works like a home screen shortcut.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.7edf6b8c5da0",
-      "source": "应用不能替你往桌面添加小组件，只能给已经存在的那些换内容。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 148,
-          "context": "{i18n(\"components.widgetbindmodal.7edf6b8c5da0\")}"
-        }
-      ],
-      "translation": "The app cannot add widgets to the home screen for you; it can only change the content of existing ones.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.86a6223fda86",
-      "source": "{value} 个",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "atomsIn(f)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 240,
-          "context": "{i18nRich(\"components.widgetbindmodal.86a6223fda86\", { value: atomsIn(f) })}"
-        }
-      ],
-      "translation": "{value} items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.96b17d4fdea5",
-      "source": "选一个收藏项做快捷方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 251,
-          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
-        }
-      ],
-      "translation": "Pick a favorite item as the shortcut",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.aa715722613a",
-      "source": "放到哪一块小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 142,
-          "context": "{i18n(\"components.widgetbindmodal.aa715722613a\")}"
-        }
-      ],
-      "translation": "Which widget to place it on",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.accde02d15d4",
-      "source": "放到哪一块小组件？",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 144,
-          "context": "{i18n(\"components.widgetbindmodal.accde02d15d4\")}"
-        }
-      ],
-      "translation": "Which widget should this go on?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.bf955b4b0454",
-      "source": "这块小组件会被它占满：拉得越高，显示的细节越多。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 252,
-          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
-        }
-      ],
-      "translation": "This widget will be filled by it: the more you stretch it, the more details it shows.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.c8c9de54712b",
-      "source": "今天的课、考试与作业截止（最常用的一块）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 70,
-          "context": "return i18n(\"components.widgetbindmodal.c8c9de54712b\");"
-        }
-      ],
-      "translation": "Today's classes, exams, and assignment deadlines (the most commonly used widget)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.cb2c998643fd",
-      "source": "选一个收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 225,
-          "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 227,
-          "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
-        }
-      ],
-      "translation": "Pick a favorites folder",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.e177d59e40d1",
-      "source": "选一个收藏项显示详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 251,
-          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
-        }
-      ],
-      "translation": "Pick a favorite item to show its details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.e8748ab06b1a",
-      "source": "一个功能页或收藏项的图标快捷方式（1×1 起）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 73,
-          "context": "return i18n(\"components.widgetbindmodal.e8748ab06b1a\");"
-        }
-      ],
-      "translation": "Icon shortcut for a feature page or favorite item (from 1×1)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.ea9677c3d21f",
-      "source": "要显示：{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "bindingSummary(binding, favs.data)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 148,
-          "context": "{i18nRich(\"components.widgetbindmodal.ea9677c3d21f\", { value: bindingSummary(binding, favs.data) })}"
-        }
-      ],
-      "translation": "To show: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.fce3bfe1b135",
-      "source": "这块小组件显示什么",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 180,
-          "context": "{i18n(\"components.widgetbindmodal.fce3bfe1b135\")}"
-        }
-      ],
-      "translation": "What this widget shows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.ff6541441f00",
-      "source": "桌面上可以同时放多块，各显示各的（点卡片即可换）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 186,
-          "context": "{i18n(\"components.widgetbindmodal.ff6541441f00\")}"
-        }
-      ],
-      "translation": "You can place several widgets on the home screen at once, each showing its own content (tap a card to switch).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.15539ef189fb",
-      "source": "它依赖的功能可能已改名或被移除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 48,
-          "context": "{i18n(\"components.widgethost.15539ef189fb\")}"
-        }
-      ],
-      "translation": "The feature it depends on may have been renamed or removed.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.32f8c1be3eb7",
-      "source": "该组件已不可用，请从白板移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 47,
-          "context": "{i18n(\"components.widgethost.32f8c1be3eb7\")}"
-        }
-      ],
-      "translation": "This widget is no longer available; please remove it from the Board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.7d77a938e62b",
-      "source": "暂无内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 94,
-          "context": "{i18n(\"components.widgethost.7d77a938e62b\")}"
-        }
-      ],
-      "translation": "No content yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.857e5e59690b",
-      "source": "这条入口已失效，请从白板移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 72,
-          "context": "{i18n(\"components.widgethost.857e5e59690b\")}"
-        }
-      ],
-      "translation": "This entry is no longer valid; please remove it from the Board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.b77883b96b72",
-      "source": "内容由原页面提供",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 100,
-          "context": "{i18n(\"components.widgethost.b77883b96b72\")}"
-        }
-      ],
-      "translation": "Content is provided by the original page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.021377fb5c78",
-      "source": "尚未添加小组件：桌面长按 → 小组件 → OneTHU，添加后可选择显示内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 103,
-          "context": "instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
-        }
-      ],
-      "translation": "No widgets added yet: long-press the home screen → Widgets → OneTHU; after adding one you can choose what it shows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.130123e01753",
-      "source": "立即刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.widgetsettingssection.130123e01753\")}"
-        }
-      ],
-      "translation": "Refresh now",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.15eb664681a3",
-      "source": "{length} 种：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(status.providersRegistered.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(status.providersRegistered.map(plainShapeName).join(\"、\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 136,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "{length} kinds: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.174b9ff2e902",
-      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 135,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "No usable sizes were read yet; please report this line's content to the developers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.17a0e39c6089",
-      "source": "日程与 DDL",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 195,
-          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
-        }
-      ],
-      "translation": "Schedule & DDL",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

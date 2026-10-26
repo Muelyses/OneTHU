@@ -253,6 +253,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const navParams: LearnNav | null = active.params;
 
   useEffect(() => {
+    if (PREVIEW_MODE) return;
+    let stopped = false, busy = false;
+    const refresh = async () => {
+      if (busy || loginBusy.current) return;
+      busy = true;
+      const action = authActionVersion.current;
+      try {
+        const result = await clients.refreshSharedSession(() => {
+          if (!stopped && action === authActionVersion.current) { setUser(null); setTwoFactor(null); setStatus("connecting"); }
+        });
+        if (!result || stopped || action !== authActionVersion.current) return;
+        authActionVersion.current++;
+        setTwoFactor(null);
+        if (result.kind === "ready") { setUser({ username: result.username }); setStatus("ready"); setError(null); }
+        else if (result.kind === "unavailable") { setUser(result.username ? { username: result.username } : null); setStatus(result.username ? "ready" : "logged-out"); setError(result.error); }
+        else { setUser(null); setStatus("logged-out"); setError(null); }
+      } catch (error) {
+        // Leave the current page usable on a daemon outage; task settings also
+        // show the connection failure, and no local scheduler is substituted.
+        if (!stopped) setError(error);
+      } finally { busy = false; }
+    };
+    const onFocus = () => { void refresh(); };
+    window.addEventListener("focus", onFocus);
+    const timer = setInterval(onFocus, 15_000);
+    return () => { stopped = true; clearInterval(timer); window.removeEventListener("focus", onFocus); };
+  }, [setError]);
+
+  useEffect(() => {
     console.log("[explorer-preview] PREVIEW_MODE=", PREVIEW_MODE, "search=", window.location.search, "DEV=", import.meta.env?.DEV);
     if (PREVIEW_MODE) {
       setUser({ username: "preview" });

@@ -113,6 +113,19 @@ export class GitLabApiError extends LibError {
 
 }
 
+/** The server may have accepted the write before its response was lost or
+ * malformed. Consumers should inspect current state before offering a retry. */
+export class GitLabWriteOutcomeUnknownError extends GitLabApiError {
+    readonly code = "GITLAB_WRITE_OUTCOME_UNKNOWN";
+    readonly retryable = false;
+    readonly writeOutcome = "unknown";
+    constructor(cause: unknown) {
+        super("The GitLab write result could not be confirmed. Refresh and check the resource before retrying.");
+        this.name = "GitLabWriteOutcomeUnknownError";
+        Object.defineProperty(this, "cause", {value: cause, enumerable: false});
+    }
+}
+
 export class ScheduleError extends LibError {
 
 }

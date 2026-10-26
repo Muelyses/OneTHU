@@ -39,11 +39,12 @@ function fixture(patch = {}, handler = () => response(200, { success: true })) {
   const logs = [];
   let cookie = "fixture-cookie";
   let relogins = 0;
+  let nativeEpoch = 1;
   const events = new Map();
   const intervals = [];
   const storage = new Map([["onethu.madmodel.models.v1", JSON.stringify({ at: now, ids: ["fixture-model"] })]]);
   const clients = {
-    session: {},
+    session: { username: "fixture-account" },
     logLine: async (line) => { logs.push(line); },
     http: {
       cookieHeaderFor: () => cookie,
@@ -57,7 +58,8 @@ function fixture(patch = {}, handler = () => response(200, { success: true })) {
   const imports = {
     "../i18n/index.js": i18n,
     "../lib/clients.js": clients,
-    "@onethu/core": { webvpnWrap: wrap },
+    "@onethu/core": { webvpnWrap: wrap, webvpnDecodeUrl: (url) => url.startsWith(TUNNEL) ? SITE + url.slice(TUNNEL.length) : null },
+    "../lib/transport.js": { nativeSessionEpoch: async () => nativeEpoch, assertNativeSessionEpoch: async (epoch) => { if (epoch !== nativeEpoch) throw new Error("AUTH_SESSION_CHANGED"); } },
     "../plugins/registry.js": {
       getPlugin: () => rec,
       updatePlugin: (_id, patch) => { writes.push(patch); Object.assign(rec, patch); },
@@ -68,7 +70,7 @@ function fixture(patch = {}, handler = () => response(200, { success: true })) {
     exports, module: { exports },
     require: (id) => { assert.ok(id in imports, `Unexpected module: ${id}`); return imports[id]; },
     Date: class extends Date { static now() { return now; } },
-    Response, URLSearchParams, atob,
+    Response, URL, URLSearchParams, atob,
     localStorage: { getItem: (key) => storage.get(key) ?? null, setItem: (key, val) => storage.set(key, val) },
     window: { addEventListener: (event, fn) => events.set(event, fn) },
     navigator: {},
@@ -80,6 +82,7 @@ function fixture(patch = {}, handler = () => response(200, { success: true })) {
     advance: (ms) => { now += ms; },
     setCookie: (value) => { cookie = value; },
     relogins: () => relogins,
+    changeAccount: () => { nativeEpoch++; clients.session.username = "replacement-account"; },
   };
 }
 
@@ -381,6 +384,93 @@ await test("a network change while old probe JSON is loading cannot publish stal
   assert.equal(f.rec.settings.madmodelBase, `${TUNNEL}/v1`, "fresh network route must win");
   assert.equal(f.rec.settings.madmodelReachable, "0");
   assert.equal(f.calls.length, 4, "discard stale body, direct gate, confirmed tunnel, token validation");
+});
+
+const PORTAL_COOKIE = "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index";
+const portalHandler = (options = {}) => (url, init) => {
+  if (url.includes("/auth-login/check?ticket=")) return response(200, { success: true, data: token(24, "portal-issued") });
+  if (url.endsWith("/auth-login/check")) return response(200, { success: false });
+  if (url.includes("/login/form/")) return response(200, '<input name="i_pass" type="password">');
+  if (url === PORTAL_COOKIE) return options.cookie ?? response(200, "XSRF-TOKEN=fixture%2Bcsrf; Path=/;");
+  if (url.includes("onlineAppRedirect")) {
+    const query = new URL(url).searchParams;
+    assert.equal(query.get("_csrf"), "fixture+csrf");
+    assert.equal(query.get("yyfwid"), "19D04E39D96B36C494F2E48A1A4741FD");
+    return options.roam ?? response(200, { object: { roamingurl: options.target ?? `${SITE}/authLogin?ticket=fixture%2Bticket&amp;other=1` } });
+  }
+  if (url.includes("/authLogin?")) return response(200, '<html><div id="app"></div></html>');
+  throw new Error(`Unexpected fixture request: ${url}`);
+};
+
+await test("a healthy portal grants MadModel access even when cross-application ID SSO is absent", async () => {
+  const f = fixture({ madmodelToken: "" }, portalHandler());
+  assert.equal(await f.api.ensureMadModelToken(), token(24, "portal-issued"));
+  assert.equal(f.relogins(), 0, "portal access must not submit credentials or request trust enrollment");
+  const landed = f.calls.findIndex((call) => call.url.includes("/authLogin?"));
+  const exchanged = f.calls.findIndex((call) => call.url.includes("/auth-login/check?ticket="));
+  assert.ok(landed >= 0 && exchanged > landed, "DSH portal entry is visited before exchange");
+  assert.equal(new URL(f.calls[exchanged].url).searchParams.get("ticket"), "fixture+ticket");
+  assert.ok(f.calls.every((call) => !call.init.method || call.init.method === "GET"));
+  assert.equal(f.rec.settings.madmodelFailStreak, "0");
+  assert.ok(f.logs.every((line) => !line.includes("fixture+ticket") && !line.includes("fixture%2Bcsrf")));
+});
+
+await test("portal entry follows the confirmed WebVPN route before exchanging its ticket", async () => {
+  const f = fixture({ madmodelToken: "", madmodelBase: `${TUNNEL}/v1` }, portalHandler({ target: `${TUNNEL}/authLogin?ticket=fixture%2Bticket` }));
+  assert.equal(await f.api.ensureMadModelToken(), token(24, "portal-issued"));
+  const landing = f.calls.find((call) => call.url.includes("/authLogin?"));
+  assert.ok(landing.url.startsWith(TUNNEL));
+  assert.equal(landing.init.direct, false);
+});
+
+for (const target of [
+  "https://evil.example/authLogin?ticket=fixture",
+  "https://madmodel.cs.tsinghua.edu.cn.evil.example/authLogin?ticket=fixture",
+  "https://user@madmodel.cs.tsinghua.edu.cn/authLogin?ticket=fixture",
+  "http://madmodel.cs.tsinghua.edu.cn/authLogin?ticket=fixture",
+  `${SITE}/model-api/admin?ticket=fixture`,
+  `${SITE}/authLogin?ticket=BAD_CREDENTIALS`,
+  `${SITE}/authLogin?ticket=%ZZ`,
+  `${SITE}/authLogin?ticket=fixture%20invalid`,
+]) {
+  await test(`portal rejects unsafe or invalid ticket target: ${target}`, async () => {
+    const f = fixture({ madmodelToken: "" }, portalHandler({ target }));
+    await assert.rejects(f.api.ensureMadModelToken(), /未能续签/);
+    assert.ok(!f.calls.some((call) => call.url.includes("/authLogin?") || call.url.includes("/auth-login/check?ticket=")));
+    assert.equal(f.rec.settings.madmodelToken, "");
+  });
+}
+
+await test("portal rate limiting stops before password recovery and preserves Retry-After", async () => {
+  const f = fixture({ madmodelToken: "" }, portalHandler({ roam: response(429, {}, { "retry-after": "180" }) }));
+  await assert.rejects(f.api.ensureMadModelToken(), /HTTP 429/);
+  assert.equal(f.relogins(), 0);
+  assert.equal(Number(f.rec.settings.madmodelNextAttemptAt), epoch + 180_000);
+});
+
+await test("account switch after portal response discards its ticket without requesting the old account entry", async () => {
+  const gate = deferred();
+  const base = portalHandler();
+  const f = fixture({ madmodelToken: "" }, (url, init) => url.includes("onlineAppRedirect") ? gate.promise : base(url, init));
+  const pending = f.api.ensureMadModelToken();
+  while (!f.calls.some((call) => call.url.includes("onlineAppRedirect"))) await new Promise((resolve) => setImmediate(resolve));
+  f.changeAccount();
+  gate.resolve(response(200, { object: { roamingurl: `${SITE}/authLogin?ticket=old-account` } }));
+  await assert.rejects(pending, /AUTH_SESSION_CHANGED/);
+  assert.ok(!f.calls.some((call) => call.url.includes("/authLogin?") || call.url.includes("/auth-login/check?ticket=")));
+  assert.equal(f.rec.settings.madmodelToken, "");
+  assert.equal(f.rec.settings.madmodelFailStreak, undefined, "old-account errors cannot change new account backoff");
+});
+
+await test("a token returned after account switch is never persisted", async () => {
+  const gate = deferred();
+  const f = fixture({}, () => gate.promise);
+  const pending = f.api.ensureMadModelToken(true);
+  while (f.calls.length < 1) await new Promise((resolve) => setImmediate(resolve));
+  f.changeAccount();
+  gate.resolve(response(200, { success: true, data: token(24, "old-account") }));
+  await assert.rejects(pending, /AUTH_SESSION_CHANGED/);
+  assert.equal(f.rec.settings.madmodelToken, token());
 });
 
 console.log(`MadModel auth/route fixtures: ${passed} passed; no network or real credentials used.`);

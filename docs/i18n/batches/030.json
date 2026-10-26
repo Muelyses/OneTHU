@@ -1,7 +1,863 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.widgetsettingssection.f607db600fe1",
+      "source": "已请求系统添加到桌面，请查看桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 114,
+          "context": "showToast(i18nMsg(\"components.widgetsettingssection.f607db600fe1\"))"
+        }
+      ],
+      "translation": "The system has been asked to add it to the home screen; please check the home screen",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsizes.07bb9d27fc45",
+      "source": "选择大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 363,
+          "context": "{i18n(\"components.widgetsizes.07bb9d27fc45\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 370,
+          "context": "{i18n(\"components.widgetsizes.07bb9d27fc45\")}"
+        }
+      ],
+      "translation": "Choose size",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsizes.7d7127517bd7",
+      "source": "已选 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "cur ? tierLabel(cur) : \"—\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 364,
+          "context": "{i18nRich(\"components.widgetsizes.7d7127517bd7\", { value: cur ? tierLabel(cur) : \"—\" })}"
+        }
+      ],
+      "translation": "Selected {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.widgetsizes.beb4816bf802",
+      "source": "选择 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 385,
+          "context": "i18n(\"components.widgetsizes.beb4816bf802\") + tierLabel(t)"
+        }
+      ],
+      "translation": "Choose ",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.dangerTitle",
+      "source": "此操作不可撤销，请确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 57,
+          "context": "opts.title ?? uiMessage(\"confirm.dangerTitle\")"
+        }
+      ],
+      "translation": "This action cannot be undone. Please confirm.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.dropCourseAction",
+      "source": "确认退选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 96,
+          "context": "confirmText: uiMessage(\"confirm.dropCourseAction\")"
+        }
+      ],
+      "translation": "Drop course",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.dropCourseTitle",
+      "source": "即将退选，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 96,
+          "context": "title: uiMessage(\"confirm.dropCourseTitle\")"
+        }
+      ],
+      "translation": "You are about to drop this course. Please confirm!",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.execute",
+      "source": "确认执行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 58,
+          "context": "opts.confirmText ?? uiMessage(\"confirm.execute\")"
+        }
+      ],
+      "translation": "Confirm action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignore",
+      "source": "忽略",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 101,
+          "context": "cancelText: uiMessage(\"confirm.ignore\")"
+        }
+      ],
+      "translation": "Ignore",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignoreHomeworkAction",
+      "source": "确认忽略",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 97,
+          "context": "confirmText: uiMessage(\"confirm.ignoreHomeworkAction\")"
+        }
+      ],
+      "translation": "Ignore assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignoreHomeworkTitle",
+      "source": "忽略这条作业，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 97,
+          "context": "title: uiMessage(\"confirm.ignoreHomeworkTitle\")"
+        }
+      ],
+      "translation": "You are about to ignore this assignment. Please confirm!",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.imageReloginTitle",
+      "source": "正文图片加载失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 101,
+          "context": "title: uiMessage(\"confirm.imageReloginTitle\")"
+        }
+      ],
+      "translation": "Unable to load images",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.relogin",
+      "source": "重新登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 101,
+          "context": "confirmText: uiMessage(\"confirm.relogin\")"
+        }
+      ],
+      "translation": "Sign in again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.title",
+      "source": "请确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Please confirm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "enum.label.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 13,
+          "context": "return t(\"enum.label.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.1760b98532ec",
+      "source": "在线服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 18,
+          "context": "return t(\"enum.label.1760b98532ec\");"
+        }
+      ],
+      "translation": "Online services",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.1eed24ed8f6f",
+      "source": "Office Hour",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 47,
+          "context": "return t(\"enum.label.1eed24ed8f6f\");"
+        }
+      ],
+      "translation": "Office Hour",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.2118cbc10988",
+      "source": "学习",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 11,
+          "context": "return t(\"enum.label.2118cbc10988\");"
+        }
+      ],
+      "translation": "Study",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.21255f717947",
+      "source": "校园生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 27,
+          "context": "return t(\"enum.label.21255f717947\");"
+        }
+      ],
+      "translation": "Campus life",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.266e6cb77079",
+      "source": "图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 55,
+          "context": "return t(\"enum.label.266e6cb77079\");"
+        }
+      ],
+      "translation": "Library",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.26ee9467d4b0",
+      "source": "courseX",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 52,
+          "context": "return t(\"enum.label.26ee9467d4b0\");"
+        }
+      ],
+      "translation": "courseX",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.31c5f1aaa0d5",
+      "source": "满意度调查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 30,
+          "context": "return t(\"enum.label.31c5f1aaa0d5\");"
+        }
+      ],
+      "translation": "Satisfaction survey",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3303b56982a0",
+      "source": "联系人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 41,
+          "context": "return t(\"enum.label.3303b56982a0\");"
+        }
+      ],
+      "translation": "Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 14,
+          "context": "return t(\"enum.label.352cdc807892\");"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3b806a76e492",
+      "source": "课程内容简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 38,
+          "context": "return t(\"enum.label.3b806a76e492\");"
+        }
+      ],
+      "translation": "Course introduction",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3d708e8e8b1f",
+      "source": "邮件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 65,
+          "context": "return t(\"enum.label.3d708e8e8b1f\");"
+        }
+      ],
+      "translation": "Email",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3deae16f1adb",
+      "source": "公共服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 28,
+          "context": "return t(\"enum.label.3deae16f1adb\");"
+        }
+      ],
+      "translation": "Public services",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.452c7b10d57a",
+      "source": "页面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 66,
+          "context": "return t(\"enum.label.452c7b10d57a\");"
+        }
+      ],
+      "translation": "Pages",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.4a3572036143",
+      "source": "上课教师",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 43,
+          "context": "return t(\"enum.label.4a3572036143\");"
+        }
+      ],
+      "translation": "Instructors",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.4c11cd93c142",
+      "source": "我的收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 56,
+          "context": "return t(\"enum.label.4c11cd93c142\");"
+        }
+      ],
+      "translation": "My favorites",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.506c068a2a1e",
+      "source": "财务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 22,
+          "context": "return t(\"enum.label.506c068a2a1e\");"
+        }
+      ],
+      "translation": "Finance",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.541fbddf4725",
+      "source": "Course Description",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 39,
+          "context": "return t(\"enum.label.541fbddf4725\");"
+        }
+      ],
+      "translation": "Course Description",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.5c55a67935af",
+      "source": "全部",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 17,
+          "context": "return t(\"enum.label.5c55a67935af\");"
+        }
+      ],
+      "translation": "All",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.5f45bb826b16",
+      "source": "资产",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 26,
+          "context": "return t(\"enum.label.5f45bb826b16\");"
+        }
+      ],
+      "translation": "Assets",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6ac380cbd716",
+      "source": "人事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 20,
+          "context": "return t(\"enum.label.6ac380cbd716\");"
+        }
+      ],
+      "translation": "HR",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 60,
+          "context": "return t(\"enum.label.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6e098153a586",
+      "source": "采购",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 24,
+          "context": "return t(\"enum.label.6e098153a586\");"
+        }
+      ],
+      "translation": "Procurement",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.75bd5f68e277",
+      "source": "教师教学特色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 46,
+          "context": "return t(\"enum.label.75bd5f68e277\");"
+        }
+      ],
+      "translation": "Teaching style",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.783d638053ea",
+      "source": "组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 63,
+          "context": "return t(\"enum.label.783d638053ea\");"
+        }
+      ],
+      "translation": "Widget",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.8289e67df525",
+      "source": "科研",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 19,
+          "context": "return t(\"enum.label.8289e67df525\");"
+        }
+      ],
+      "translation": "Research",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.8459c1e91bc0",
+      "source": "选课指导语",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 44,
+          "context": "return t(\"enum.label.8459c1e91bc0\");"
+        }
+      ],
+      "translation": "Course selection tips",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.9151a836f996",
+      "source": "GitLab",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 50,
+          "context": "return t(\"enum.label.9151a836f996\");"
+        }
+      ],
+      "translation": "GitLab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a0f88ca9398c",
+      "source": "就业离校",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 29,
+          "context": "return t(\"enum.label.a0f88ca9398c\");"
+        }
+      ],
+      "translation": "Employment & leaving school",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 12,
+          "context": "return t(\"enum.label.a14f23af7016\");"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a17b8666e5d9",
+      "source": "北大研",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 32,
+          "context": "return t(\"enum.label.a17b8666e5d9\");"
+        }
+      ],
+      "translation": "PKU Grad",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 59,
+          "context": "return t(\"enum.label.a626aad412b7\");"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a914a7b52cec",
+      "source": "教材及参考书",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 42,
+          "context": "return t(\"enum.label.a914a7b52cec\");"
+        }
+      ],
+      "translation": "Textbooks & references",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 64,
+          "context": "return t(\"enum.label.aa39cac2b409\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 441,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 510,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 550,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        }
+      ],
+      "translation": "Web Learning",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.aaabe42b5a23",
+      "source": "党建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 21,
+          "context": "return t(\"enum.label.aaabe42b5a23\");"
+        }
+      ],
+      "translation": "Party affairs",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.b0938ffbd07c",
+      "source": "外事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 23,
+          "context": "return t(\"enum.label.b0938ffbd07c\");"
+        }
+      ],
+      "translation": "International affairs",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.bd2d74b297d1",
+      "source": "课程名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 35,
+          "context": "return t(\"enum.label.bd2d74b297d1\");"
+        }
+      ],
+      "translation": "Course name",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.be67cc45b9f0",
+      "source": "考核安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 40,
+          "context": "return t(\"enum.label.be67cc45b9f0\");"
+        }
+      ],
+      "translation": "Assessment plan",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "enum.label.d39567b2b9f1",
       "source": "新闻",
@@ -457,932 +1313,6 @@
         }
       ],
       "translation": "Connect Tsinghua Cloud to check friend invitations.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.connected",
-      "source": "已连接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 95,
-          "context": "showToast(msg(\"friends.connected\"))"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 643,
-          "context": "shown.shared?.acceptedAt\n                    ? i18n(\"friends.connected\") : shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
-        }
-      ],
-      "translation": "Connected",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.connecting",
-      "source": "正在接入…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 122,
-          "context": "busy === invite.id ? t(\"friends.connecting\") : conflictingFriendChannel(invite) ? t(\"friends.switchChannel\") : t(\"friends.accept\")"
-        }
-      ],
-      "translation": "Joining…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.create",
-      "source": "邀请建立好友通道",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 660,
-          "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
-        }
-      ],
-      "translation": "Invite to a friend channel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.download",
-      "source": "下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 706,
-          "context": "{i18n(\"friends.download\")}"
-        }
-      ],
-      "translation": "Download",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.duplicateHint",
-      "source": "你们已经有另一个通道。可以忽略这份邀请，或切换到对方的通道；旧文件会保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 117,
-          "context": "{t(\"friends.duplicateHint\")}"
-        }
-      ],
-      "translation": "You already have another channel. Ignore this invitation or switch to theirs. Existing files will be kept.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.fromMe",
-      "source": "我",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 704,
-          "context": "m.mine ? i18n(\"friends.fromMe\") : shown.name"
-        }
-      ],
-      "translation": "Me",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.ignore",
-      "source": "忽略",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 124,
-          "context": "{t(\"friends.ignore\")}"
-        }
-      ],
-      "translation": "Ignore",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.inboxHint",
-      "source": "应用在前台时每 30 秒检查一次，重新打开或回到前台也会检查。无需双方各建一个通道。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 110,
-          "context": "configured ? t(\"friends.inboxHint\") : t(\"friends.connectCloud\")"
-        }
-      ],
-      "translation": "Checked every 30 seconds while the app is visible, and when opened or brought to the foreground. One shared channel connects both of you.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.invalidInvite",
-      "source": "邀请已失效或不属于当前云盘账号，请刷新后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 98,
-          "context": "new Error(t(\"friends.invalidInvite\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 293,
-          "context": "new Error(t(\"friends.invalidInvite\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 299,
-          "context": "new Error(t(\"friends.invalidInvite\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 302,
-          "context": "new Error(t(\"friends.invalidInvite\"))"
-        }
-      ],
-      "translation": "This invitation is unavailable or belongs to another cloud account. Refresh and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.inviteCount",
-      "source": "好友邀请 · {count}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 64,
-          "context": "{t(\"friends.inviteCount\", { count: inbox.invitations.length })}"
-        },
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 104,
-          "context": "{t(\"friends.inviteCount\", { count: inbox.invitations.length })}"
-        }
-      ],
-      "translation": "Friend invitations · {count}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.inviteDetail",
-      "source": "邀请你使用同一个共享云盘和好友通道。接入后，对方会看到确认回执。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 116,
-          "context": "{t(\"friends.inviteDetail\")}"
-        }
-      ],
-      "translation": "Join the same shared cloud folder and friend channel. The sender will receive an acceptance receipt.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.legacyChannel",
-      "source": "已有云盘，需补发接入邀请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 644,
-          "context": "shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
-        }
-      ],
-      "translation": "Cloud folder exists · send a join invitation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.legacyLinkUnknown",
-      "source": "无法识别旧分享链接，请先在云盘撤销它，再重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 252,
-          "context": "new Error(t(\"friends.legacyLinkUnknown\"))"
-        }
-      ],
-      "translation": "The old share link could not be identified. Revoke it in Cloud before retrying.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.modeChanged",
-      "source": "模式已切换，请在完整模式中重新操作。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/fullModeReceive.ts",
-          "line": 9,
-          "context": "new Error(t(\"friends.modeChanged\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 78,
-          "context": "new Error(t(\"friends.modeChanged\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 288,
-          "context": "new Error(t(\"friends.modeChanged\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 439,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 443,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 459,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 461,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 116,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 120,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 130,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 141,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 363,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 365,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 369,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 377,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 382,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 387,
-          "context": "reason: i18n(\"friends.modeChanged\")"
-        }
-      ],
-      "translation": "The mode has changed. Try again in full mode.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.needPeerEmail",
-      "source": "请先接收含有对方清华云盘邮箱的名片，不能向自己发起邀请。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 229,
-          "context": "new Error(t(\"friends.needPeerEmail\"))"
-        }
-      ],
-      "translation": "First receive a card with your friend's Tsinghua Cloud email. You cannot invite yourself.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.newInvites",
-      "source": "收到 {count} 个好友通道邀请，点顶栏信封或进入通讯录查看。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 50,
-          "context": "notification = msg(\"friends.newInvites\", { count: inbox.invitations.length })"
-        }
-      ],
-      "translation": "{count} friend channel invitations received. Open the envelope in navigation or go to Contacts.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.openFiles",
-      "source": "打开共享文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 654,
-          "context": "{i18n(\"friends.openFiles\")}"
-        }
-      ],
-      "translation": "Shared files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.ownerOnly",
-      "source": "只有通道创建者可以补发邀请。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 244,
-          "context": "new Error(t(\"friends.ownerOnly\"))"
-        }
-      ],
-      "translation": "Only the channel owner can resend its invitation.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.partialCheck",
-      "source": "部分共享库暂时无法检查，已显示其他邀请。稍后会自动重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 190,
-          "context": "failures ? t(\"friends.partialCheck\") : null"
-        }
-      ],
-      "translation": "Some shared libraries could not be checked. Other invitations are shown; unavailable libraries will be retried.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.peerChanged",
-      "source": "这张名片的云盘邮箱与原通道不同。请为新的联系人建立独立通道，原通道不会转交给别人。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 233,
-          "context": "new Error(t(\"friends.peerChanged\"))"
-        }
-      ],
-      "translation": "This card's cloud email differs from the original channel. Create a separate channel for the new contact; this channel will not be transferred.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.personalOnly",
-      "source": "好友通道需要选择个人联系人。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 227,
-          "context": "new Error(t(\"friends.personalOnly\"))"
-        }
-      ],
-      "translation": "Select a personal contact to create a friend channel.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.published",
-      "source": "邀请已发布到对方云盘，对方打开 OneTHU 后可发现并接入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 424,
-          "context": "showToast(i18nMsg(\"friends.published\"), 7000)"
-        }
-      ],
-      "translation": "Invitation published to your friend's cloud account. They can discover and join it when they open OneTHU.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.readOnlyInvite",
-      "source": "对方只授予了阅读权限，请让对方补发读写邀请后再接入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 118,
-          "context": "{t(\"friends.readOnlyInvite\")}"
-        },
-        {
-          "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 303,
-          "context": "new Error(t(\"friends.readOnlyInvite\"))"
-        }
-      ],
-      "translation": "This invitation is read-only. Ask the sender to resend it with read and write access.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.refreshMessages",
-      "source": "刷新留言",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 689,
-          "context": "{i18n(\"friends.refreshMessages\")}"
-        }
-      ],
-      "translation": "Refresh messages",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.resend",
-      "source": "补发邀请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 660,
-          "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
-        }
-      ],
-      "translation": "Resend invitation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.switchChannel",
-      "source": "切换到这个通道",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 122,
-          "context": "conflictingFriendChannel(invite) ? t(\"friends.switchChannel\") : t(\"friends.accept\")"
-        }
-      ],
-      "translation": "Use this channel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.switchConfirm",
-      "source": "将这张名片切换到对方邀请的通道？原通道的文件和留言会保留在云盘中，当前名片将只显示新通道的内容。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 89,
-          "context": "confirmOk(msg(\"friends.switchConfirm\"))"
-        }
-      ],
-      "translation": "Switch this card to the invited channel? Files and messages in the old channel will remain in Cloud. This card will show the new channel's content.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "friends.upgradeLegacy",
-      "source": "将这个旧通道升级为账号邀请？原来的公开分享链接会失效，共享文件和留言会保留。对方可在 OneTHU 内发现并接入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 420,
-          "context": "confirmOk(i18nMsg(\"friends.upgradeLegacy\"))"
-        }
-      ],
-      "translation": "Upgrade this channel to an account invitation? Its public link will stop working; files and messages will be kept. Your friend can discover and join it in OneTHU.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.action.back",
-      "source": "返回",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.action.close",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.action.remove",
-      "source": "移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Remove",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.breadcrumb.label",
-      "source": "面包屑",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Breadcrumb",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.code.copied",
-      "source": "已复制",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Copied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.code.copy",
-      "source": "复制",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Copy",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.navigation.home",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.number.decrease",
-      "source": "减",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Decrease",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.number.increase",
-      "source": "加",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Increase",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.actionMenu",
-      "source": "操作菜单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Actions menu",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.actions",
-      "source": "操作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Actions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.dialog",
-      "source": "对话框",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Dialog",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.drawer",
-      "source": "抽屉",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Drawer",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.panel",
-      "source": "面板",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Panel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.overlay.popover",
-      "source": "浮层",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Popover",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.pagination.next",
-      "source": "下一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Next page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.pagination.previous",
-      "source": "上一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Previous page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.range.lower",
-      "source": "下限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Lower bound",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.range.upper",
-      "source": "上限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Upper bound",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.search.clear",
-      "source": "清空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Clear",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.search.placeholder",
-      "source": "搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.segment.scroll",
-      "source": "滚动选项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Scroll options",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.status.loading",
-      "source": "加载中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Loading",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.tabs.all",
-      "source": "全部标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "All tabs",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

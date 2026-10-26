@@ -362,3 +362,4 @@ export type { TuojSourceConfig } from "./tuoj.js";
 /* R21-A：Tyche 会话失效错误（status=login / 401 / 跳登录页），供编排层与离线测试判定 */
 export { TycheSessionError, isTycheSessionError } from "./tyche.js";
 export { DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, BASE as DSA_BASE } from "./dsa.js";
+export { createYuketangQueries, type YuketangQueryPorts } from "./query.js";

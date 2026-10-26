@@ -5,6 +5,7 @@
 import { AuthRequiredError, HttpClient } from "../http.js";
 import { encryptPassword } from "../crypto/sm2.js";
 import * as urls from "./urls.js";
+import { collectLearnOffsetPages, collectLearnSizePages, readLearnTotal } from "./pagination.js";
 import type {
   CalendarData,
   CalendarSemester,
@@ -56,6 +57,36 @@ function decodeHtml(s: unknown): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, " ");
+}
+
+/** Balanced div selection for the upstream homework body selector. A missing or
+ * unclosed block remains unknown; the page's answer/submission must never become
+ * the assignment description merely because it also contains a c55 element. */
+function firstDivContent(html: string, classes: string[], directOnly = false): string | undefined {
+  const tags = /<\/?div\b[^>]*>/gi;
+  let depth = 0;
+  let selectedDepth = -1;
+  let start = -1;
+  for (const match of html.matchAll(tags)) {
+    if (/^<\/div/i.test(match[0])) {
+      depth--;
+      if (start >= 0 && depth === selectedDepth) return html.slice(start, match.index);
+      continue;
+    }
+    const classNames = /\bclass=["']([^"']*)["']/i.exec(match[0])?.[1]?.split(/\s+/) ?? [];
+    if (start < 0 && (!directOnly || depth === 0) && classes.every(name => classNames.includes(name))) {
+      selectedDepth = depth;
+      start = (match.index ?? 0) + match[0].length;
+    }
+    depth++;
+  }
+  return undefined;
+}
+function homeworkDescriptionFromPage(html: string): string | undefined {
+  const markup = html.replace(/<!--[\s\S]*?-->|<(?:script|style)\b[^>]*>[\s\S]*?<\/(?:script|style)>/gi, "");
+  const calendar = firstDivContent(markup, ["list", "calendar", "clearfix"]);
+  const right = calendar === undefined ? undefined : firstDivContent(calendar, ["fl", "right"], true);
+  return right === undefined ? undefined : firstDivContent(right, ["c55"], true)?.trim();
 }
 
 function decodeBase64Utf8(b64: string): string {
@@ -416,6 +447,7 @@ class LearnSessionMissingError extends SessionExpiredError {
 
 /** A failed upstream response is distinct from an expired university session. */
 class LearnResponseError extends Error {
+  readonly code = "LEARN_RESPONSE_UNEXPECTED";
   readonly kind: string;
   constructor(kind: string) {
     super("LEARN_RESPONSE_UNEXPECTED");
@@ -804,7 +836,8 @@ export class LearnClient {
 
   /** 讨论区 /b/bbs ajax 端点：站点 jQuery 发的请求带 X-Requested-With + Referer，
    *  服务器过滤器对无此头的请求可能回 HTML 壳（2.har 请求头实录） */
-  async #bbsPost(url: string, body: URLSearchParams | FormData): Promise<string> {
+  async #bbsPost(url: string, body: URLSearchParams | FormData, beforeWrite?: () => Promise<void>): Promise<string> {
+    await beforeWrite?.();
     return this.#http.request(this.#withCsrf(url), {
       method: "POST",
       body,
@@ -1072,7 +1105,8 @@ export class LearnClient {
         body,
         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       });
-      const msg = typeof json.message === "string" ? json.message : str(json.msg);
+      const msg = typeof json.msg === "string" ? json.msg : typeof json.message === "string" ? json.message : undefined;
+      if (msg === undefined) throw new LearnResponseError("invalid-homework-description");
       return { description: decodeText(msg) };
     });
   }
@@ -1083,11 +1117,12 @@ export class LearnClient {
    *  为 URL 编码的服务器路径）；无文件下载 href 的纯导航锚点（如「去答疑」）、
    *  指向答疑/讨论/笔记路由的锚点（mobile filterJunkLinks 同源路由）一律不要。
    *  解析出的每个附件因此必有可下载 URL；文件名取锚点文本（可空，UI 以「附件 {id}」兜底）。 */
-  #parseAttachmentAnchor(block: string): LearnAttachment | undefined {
+  #parseAttachmentAnchors(block: string): LearnAttachment[] {
+    const attachments: LearnAttachment[] = [];
     for (const a of block.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
       const attrs: Record<string, string> = {};
-      for (const m of (a[1] ?? "").matchAll(/([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*"([^"]*)"/g)) {
-        attrs[(m[1] ?? "").toLowerCase()] = decodeText(m[2] ?? "");
+      for (const m of (a[1] ?? "").matchAll(/([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*(["'])(.*?)\2/g)) {
+        attrs[(m[1] ?? "").toLowerCase()] = decodeText(m[3] ?? "");
       }
       const href = (attrs["href"] ?? "").trim();
       if (!href || href === "#" || /^javascript:/i.test(href)) continue;
@@ -1106,9 +1141,9 @@ export class LearnClient {
       // 判断（再拼一次 LEARN_PREFIX 就是双重包装 → 404，真机踩过）
       const downloadUrl = urls.learnAbsoluteUrl(dl ?? href);
       const size = decodeText(/<span[^>]*class="[^"]*color[^"]*"[^>]*>([^<]*)<\/span>/i.exec(block)?.[1] ?? "").trim();
-      return { id, name, downloadUrl, size: size || undefined };
+      if (!attachments.some(item => item.downloadUrl === downloadUrl)) attachments.push({ id, name, downloadUrl, size: size || undefined });
     }
-    return undefined;
+    return attachments;
   }
 
   /** fujian div 自身内容的配平提取：从开标签起做 <div>/</div> 计数，取到其闭合标签，
@@ -1153,18 +1188,47 @@ export class LearnClient {
   lastPageDetailDebug = "";
 
   async getHomeworkPageDetail(courseId: string, studentHomeworkId: string): Promise<HomeworkPageDetail> {
+    return this.#homeworkPageDetail(courseId, studentHomeworkId, false);
+  }
+
+  /** Query/export follows thu-learn-lib's viewCj reader. The separate submission
+   * page can be unavailable for a graded/closed assignment; only the interactive
+   * submit UI needs its controls. Omit form availability when it was not checked. */
+  async getHomeworkReadDetail(courseId: string, studentHomeworkId: string): Promise<Omit<HomeworkPageDetail, "hasSubmitForm">> {
+    const { hasSubmitForm: _unchecked, ...detail } = await this.#homeworkPageDetail(courseId, studentHomeworkId, true);
+    return detail;
+  }
+
+  async #homeworkPageDetail(courseId: string, studentHomeworkId: string, readOnly: boolean): Promise<HomeworkPageDetail> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
     // Read both pages as one attempt. A failed page cannot safely assert that
     // an existing submission/form is absent. Finish both reads before recovery
     // so a late response from the old session cannot overwrite fresh cookies.
     const [tijiao, viewcj] = await this.#withRelogin(async () => {
+      if (readOnly) {
+        try {
+          const page = await this.#readPage(this.#withCsrf(urls.LEARN_HOMEWORK_PAGE(courseId, studentHomeworkId)));
+          const markup = page.replace(/<!--[\s\S]*?-->|<(?:script|style)\b[^>]*>[\s\S]*?<\/(?:script|style)>/gi, "");
+          if (homeworkDescriptionFromPage(page) === undefined && firstDivContent(markup, ["list", "fujian", "clearfix"]) === undefined) {
+            throw new LearnResponseError("homework-detail-shape");
+          }
+          return ["", page] as [string, string];
+        } catch (error) {
+          if (error instanceof Error) Object.assign(error, { stage: "homework-grade-page" });
+          throw error;
+        }
+      }
       const result = await Promise.allSettled([
-        this.#readPage(urls.LEARN_HOMEWORK_SUBMIT_PAGE(courseId, studentHomeworkId)),
-        this.#readPage(urls.LEARN_HOMEWORK_PAGE(courseId, studentHomeworkId)),
+        this.#readPage(this.#withCsrf(urls.LEARN_HOMEWORK_SUBMIT_PAGE(courseId, studentHomeworkId))),
+        this.#readPage(this.#withCsrf(urls.LEARN_HOMEWORK_PAGE(courseId, studentHomeworkId))),
       ]);
-      const failed = result.find((r) => r.status === "rejected");
-      if (failed?.status === "rejected") throw failed.reason;
+      const failedIndex = result.findIndex((r) => r.status === "rejected");
+      const failed = result[failedIndex];
+      if (failed?.status === "rejected") {
+        if (failed.reason instanceof Error) Object.assign(failed.reason, { stage: failedIndex === 0 ? "homework-submit-page" : "homework-grade-page" });
+        throw failed.reason;
+      }
       const pages = result.map((r) => r.status === "fulfilled" ? r.value : "") as [string, string];
       if (!pages.some(p => p.trim())) throw new LearnResponseError("empty-detail");
       return pages;
@@ -1173,10 +1237,14 @@ export class LearnClient {
       /\btjzy\b/i.test(h) ||
       /<input\b[^>]*name=["']fileupload["']/i.test(h) ||
       /<textarea\b[^>]*name=["']zynr["']/i.test(h);
-    const out: HomeworkPageDetail = { hasSubmitForm: hasForm(tijiao) || hasForm(viewcj) };
+    const out: HomeworkPageDetail = { hasSubmitForm: hasForm(tijiao) || hasForm(viewcj), attachments: [] };
+    // Same selector as thu-learn-lib parseHomeworkAtUrl. JSON is an independent
+    // endpoint; this body keeps read-only callers useful when it is unavailable.
+    out.description = homeworkDescriptionFromPage(tijiao) ?? homeworkDescriptionFromPage(viewcj);
     // 附件四槽（文档序 = 四类附件顺序）：tijiao 先占位，viewCj 只补空槽
     // （learnApi assignFujianSlots 同款：viewCj 传 onlyEmpty，已占槽跳过但槽位照常前进）
     const keys = ["attachment", "answerAttachment", "submittedAttachment", "gradeAttachment"] as const;
+    const roles = ["teacher", "answer", "submission", "grade"] as const;
     const fill = (html: string, onlyEmpty: boolean): void => {
       if (!html) return;
       const starts = [...html.matchAll(/<div[^>]*class=["']list[^"']*["'][^>]*>/gi)].map((m) => ({
@@ -1187,10 +1255,16 @@ export class LearnClient {
       for (let i = 0; i < starts.length && kindIdx < keys.length; i++) {
         if (!starts[i]!.fujian) continue;
         const k = keys[kindIdx];
+        const role = roles[kindIdx];
         kindIdx++;
-        if (!k || (onlyEmpty && out[k])) continue;
-        const a = this.#parseAttachmentAnchor(this.#fujianBlockContent(html, starts[i]!.idx));
-        if (a && k) out[k] = a;
+        if (!k || !role) continue;
+        const attachments = this.#parseAttachmentAnchors(this.#fujianBlockContent(html, starts[i]!.idx));
+        if (attachments[0] && (!onlyEmpty || !out[k])) out[k] = attachments[0];
+        for (const attachment of attachments) {
+          if (!out.attachments!.some(item => item.role === role && item.downloadUrl === attachment.downloadUrl)) {
+            out.attachments!.push({ ...attachment, role });
+          }
+        }
       }
     };
     fill(tijiao, false);
@@ -1232,28 +1306,17 @@ export class LearnClient {
 
   /** 通知详情页（beforeViewXs HTML）附件解析 —— thu-learn-lib parseNotificationDetail 等价。
    *  学生版附件锚点带 class="ml-10"（href 含 wjid）；fjmc 只有文件名，下载地址在页面里。 */
-  async getNotificationPageDetail(courseId: string, notificationId: string): Promise<NotificationPageDetail> {
+  async getNotificationPageDetail(courseId: string, notificationId: string, attachmentName?: string): Promise<NotificationPageDetail> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
-    const html = await this.#withRelogin(() => this.#readPage(urls.LEARN_NOTIFICATION_DETAIL(courseId, notificationId)));
-    const anchors = [...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];
-    const pick =
-      anchors.find((m) => /ml-10/i.test(m[0]) || /[?&]wjid=/.test(m[1]!)) ??
-      anchors.find((m) => /wjid/i.test(m[0]));
-    if (!pick) return {};
-    const href = decodeText(pick[1]!);
-    const q = href.indexOf("?");
-    const params = new URLSearchParams(q >= 0 ? href.slice(q + 1) : "");
-    const id = params.get("wjid") ?? params.get("fileId") ?? "";
-    const dl = params.get("downloadUrl");
-    // 同附件锚点：通知页也是经 webvpn 取回的，href 可能已带 `/https/<hex>/` 前缀
-    const downloadUrl = urls.learnAbsoluteUrl(dl ?? href);
-    const name = decodeText(pick[2]!.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
-    const size = decodeText(
-      /id="attachment"[^>]*>[\s\S]*?<span[^>]*class="[^"]*color[^"]*"[^>]*>([^<]*)<\/span>/i.exec(html)?.[1] ?? "",
-    ).trim();
-    if (!id && !name) return {};
-    return { attachment: { id, name, downloadUrl, size: size || undefined } };
+    const html = await this.#withRelogin(() => this.#readPage(this.#withCsrf(urls.LEARN_NOTIFICATION_DETAIL(courseId, notificationId))));
+    const attachments = this.#parseAttachmentAnchors(html);
+    // fjmc in the notification list is the original filename, including its
+    // extension. Only use this single-file field for an unambiguous attachment.
+    if (attachments.length === 1 && !attachments[0]!.name && attachmentName?.trim()) {
+      attachments[0]!.name = decodeText(attachmentName).trim();
+    }
+    return { attachment: attachments[0], attachments };
   }
 
   /** 通知（全部课程或指定课程）；expired=已过期。
@@ -1262,71 +1325,73 @@ export class LearnClient {
    *  下游「最近通知」卡直接取前 3 条，不在这里定序就会永远只显示第一门课的通知。
    *  按课程分组对调用方无用（各页要的都是「最新」），故在源头定序，课内/跨课程一次解决。 */
   async getAllNotifications(courseIds: string[], expired = false): Promise<Notification[]> {
-    await this.#ensureCsrfReady();
-    this.#requireCsrf();
-    const groups = await Promise.all(
-      courseIds.map((courseId) =>
-        this.#withRelogin(async () => {
-          const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_NOTIFICATION_LIST(expired)), {
-            method: "POST",
-            body: this.#aoData({ wlkcid: courseId, iDisplayStart: 0, iDisplayLength: 50 }),
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-              "X-Requested-With": "XMLHttpRequest",
-              Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
-            },
-          });
-          this.#http.debug?.(`LEARN-API 通知 rows=${asArray(json.object ?? json.resultList).length}`);
-          return requireLearnRows(json).map((raw) => {
-            const d = raw as Record<string, unknown>;
-            const cid = str(d.wlkcid) || courseId;
-            const nid = str(d.ggid ?? d.id);
-            return {
-              id: nid,
-              courseId: cid,
-              title: decodeText(d.bt ?? d.ggbt),
-              content: decodeBase64Utf8(str(d.ggnr)),
-              publisher: decodeText(d.fbrxm),
-              publishTime: normalizeTime(d.fbsj, d.fbsjStr),
-              expireTime: d.jzsj ? normalizeTime(d.jzsj, d.jzsjStr) : undefined,
-              important: str(d.sfqd) === "1" || Number(d.sfqd) === 1,
-              // sfyd = "是"/"否"（learn-lib hasRead: n.sfyd === YES）
-              hasRead: str(d.sfyd) === "是",
-              attachmentName: str(d.fjmc).trim() || undefined,
-              url: urls.LEARN_NOTIFICATION_DETAIL(cid, nid),
-            };
-          });
-        }),
-      ),
-    );
-    // 发布时间倒序（normalizeTime 统一为 "YYYY-MM-DD HH:mm"/"YYYY-MM-DD"，字典序即时序；
-    // 解析失败的 "" 排在最后）。等于同时抹掉「按课程分组」与「课内乱序」两层缺陷。
+    const groups = await Promise.all([...new Set(courseIds)].map((courseId) => this.getNotificationList(courseId, expired)));
     return groups.flat().sort((a, b) => b.publishTime.localeCompare(a.publishTime));
   }
 
+  /** Complete one-course list. Kept separate so CLI callers need not fetch every course. */
+  async getNotificationList(courseId: string, expired = false): Promise<Notification[]> {
+    await this.#ensureCsrfReady();
+    this.#requireCsrf();
+    const resource = `notifications:${expired ? "expired" : "active"}`;
+    const rows = await collectLearnOffsetPages<unknown>(resource, async (offset, limit) => {
+      const json = await this.#withRelogin(() => this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_NOTIFICATION_LIST(expired)), {
+        method: "POST",
+        body: this.#aoData({ wlkcid: courseId, iDisplayStart: offset, iDisplayLength: limit }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "X-Requested-With": "XMLHttpRequest",
+          Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
+        },
+      }));
+      const page = requireLearnRows(json);
+      this.#http.debug?.(`LEARN-API 通知 rows=${page.length} offset=${offset}`);
+      return { rows: page, total: readLearnTotal(json, resource) };
+    }, (raw) => { const d = raw as Record<string, unknown>; return str(d?.ggid ?? d?.id); });
+    return rows.map((raw) => {
+      const d = raw as Record<string, unknown>;
+      const cid = str(d.wlkcid) || courseId;
+      const nid = str(d.ggid ?? d.id);
+      return {
+        id: nid,
+        courseId: cid,
+        title: decodeText(d.bt ?? d.ggbt),
+        content: decodeBase64Utf8(str(d.ggnr)),
+        publisher: decodeText(d.fbrxm),
+        publishTime: normalizeTime(d.fbsj, d.fbsjStr),
+        expireTime: d.jzsj ? normalizeTime(d.jzsj, d.jzsjStr) : undefined,
+        important: str(d.sfqd) === "1" || Number(d.sfqd) === 1,
+        hasRead: str(d.sfyd) === "是",
+        attachmentName: decodeText(d.fjmc).trim() || undefined,
+        url: urls.LEARN_NOTIFICATION_DETAIL(cid, nid),
+      };
+    }).sort((a, b) => b.publishTime.localeCompare(a.publishTime));
+  }
+
+  /** Complete file enumeration. The endpoint grows a prefix rather than accepting offsets. */
   async getFileList(courseId: string): Promise<CourseFile[]> {
-    return this.#withRelogin(async () => {
-      this.#requireCsrf();
-      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_FILE_LIST(courseId)));
-      // 学生端点返回 object 为行数组（thu-learn-lib getFileList 同源）；
-      // 解析 resultList 会导致文件列表恒为空（"文件消失"根因）。
-      const rows = requireLearnRows(json);
-      return rows.map((raw) => {
-        const d = raw as Record<string, unknown>;
-        const fid = str(d.wjid);
-        const rawType = str(d.wjlx).trim().replace(/^\./, "");
-        return {
-          id: fid,
-          courseId,
-          title: decodeText(d.bt ?? d.kjbt),
-          uploadTime: normalizeTime(d.scsj, d.fxsj ?? d.scj),
-          downloadUrl: urls.LEARN_FILE_DOWNLOAD(fid),
-          fileType: rawType || undefined,
-          size: str(d.fileSize).trim() || undefined,
-          description: decodeText(d.ms).trim() || undefined,
-          important: str(d.sfqd) === "1",
-        };
+    const rows = await collectLearnSizePages<unknown>("files", async (size) => {
+      const json = await this.#withRelogin(async () => {
+        this.#requireCsrf();
+        return this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_FILE_LIST(courseId, size)));
       });
+      return { rows: requireLearnRows(json), total: readLearnTotal(json, "files") };
+    }, (raw) => str((raw as Record<string, unknown>)?.wjid));
+    return rows.map((raw) => {
+      const d = raw as Record<string, unknown>;
+      const fid = str(d.wjid);
+      const rawType = str(d.wjlx).trim().replace(/^\./, "");
+      return {
+        id: fid,
+        courseId,
+        title: decodeText(d.bt ?? d.kjbt),
+        uploadTime: normalizeTime(d.scsj, d.fxsj ?? d.scj),
+        downloadUrl: urls.LEARN_FILE_DOWNLOAD(fid),
+        fileType: rawType || undefined,
+        size: str(d.fileSize).trim() || undefined,
+        description: decodeText(d.ms).trim() || undefined,
+        important: str(d.sfqd) === "1",
+      };
     });
   }
 
@@ -1499,6 +1564,7 @@ export class LearnClient {
     nr: string,
     fhhid?: string,
     file?: File | null,
+    beforeWrite?: () => Promise<void>,
   ): Promise<void> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
@@ -1512,7 +1578,7 @@ export class LearnClient {
       fd.append("nr", nr);
       if (file) fd.append("fileupload", file, file.name);
       else fd.append("fileupload", "undefined");
-      const res = await this.#bbsPost(urls.LEARN_BBS_SAVE_REPLY(wlkcid), fd);
+      const res = await this.#bbsPost(urls.LEARN_BBS_SAVE_REPLY(wlkcid), fd, beforeWrite);
       let ok = false;
       try {
         const j = JSON.parse(res) as { result?: unknown; msg?: unknown };
@@ -1533,6 +1599,7 @@ export class LearnClient {
   async postBbsThread(
     wlkcid: string,
     opts: { bqid: string; title: string; html: string; file?: File | null },
+    beforeWrite?: () => Promise<void>,
   ): Promise<void> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
@@ -1544,7 +1611,7 @@ export class LearnClient {
       fd.append("wtnr", opts.html);
       if (opts.file) fd.append("fileupload", opts.file, opts.file.name);
       else fd.append("fileupload", "undefined");
-      const res = await this.#bbsPost(urls.LEARN_BBS_SAVE_THREAD(wlkcid), fd);
+      const res = await this.#bbsPost(urls.LEARN_BBS_SAVE_THREAD(wlkcid), fd, beforeWrite);
       let ok = false;
       try {
         const j = JSON.parse(res) as { result?: unknown; msg?: unknown };

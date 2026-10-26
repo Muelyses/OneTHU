@@ -199,12 +199,26 @@ export const loadMoreMail = (folder: string): Promise<MailHead[]> => listMail(fo
 
 /** Native requests may finish after a view closes; only the matching account
  * may receive or cache their results. Reading a cached UID still checks auth. */
-export async function readMail(folder: string, uid: number): Promise<MailBody> {
+export async function readMail(folder: string, uid: number, options: { markSeen?: boolean } = {}): Promise<MailBody> {
   const c = await cred();
   const key = `${folder}#${uid}`;
+  const markSeen = () => {
+    if (options.markSeen === false) return;
+    assertCurrent(c);
+    void invoke("mail_mark_seen", { email: c.email, auth: c.auth, folder, uid }).then(() => {
+      if (!current(c)) return;
+      const head = headsByFolder[folder]?.find((row) => row.uid === uid);
+      if (head && !head.seen) {
+        headsByFolder[folder] = headsByFolder[folder]!.map((row) => row.uid === uid ? { ...row, seen: true } : row);
+        emit();
+        void persistCache().catch(() => {});
+      }
+    }).catch(() => {});
+  };
   const cached = bodies.get(key);
-  if (cached) return cached;
-  const pending = reading.get(key);
+  if (cached) { markSeen(); return cached; }
+  const pendingKey = `${key}:${options.markSeen !== false ? "seen" : "peek"}`;
+  const pending = reading.get(pendingKey);
   if (pending) return pending;
   const promise: Promise<MailBody> = Promise.resolve().then(async () => {
     try {
@@ -212,21 +226,13 @@ export async function readMail(folder: string, uid: number): Promise<MailBody> {
       assertCurrent(c);
       if (bodies.size >= 24) bodies.clear();
       bodies.set(key, body);
-      void invoke("mail_mark_seen", { email: c.email, auth: c.auth, folder, uid }).then(() => {
-        if (!current(c)) return;
-        const head = headsByFolder[folder]?.find((row) => row.uid === uid);
-        if (head && !head.seen) {
-          headsByFolder[folder] = headsByFolder[folder]!.map((row) => row.uid === uid ? { ...row, seen: true } : row);
-          emit();
-          void persistCache().catch(() => {});
-        }
-      }).catch(() => {});
+      markSeen();
       return body;
     } finally {
-      if (reading.get(key) === promise) reading.delete(key);
+      if (reading.get(pendingKey) === promise) reading.delete(pendingKey);
     }
   });
-  reading.set(key, promise);
+  reading.set(pendingKey, promise);
   return promise;
 }
 
@@ -243,10 +249,12 @@ export async function mailSearch(folder: string, query: string): Promise<MailHea
   assertCurrent(c);
   return out;
 }
-export async function sendMail(to: string, cc: string, subject: string, body: string): Promise<void> {
+export async function sendMail(to: string, cc: string, subject: string, body: string, beforeWrite?: () => Promise<void>): Promise<void> {
   const tos = to.split(/[,;\s]+/).filter(Boolean), ccs = cc.split(/[,;\s]+/).filter(Boolean);
   if (!tos.length) throw new Error(i18n("state.mail.e405fef4c8cd"));
   const c = await cred();
+  await beforeWrite?.();
+  assertCurrent(c);
   await invoke("mail_send", { args: { email: c.email, auth: c.auth, to: tos, cc: ccs, subject, body } });
   if (current(c)) lastRefreshAt["Sent Items"] = 0;
   // SMTP cannot be recalled after dispatch; never retry automatically.

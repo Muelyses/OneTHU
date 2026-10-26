@@ -14,6 +14,13 @@ export function createAuthCookieBoundary(deps: {
     return next;
   };
   return {
+    // Called only after the private native handoff has atomically replaced the
+    // full jar with a daemon-verified account. No network logout or cookie clear.
+    acceptVerifiedOwner: (username: string | null): Promise<void> => serialize(async () => {
+      if (username !== null && !username.trim()) throw new Error("Authentication requires an account.");
+      deps.clearAccountTrust();
+      owner = username;
+    }),
     prepare: (username: string): Promise<"reused" | "isolated"> => serialize(async () => {
       if (!username.trim()) throw new Error("Authentication requires an account.");
       if (owner === undefined) owner = await deps.readOwner().catch(() => null);

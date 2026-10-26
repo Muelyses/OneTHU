@@ -107,12 +107,13 @@ async function postJson<T>(
   endpoint: string,
   body: Record<string, unknown>,
   token?: string,
+  signal?: AbortSignal,
 ): Promise<T> {
   const res = await http.request(`${baseUrl.replace(/\/+$/, "")}/${endpoint}`, {
     method: "POST",
     headers: headers(token),
     body: JSON.stringify({ ...body, base_info: baseInfo() }),
-    direct: true,
+    direct: true, signal,
   });
   const text = await res.text();
   if (!res.ok) throw new Error(`${endpoint} HTTP ${res.status}: ${text.slice(0, 200)}`);
@@ -170,9 +171,10 @@ export async function sendMessage(
   baseUrl: string,
   token: string,
   msg: WeixinMessage,
+  signal?: AbortSignal,
 ): Promise<{ ret?: number; errmsg?: string; message_id?: string }> {
   const r = await postJson<{ ret?: number; errmsg?: string; message_id?: string }>(
-    baseUrl, "ilink/bot/sendmessage", { msg }, token,
+    baseUrl, "ilink/bot/sendmessage", { msg }, token, signal,
   );
   if (r.ret && r.ret !== 0) throw new Error(`sendMessage ret=${r.ret} errmsg=${r.errmsg ?? "(none)"}`);
   return r;

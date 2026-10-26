@@ -15,13 +15,13 @@ import { t as i18n } from "../i18n/index.js";
  * 形态 A（老模板）：token 渲染在 <input>/<span>（40 位 hex）
  * 形态 B（SPA）：var app = {pageOptions: {..., apiToken: "hex40"}}
  */
-import { http } from "../lib/clients.js";
+import { http, session } from "../lib/clients.js";
 import { logLine } from "../lib/clients.js";
-import { getSeafileCredentialVersion, setSeafileToken, type SeafileAccount } from "./seafile.js";
+import { ensureSeafileLoaded, getSeafileToken, getSeafileCredentialVersion, setSeafileToken, type SeafileAccount } from "./seafile.js";
 import type { TwoFactorMethod } from "@onethu/core";
 
 import { nativeSessionEpoch, assertNativeSessionEpoch } from "../lib/transport.js";
-import { requireCloudConsent } from "./privacyConsent.js";
+import { initPrivacyConsent, requireCloudConsent } from "./privacyConsent.js";
 const PROFILE_URL = "https://cloud.tsinghua.edu.cn/profile/";
 
 /** checkSingle 指纹确认页（id 会话活着，与 core/exthw/tuojCas.ts isCheckSinglePage 同判据） */
@@ -76,43 +76,88 @@ export async function autoConnectSeafile(
  *  壳页则 InfoClient.confirmIdCheckSingle（带设备指纹）确认续用 → cloud 直连会话落
  *  native jar → 重爬即登录态 → GET /api/v2.1/auth-token-by-session/（云盘 settings
  *  bundle 实锤的「显示口令」端点，纯只读）→ 40hex 口令 → setSeafileToken 落盘。
- *  全程零窗口零输入；幂等（已连接直接返回）。ConnectGate / 导览 / IM 指令共用。 */
+ *  缺少直连会话时复用已登录账号的内存凭据，兑付本次服务回调后再读取口令。
+ *  全程零窗口零输入；已保存口令优先验证。ConnectGate / 导览 / IM 指令共用。 */
+let silentPending: Promise<AutoConnectResult> | null = null;
 export async function silentConnectSeafile(): Promise<AutoConnectResult> {
+  await initPrivacyConsent();
   requireCloudConsent();
+  // Hydrate the durable token before deciding that a new SSO flow is needed.
+  await ensureSeafileLoaded();
+  if (silentPending) return silentPending;
+  const pending = runSilentConnect();
+  silentPending = pending;
+  void pending.finally(() => { if (silentPending === pending) silentPending = null; }).catch(() => undefined);
+  return pending;
+}
+
+async function runSilentConnect(): Promise<AutoConnectResult> {
   const credentialVersion = getSeafileCredentialVersion();
   const epoch = await nativeSessionEpoch();
+  const owner = session.username;
+  const assertCurrent = async () => {
+    await assertNativeSessionEpoch(epoch);
+    requireCloudConsent();
+    if (credentialVersion !== getSeafileCredentialVersion() || session.username !== owner) {
+      throw new Error(i18n("state.seafile.accountChanged"));
+    }
+  };
   const log = (m: string) => void logLine(`[CLOUD-DIRECT] ${m}`).catch(() => undefined);
   try {
-    const { getSeafileToken } = await import("./seafile.js");
     if (getSeafileToken()) {
       const { refreshSeafileAccount } = await import("./seafile.js");
-      await refreshSeafileAccount().catch(() => undefined);
-      return { ok: true };
+      try {
+        await refreshSeafileAccount();
+        await assertCurrent();
+        return { ok: true };
+      } catch (error) {
+        // A network failure keeps the saved credential intact. Only a confirmed
+        // rejected token needs another read-only SSO discovery.
+        if (!/\b(?:401|403)\b/.test(String(error))) throw error;
+      }
     }
     const { invoke } = await import("@tauri-apps/api/core");
     const { info } = await import("../lib/clients.js");
-    let r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile", { epoch });
-    await assertNativeSessionEpoch(epoch);
-    if (r.needConfirm) {
-      log(`落确认页 → confirmIdCheckSingle（finalUrl=${r.finalUrl.slice(0, 80)}）`);
-      const ok = await info.confirmIdCheckSingle(r.finalUrl).catch(() => false);
-      log(`确认=${ok ? "ok" : "fail"} → 重爬 profile`);
-      if (!ok) return { ok: false, error: i18n("state.seafileauto.d236f74b57c1") };
-      r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile", { epoch });
+    let confirmed = false, renewed = false;
+    for (let step = 0; step < 4; step++) {
+      await assertCurrent();
+      const r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile", { epoch });
+      await assertCurrent();
+      if (r.needConfirm && !confirmed) {
+        confirmed = true;
+        log("确认已有统一认证会话");
+        const ok = await info.confirmIdCheckSingle(r.finalUrl);
+        await assertCurrent();
+        if (!ok) return { ok: false, error: i18n("state.seafileauto.d236f74b57c1") };
+        continue;
+      }
+      // The daemon may restore a valid WebVPN session without a direct ID
+      // session. Reuse this signed-in account's in-memory credentials and device
+      // trust once. This path never changes school account or opens a window.
+      if (CAS_LOGIN_RE.test(r.body) && !renewed && owner && session.state === "ready" && info.hasIdCredentials()) {
+        renewed = true;
+        log("学校会话已就绪 → 续接云盘直连认证");
+        const ok = await info.ensureDirectIdLogin(r.finalUrl, { consumeServiceTicket: true });
+        await assertCurrent();
+        if (!ok) return { ok: false, error: i18n("state.seafileauto.789c9d831ceb") };
+        continue;
+      }
+      if (TWO_FACTOR_RE.test(r.body)) return { ok: false, error: twoFactorMessage() };
+      const token = (r.plainToken && /^[0-9a-f]{40}$/i.test(r.plainToken) ? r.plainToken : "") || extractToken(r.body) || "";
+      if (!token) {
+        log(`页面无口令（len=${r.body.length}）`);
+        return { ok: false, error: CAS_LOGIN_RE.test(r.body) ? i18n("state.seafileauto.ab0d7338c8dd") : i18n("state.seafileauto.64be8fcebc0a") };
+      }
+      await assertCurrent();
+      const account = await setSeafileToken(token, credentialVersion);
+      log("云盘已静默连接");
+      return { ok: true, account };
     }
-    await assertNativeSessionEpoch(epoch);
-    const token = (r.plainToken && /^[0-9a-f]{40}$/i.test(r.plainToken) ? r.plainToken : "") || extractToken(r.body) || "";
-    if (!token) {
-      log(`页面无口令（finalUrl=${r.finalUrl.slice(0, 80)} len=${r.body.length}）`);
-      return { ok: false, error: i18n("state.seafileauto.64be8fcebc0a") };
-    }
-    await assertNativeSessionEpoch(epoch);
-    const account = await setSeafileToken(token, credentialVersion);
-    log(`云盘已静默连接：${account.name}（${account.email}）`);
-    return { ok: true, account };
+    return { ok: false, error: i18n("state.seafileauto.64be8fcebc0a") };
   } catch (e) {
-    log(`静默链异常 ${String(e).slice(0, 100)}`);
-    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    log("静默连接未完成");
+    const message = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: /二次认证|双因素|二次验证|双因子/.test(message) ? twoFactorMessage() : message };
   }
 }
 

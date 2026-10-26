@@ -1,9 +1,9 @@
 import {InfoHelper} from "../index";
-import {roamingWrapper, roamingWrapperWithMocks} from "./core";
-import {stringify, uFetch, uFetchMethod, platformFetchWith} from "../utils/network";
+import {roamingWrapper, roamingWrapperWithMocks, roamingWriteWrapper, roamingWriteWrapperWithMocks} from "./core";
+import {ResponseStatusError, stringify, uFetch, uFetchMethod, platformFetchWith} from "../utils/network";
 import * as cheerio from "cheerio";
 import {GITLAB_API_BASE_URL, GITLAB_WEB_BASE_URL} from "../constants/strings";
-import {GitLabApiError} from "../utils/error";
+import {GitLabApiError, GitLabWriteOutcomeUnknownError} from "../utils/error";
 import {
     MOCK_GIT_NAMESPACES,
     MOCK_GIT_PERSONAL_PROJECTS,
@@ -41,8 +41,8 @@ const fetchGitLab = async (path: string, query?: object, post?: object) => {
 const CSRF_TTL_MS = 10 * 60_000;
 let csrfCache: {token: string; at: number} | null = null;
 
-const gitlabCsrfToken = async (force = false): Promise<string> => {
-    if (!force && csrfCache !== null && Date.now() - csrfCache.at < CSRF_TTL_MS) {
+const gitlabCsrfToken = async (): Promise<string> => {
+    if (csrfCache !== null && Date.now() - csrfCache.at < CSRF_TTL_MS) {
         return csrfCache.token;
     }
     const html = await uFetch(`${GITLAB_WEB_BASE_URL}/`);
@@ -54,23 +54,28 @@ const gitlabCsrfToken = async (force = false): Promise<string> => {
     return token;
 };
 
-const fetchGitLabWrite = async (path: string, method: "POST" | "PUT" | "DELETE", payload: object = {}) => {
+const fetchGitLabWrite = async (path: string, method: "POST" | "PUT" | "DELETE", payload: object = {}, beforeWrite?: () => Promise<void>) => {
     // 删除类接口成功时是 204 空响应体：无条件 JSON.parse 会抛错，进而被漫游包装器当成
     // 会话失效去重试一次，重试时资源已不存在 → 404 冒到界面上（2026-10-08 实测：
     // 取消表情回应 DELETE 成功 204 之后又发一次同样的 DELETE 收到 404）
-    const send = async (force: boolean) => {
-        const text = await uFetchMethod(GITLAB_API_BASE_URL + path, method, payload, {"X-CSRF-Token": await gitlabCsrfToken(force)});
-        return text.trim() === "" ? null : JSON.parse(text);
-    };
+    // Fetching a token is a read: a failure here means the mutation never began.
+    const token = await gitlabCsrfToken();
+    // Per-call guard survives CSRF loading and the wrapper's one confirmed-401
+    // retry. Keep rejection outside the outcome-unknown catch: no write began.
+    await beforeWrite?.();
     try {
-        return await send(false);
+        const text = await uFetchMethod(GITLAB_API_BASE_URL + path, method, payload, {"X-CSRF-Token": token});
+        return text.trim() === "" ? null : JSON.parse(text);
     } catch (e) {
-        // 令牌随会话轮换：写请求被拒时换一枚新令牌重试一次，其余错误照旧抛
-        if (e instanceof GitLabApiError && /40[13]|422/.test(e.message)) {
-            csrfCache = null;
-            return await send(true);
+        if (e instanceof ResponseStatusError && e.directResponse && e.status >= 400 && e.status < 500) {
+            // Only the outer write wrapper may retry a confirmed 401, once.
+            // Clearing the token here guarantees that retry reads a fresh one.
+            if (e.status === 401) csrfCache = null;
+            throw e;
         }
-        throw e;
+        // Includes a disconnect/timeout, 5xx, and a 2xx with malformed JSON.
+        // The response cannot tell us whether GitLab committed the mutation.
+        throw new GitLabWriteOutcomeUnknownError(e);
     }
 };
 
@@ -224,7 +229,7 @@ export const createProject = async (
     helper: InfoHelper,
     input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"; namespace_id?: number},
 ): Promise<ProjectDetail> =>
-    roamingWrapperWithMocks(
+    roamingWriteWrapperWithMocks(
         helper,
         "gitlab",
         "",
@@ -248,7 +253,7 @@ export const createGroup = async (
     helper: InfoHelper,
     input: {name: string; path: string; description?: string; visibility?: "private" | "internal" | "public"},
 ): Promise<GitGroupBrief> =>
-    roamingWrapper(helper, "gitlab", "", async () => fetchGitLabWrite("/groups", "POST", input));
+    roamingWriteWrapper(helper, "gitlab", "", async () => fetchGitLabWrite("/groups", "POST", input));
 
 /** 把 GitLab 用户加进群组：30 = developer，20 = reporter。 */
 export const addGroupMember = async (
@@ -257,7 +262,7 @@ export const addGroupMember = async (
     userId: number,
     accessLevel = 30,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
         await fetchGitLabWrite(`/groups/${groupId}/members`, "POST", {user_id: userId, access_level: accessLevel});
     });
 
@@ -366,7 +371,7 @@ export const addProjectMember = async (
     userId: number,
     accessLevel = 30,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
         await fetchGitLabWrite(`/projects/${id}/members`, "POST", {user_id: userId, access_level: accessLevel});
     });
 
@@ -450,9 +455,10 @@ export const createProjectIssue = async (
     id: number,
     title: string,
     description: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Issue> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/issues`, "POST", {title, description}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/issues`, "POST", {title, description}, beforeWrite));
 
 /** 关闭或重开 Issue（state_event 取 close / reopen） */
 export const setIssueState = async (
@@ -460,18 +466,20 @@ export const setIssueState = async (
     id: number,
     iid: number,
     state: "close" | "reopen",
+    beforeWrite?: () => Promise<void>,
 ): Promise<Issue> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/issues/${iid}`, "PUT", {state_event: state}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/issues/${iid}`, "PUT", {state_event: state}, beforeWrite));
 
 export const addIssueNote = async (
     helper: InfoHelper,
     id: number,
     iid: number,
     body: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/issues/${iid}/notes`, "POST", {body}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/issues/${iid}/notes`, "POST", {body}, beforeWrite));
 
 /** 关闭或重开合并请求（state_event 取 close / reopen；不合入、不删除源分支） */
 export const setMergeRequestState = async (
@@ -479,18 +487,20 @@ export const setMergeRequestState = async (
     id: number,
     iid: number,
     state: "close" | "reopen",
+    beforeWrite?: () => Promise<void>,
 ): Promise<MergeRequest> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}`, "PUT", {state_event: state}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}`, "PUT", {state_event: state}, beforeWrite));
 
 export const addMergeRequestNote = async (
     helper: InfoHelper,
     id: number,
     iid: number,
     body: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/notes`, "POST", {body}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/notes`, "POST", {body}, beforeWrite));
 
 /** 改写自己的评论（GitLab 只允许作者本人改） */
 export const updateIssueNote = async (
@@ -499,9 +509,10 @@ export const updateIssueNote = async (
     iid: number,
     noteId: number,
     body: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/issues/${iid}/notes/${noteId}`, "PUT", {body}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/issues/${iid}/notes/${noteId}`, "PUT", {body}, beforeWrite));
 
 export const updateMergeRequestNote = async (
     helper: InfoHelper,
@@ -509,9 +520,10 @@ export const updateMergeRequestNote = async (
     iid: number,
     noteId: number,
     body: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/notes/${noteId}`, "PUT", {body}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/notes/${noteId}`, "PUT", {body}, beforeWrite));
 
 /* ── 讨论（thread）：评论线程、回复、编辑、删除、解决 ── */
 
@@ -536,7 +548,7 @@ export const createDiscussion = async (
     iid: number,
     body: string,
 ): Promise<Discussion> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
         fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions`, "POST", {body}));
 
 /** 回复某条评论（同一讨论里追加一条） */
@@ -547,9 +559,10 @@ export const addDiscussionNote = async (
     iid: number,
     discussionId: string,
     body: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions/${discussionId}`, "POST", {body}));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions/${discussionId}`, "POST", {body}, beforeWrite));
 
 export const updateDiscussionNote = async (
     helper: InfoHelper,
@@ -560,7 +573,7 @@ export const updateDiscussionNote = async (
     noteId: number,
     body: string,
 ): Promise<Note> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
         fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions/${discussionId}/notes/${noteId}`, "PUT", {body}));
 
 export const deleteDiscussionNote = async (
@@ -570,9 +583,10 @@ export const deleteDiscussionNote = async (
     iid: number,
     discussionId: string,
     noteId: number,
+    beforeWrite?: () => Promise<void>,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
-        await fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions/${discussionId}/notes/${noteId}`, "DELETE");
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
+        await fetchGitLabWrite(`${threadBase(kind, id, iid)}/discussions/${discussionId}/notes/${noteId}`, "DELETE", {}, beforeWrite);
     });
 
 /** 解决 / 重新打开整个讨论（GitLab 网页上评论右侧那个 Resolve） */
@@ -583,11 +597,12 @@ export const resolveDiscussion = async (
     iid: number,
     discussionId: string,
     resolved: boolean,
+    beforeWrite?: () => Promise<void>,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
         await fetchGitLabWrite(
             `${threadBase(kind, id, iid)}/discussions/${discussionId}?resolved=${resolved ? "true" : "false"}`,
-            "PUT",
+            "PUT", {}, beforeWrite,
         );
     });
 
@@ -598,9 +613,10 @@ export const assignTo = async (
     id: number,
     iid: number,
     userIds: number[],
+    beforeWrite?: () => Promise<void>,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
-        await fetchGitLabWrite(threadBase(kind, id, iid), "PUT", {assignee_ids: userIds});
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
+        await fetchGitLabWrite(threadBase(kind, id, iid), "PUT", {assignee_ids: userIds}, beforeWrite);
     });
 
 /* ── 表情回应（award emoji）：议题 / 合并请求 / 二者评论，三条路径同形 ── */
@@ -626,9 +642,10 @@ export const addAward = async (
     iid: number,
     name: string,
     noteId?: number,
+    beforeWrite?: () => Promise<void>,
 ): Promise<Award> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`${awardPath(kind, id, iid, noteId)}?name=${encodeURIComponent(name)}`, "POST"));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`${awardPath(kind, id, iid, noteId)}?name=${encodeURIComponent(name)}`, "POST", {}, beforeWrite));
 
 export const removeAward = async (
     helper: InfoHelper,
@@ -637,9 +654,10 @@ export const removeAward = async (
     iid: number,
     awardId: number,
     noteId?: number,
+    beforeWrite?: () => Promise<void>,
 ): Promise<void> =>
-    roamingWrapper(helper, "gitlab", "", async () => {
-        await fetchGitLabWrite(`${awardPath(kind, id, iid, noteId)}/${awardId}`, "DELETE");
+    roamingWriteWrapper(helper, "gitlab", "", async () => {
+        await fetchGitLabWrite(`${awardPath(kind, id, iid, noteId)}/${awardId}`, "DELETE", {}, beforeWrite);
     });
 
 /* ── 合并请求：变更、新建、合入 ── */
@@ -658,23 +676,25 @@ export const createMergeRequest = async (
     targetBranch: string,
     title: string,
     description: string,
+    beforeWrite?: () => Promise<void>,
 ): Promise<MergeRequest> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
         fetchGitLabWrite(`/projects/${id}/merge_requests`, "POST", {
             source_branch: sourceBranch,
             target_branch: targetBranch,
             title,
             description,
-        }));
+        }, beforeWrite));
 
 /** 合入（不代删源分支、不改提交信息：这两项留给 GitLab 网页端） */
 export const mergeMergeRequest = async (
     helper: InfoHelper,
     id: number,
     iid: number,
+    beforeWrite?: () => Promise<void>,
 ): Promise<MergeRequest> =>
-    roamingWrapper(helper, "gitlab", "", async () =>
-        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/merge`, "PUT"));
+    roamingWriteWrapper(helper, "gitlab", "", async () =>
+        fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/merge`, "PUT", {}, beforeWrite));
 
 /** Organization collaboration uses authenticated APIs only, never preview mocks. */
 export interface GitOrgMember {
@@ -685,9 +705,9 @@ export interface GitOrgGroup extends GitGroupBrief { visibility: string; parent_
 export interface GitOrgProject { id: number; name: string; path_with_namespace: string; web_url: string; visibility: string; default_branch: string; namespace: {id: number}; shared_with_groups?: Array<{group_id:number}> }
 export interface GitOrgFile { content: string; encoding: string; last_commit_id: string; size: number }
 export interface GitOrgProtection { name: string; allow_force_push: boolean; push_access_levels: Array<{access_level: number; user_id?: number; group_id?: number; deploy_key_id?:number}>; merge_access_levels: Array<{access_level: number; user_id?:number;group_id?:number;deploy_key_id?:number}> }
-export const organizationGitApi = (helper: InfoHelper) => {
+export const organizationGitApi = (helper: InfoHelper, beforeWrite?: () => Promise<void>) => {
     const read = <T>(path: string, query?: object): Promise<T> => roamingWrapper(helper, "gitlab", "", () => fetchGitLab(path, query));
-    const write = <T>(path: string, method: "POST" | "PUT" | "DELETE", body: object = {}): Promise<T> => roamingWrapper(helper, "gitlab", "", () => fetchGitLabWrite(path, method, body));
+    const write = <T>(path: string, method: "POST" | "PUT" | "DELETE", body: object = {}): Promise<T> => roamingWriteWrapper(helper, "gitlab", "", () => fetchGitLabWrite(path, method, body, beforeWrite));
     const members = async (kind: "groups" | "projects", id: number, inherited = true): Promise<GitOrgMember[]> => {
         const all: GitOrgMember[] = [];
         for (let page = 1; page <= 100; page++) {

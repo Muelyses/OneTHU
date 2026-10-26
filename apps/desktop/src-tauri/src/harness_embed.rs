@@ -19,7 +19,7 @@
 //! 继续，回来写穿缓存）；**写**（storage.set）超时先落 pending、门面回来后带**基准比对**
 //! 回写（期间被别处改过就丢弃，绝不覆盖新数据）。工具面是真·实时数据，照旧实时调用。
 
-use onethu_harness_core::{activate_commands, dispatch_run, Emit, Host};
+use onethu_harness_core::{activate_commands, activate, sync_mcp_settings, dispatch_run, Emit, Host};
 use onethu_harness_core::host::{chat_busy_result, requires_run_permit, ChatRunGate, ChatRunPermit, RunEmit};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -531,9 +531,11 @@ fn bridge_push(payload: Value) {
 /// 所以每次进来都试着把暂存的写回补上——用户切回本体后不必再等下一次对话。
 #[tauri::command]
 pub async fn harness_bridge_take(
+    window: tauri::WebviewWindow,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
 ) -> Result<Vec<Value>, String> {
+    crate::plugins::require_plugin_main_window(window.label())?;
     // 说明：带 `&State` 引用的 async 命令必须返回 `Result`（Tauri 的宏约束），否则
     // `__tauri_message__` 生命周期 + AsyncCommandMustReturnResult 两个错一起报。
     bridge_init(); // 惰性建道（桌面端泵也会走到这）
@@ -586,10 +588,12 @@ pub struct HarnessHost {
 /// 启动内嵌 agent：起 agent 线程 + 门面桥线程，返回 activate 应答（commands 清单）。
 #[tauri::command]
 pub async fn harness_start(
+    window: tauri::WebviewWindow,
     app: AppHandle,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
 ) -> Result<Value, String> {
+    crate::plugins::require_plugin_main_window(window.label())?;
     let chat_runs = state.chat_runs.lock().map_err(|_| "对话状态锁中毒")?
         .entry(plugin_id.clone()).or_default().clone();
     if chat_runs.is_busy() {
@@ -724,6 +728,7 @@ pub async fn harness_start(
 /// 超时与 sidecar 的 plugin_call 同款默认 600s。
 #[tauri::command]
 pub async fn harness_call(
+    window: tauri::WebviewWindow,
     app: AppHandle,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
@@ -731,6 +736,7 @@ pub async fn harness_call(
     params: Value,
     timeout_ms: Option<u64>,
 ) -> Result<Value, String> {
+    crate::plugins::require_plugin_client_window(window.label(), &plugin_id, &method, false)?;
     if method == "run" { crate::privacy_consent::require_oh()?; }
     let live = state
         .live
@@ -755,6 +761,11 @@ pub async fn harness_call(
         return Err("内嵌插件已停止".into());
     }
     tauri::async_runtime::spawn_blocking(move || {
+        // Model-independent settings sync must never queue behind a chat.
+        if method == "mcp_sync" || method == "activate" {
+            let mut ctx = AgentCtx { call_tx: live.call_tx.clone(), interrupt: Arc::new(AtomicBool::new(false)), cache: live.cache.clone() };
+            return Ok(if method == "mcp_sync" { sync_mcp_settings(&mut ctx) } else { activate(&mut ctx) });
+        }
         // 非 chat 控制命令直接分发；取消票在排队/切线程前已认领。
         if method == "run" {
             let command = params.get("command").and_then(|v| v.as_str()).unwrap_or("");
@@ -785,11 +796,13 @@ pub async fn harness_call(
 /// 宿主通知：interrupt 置快路径标志（llm 流逐块检查，毫秒级生效）
 #[tauri::command]
 pub async fn harness_notify(
+    window: tauri::WebviewWindow,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
     method: String,
     params: Value,
 ) -> Result<(), String> {
+    crate::plugins::require_plugin_client_window(window.label(), &plugin_id, &method, true)?;
     let live = state
         .live
         .lock()
@@ -806,12 +819,14 @@ pub async fn harness_notify(
 /// webview 门面执行完 onethu.call 后回写结果（桥线程据此唤醒 agent）
 #[tauri::command]
 pub async fn harness_rpc_reply(
+    window: tauri::WebviewWindow,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
     id: u64,
     ok: bool,
     result: Value,
 ) -> Result<(), String> {
+    crate::plugins::require_plugin_main_window(window.label())?;
     let live = state
         .live
         .lock()
@@ -838,10 +853,12 @@ pub async fn harness_rpc_reply(
 /// 对话面板据此强制解锁（打断死人开关之外的确定性收尾）。
 #[tauri::command]
 pub async fn harness_stop(
+    window: tauri::WebviewWindow,
     app: AppHandle,
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
 ) -> Result<(), String> {
+    crate::plugins::require_plugin_main_window(window.label())?;
     if harness_stop_inner(&state, &plugin_id) {
         let _ = app.emit(
             "plugin-event",

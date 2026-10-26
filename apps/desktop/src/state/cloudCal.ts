@@ -219,9 +219,19 @@ export function msSinceSync(): number {
   return lastSyncAt ? Date.now() - lastSyncAt : Number.POSITIVE_INFINITY;
 }
 
-function makeClient(): CalDavClient | null {
+function makeClient(beforeWrite?: () => Promise<void>): CalDavClient | null {
   if (!cfg) return null;
-  return new CalDavClient(universalFetch, { email: cfg.email, authCode: cfg.authCode });
+  const epoch = accountEpoch;
+  // The client may discover its calendar asynchronously before issuing PUT.
+  // Keep this guard local to this request; ordinary UI clients stay independent.
+  const fetcher: typeof universalFetch = beforeWrite ? async (input, init) => {
+    if (["PUT", "DELETE", "POST", "MKCOL", "MKCALENDAR", "PROPPATCH"].includes(String(init?.method ?? "GET").toUpperCase())) {
+      await beforeWrite();
+      assertAccount(epoch);
+    }
+    return universalFetch(input, init);
+  } : universalFetch;
+  return new CalDavClient(fetcher, { email: cfg.email, authCode: cfg.authCode });
 }
 
 /* -------------- 动作 -------------- */
@@ -311,9 +321,9 @@ export async function syncCloudCal(): Promise<SyncResult> {
   try { return await promise; } finally { if (syncFlight === flight) syncFlight = null; }
 }
 
-async function writeCloud(ev: caldav.IcsEvent, epoch: number): Promise<void> {
+async function writeCloud(ev: caldav.IcsEvent, epoch: number, beforeWrite?: () => Promise<void>): Promise<void> {
   assertAccount(epoch);
-  const client = makeClient();
+  const client = makeClient(beforeWrite);
   if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
   const previous = cloudEvents.find(e => e.uid === ev.uid && e.recurrenceId === ev.recurrenceId);
   const resource = previous?.href ? cloudEvents.filter(e => e.href === previous.href) : [];
@@ -328,9 +338,9 @@ async function writeCloud(ev: caldav.IcsEvent, epoch: number): Promise<void> {
   assertAccount(epoch);
   cloudEvents = next; emit(); emitChange();
 }
-async function removeCloud(uid: string, epoch: number, expectedEtag?: string): Promise<void> {
+async function removeCloud(uid: string, epoch: number, expectedEtag?: string, beforeWrite?: () => Promise<void>): Promise<void> {
   assertAccount(epoch);
-  const client = makeClient();
+  const client = makeClient(beforeWrite);
   if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
   const target = cloudEvents.find(e => e.uid === uid);
   if (!target) throw new Error(i18n("state.cloudcal.bd5ff99826df"));
@@ -342,30 +352,31 @@ async function removeCloud(uid: string, epoch: number, expectedEtag?: string): P
   assertAccount(epoch);
   cloudEvents = next; emit(); emitChange();
 }
-export async function putCloudEvent(ev: caldav.IcsEvent): Promise<void> {
+export async function putCloudEvent(ev: caldav.IcsEvent, beforeWrite?: () => Promise<void>): Promise<void> {
   await ensureLoaded(); const epoch = accountEpoch;
-  await enqueue(() => writeCloud(ev, epoch));
+  await enqueue(() => writeCloud(ev, epoch, beforeWrite));
 }
-export async function deleteCloudEvent(uid: string, expectedEtag?: string): Promise<void> {
+export async function deleteCloudEvent(uid: string, expectedEtag?: string, beforeWrite?: () => Promise<void>): Promise<void> {
   await ensureLoaded(); const epoch = accountEpoch;
-  await enqueue(() => removeCloud(uid, epoch, expectedEtag));
+  await enqueue(() => removeCloud(uid, epoch, expectedEtag, beforeWrite));
 }
 export function getLocalEvents(): caldav.IcsEvent[] { return localEvents; }
-async function writeLocal(events: caldav.IcsEvent[]): Promise<void> {
+async function writeLocal(events: caldav.IcsEvent[], beforeWrite?: () => Promise<void>): Promise<void> {
+  await beforeWrite?.();
   await fileWrite(LOCAL_FILE, JSON.stringify({ events }));
   localEvents = events; emit(); emitChange();
 }
-export async function putLocalEvent(ev: caldav.IcsEvent): Promise<void> {
+export async function putLocalEvent(ev: caldav.IcsEvent, beforeWrite?: () => Promise<void>): Promise<void> {
   await ensureLoaded();
-  await enqueue(() => writeLocal([...localEvents.filter(e => e.uid !== ev.uid || e.recurrenceId !== ev.recurrenceId), ev]));
+  await enqueue(() => writeLocal([...localEvents.filter(e => e.uid !== ev.uid || e.recurrenceId !== ev.recurrenceId), ev], beforeWrite));
 }
-export async function deleteLocalEvent(uid: string): Promise<void> {
+export async function deleteLocalEvent(uid: string, beforeWrite?: () => Promise<void>): Promise<void> {
   await ensureLoaded();
-  await enqueue(() => writeLocal(localEvents.filter(e => e.uid !== uid)));
+  await enqueue(() => writeLocal(localEvents.filter(e => e.uid !== uid), beforeWrite));
 }
 
 /** 先确保目的侧已落盘，再清源侧。清理失败时两侧都保留，绝不先删唯一副本。 */
-export async function saveCalendarEvent(ev: caldav.IcsEvent, options: { cloud: boolean; originalCloud?: boolean }): Promise<void> {
+export async function saveCalendarEvent(ev: caldav.IcsEvent, options: { cloud: boolean; originalCloud?: boolean }, beforeWrite?: () => Promise<void>): Promise<void> {
   await ensureLoaded(); const epoch = accountEpoch;
   await enqueue(() => withBatch(async () => {
     const source = (options.originalCloud ? cloudEvents : localEvents).find(e => e.uid === ev.uid && e.recurrenceId === ev.recurrenceId);
@@ -373,12 +384,12 @@ export async function saveCalendarEvent(ev: caldav.IcsEvent, options: { cloud: b
     if (options.originalCloud !== undefined && options.originalCloud !== options.cloud && (source?.rrule || source?.recurrenceId !== undefined || (options.originalCloud ? cloudEvents : localEvents).filter(e => e.uid === ev.uid).length > 1)) {
       throw new Error(i18n("state.cloudcal.6600b7092f4c"));
     }
-    if (options.cloud) await writeCloud(merged, epoch);
-    else { const { href: _href, etag: _etag, ...local } = merged; await writeLocal([...localEvents.filter(e => e.uid !== ev.uid || e.recurrenceId !== ev.recurrenceId), local]); }
+    if (options.cloud) await writeCloud(merged, epoch, beforeWrite);
+    else { const { href: _href, etag: _etag, ...local } = merged; await writeLocal([...localEvents.filter(e => e.uid !== ev.uid || e.recurrenceId !== ev.recurrenceId), local], beforeWrite); }
     if (options.originalCloud === undefined || options.originalCloud === options.cloud) return;
     try {
-      if (options.originalCloud) await removeCloud(ev.uid, epoch, ev.etag || source?.etag);
-      else await writeLocal(localEvents.filter(e => e.uid !== ev.uid));
+      if (options.originalCloud) await removeCloud(ev.uid, epoch, ev.etag || source?.etag, beforeWrite);
+      else await writeLocal(localEvents.filter(e => e.uid !== ev.uid), beforeWrite);
     } catch { throw new Error(i18n("state.cloudcal.892291a664b5")); }
   }));
 }

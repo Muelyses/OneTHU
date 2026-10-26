@@ -1,3 +1,5 @@
+import { setCliRuntimeActive } from "../state/cliRuntime.js";
+import { isPluginRuntimeOwner } from "./windowOwner.js";
 import { t as i18n } from "../i18n/index.js";
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
@@ -159,7 +161,19 @@ function defaultsOf(m: PluginManifest): Record<string, string> {
   return out;
 }
 
-async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> {
+const activations = new Map<string, Promise<void>>();
+function activate(id: string, mod?: any, blobUrl?: string): Promise<void> {
+  if (!isPluginRuntimeOwner()) return Promise.resolve();
+  const pending = activations.get(id);
+  if (pending) return pending;
+  if (live.has(id)) return Promise.resolve();
+  const task = Promise.resolve().then(() => activateOnce(id, mod, blobUrl)).finally(() => { activations.delete(id); });
+  activations.set(id, task);
+  return task;
+}
+
+async function activateOnce(id: string, mod?: any, blobUrl?: string): Promise<void> {
+  if (!isPluginRuntimeOwner()) return;
   if (id === "onethu.harness" && !ohAuthorized()) return;
   const rec = getPlugin(id);
   if (!rec) throw new Error(i18n("plugins.loader.e8ce81d059b5", { id: String(id) }));
@@ -181,6 +195,7 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
       hand = await spawnRustPlugin(id, rec.binPath);
     }
     live.set(id, { id, kind: "rust", mod: null, blobUrl: "" });
+    if (id === "onethu.harness") setCliRuntimeActive(true);
     // 约定：activate 应答 { commands: [{id,title,inputLabel?,inputPlaceholder?}] }
     const cmds = (hand as any)?.commands;
     if (Array.isArray(cmds)) {
@@ -282,9 +297,12 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
 }
 
 async function deactivate(id: string, opts?: { keepTheme?: boolean }): Promise<void> {
+  if (!isPluginRuntimeOwner()) return;
+  await activations.get(id)?.catch(() => undefined);
   const p = live.get(id);
   if (!p) return;
   if (p.kind === "rust") {
+    if (id === "onethu.harness") setCliRuntimeActive(false);
     await disposeRust(id).catch(() => undefined);
     for (const k of [...liveCommands.keys()]) if (k.startsWith(`${id}:`)) liveCommands.delete(k);
     notifyCmds();
@@ -367,6 +385,7 @@ export function isLive(id: string): boolean {
 
 /** 应用启动时恢复：激活全部 enabled 插件（失败逐个记日志，不阻塞启动） */
 export async function activateInstalledPlugins(): Promise<void> {
+  if (!isPluginRuntimeOwner()) return;
   for (const rec of snapshot()) {
     if (!rec.enabled) continue;
     try {
@@ -380,6 +399,7 @@ export async function activateInstalledPlugins(): Promise<void> {
 
 let consentRuntimeTail = Promise.resolve();
 export function refreshHarnessConsent(): Promise<void> {
+  if (!isPluginRuntimeOwner()) return Promise.resolve();
   return consentRuntimeTail = consentRuntimeTail.catch(() => undefined).then(async () => {
     await deactivate("onethu.harness").catch(() => undefined);
     if (ohAuthorized() && getPlugin("onethu.harness")?.enabled) await activate("onethu.harness");
@@ -400,8 +420,9 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
   get description() { return i18n("plugins.loader.5567681c1fcb"); },
   permissions: [
     "user:read", "info:read", "card:read", "dorm:read",
+    "contacts:read", "org:read", "org:write", "xiaoda:read", "xiaoda:manage", "xiaoda:chat", "vault:read", "vault:write",
     "library:read", "library:book", "network:read",
-    "learn:read", "learn:write", "venue:read", "venue:book", "xk:read", "kongjian:book",
+    "learn:read", "learn:write", "exthw:read", "venue:read", "venue:book", "xk:read", "kongjian:book",
     "cal:read", "cal:write", "mail:read", "mail:write", "cloud:read", "cloud:write",
     "gitlab:read", "gitlab:write",
     "nav", "ui", "storage", "net:external", "llm", "plugins:call"],
@@ -446,7 +467,7 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
 };
 
 // MadModel 免费档续期泵：模块加载即启动（启动即试一枚 + 10 分钟巡检）
-startMadModelPump();
+if (isPluginRuntimeOwner()) startMadModelPump();
 
 /* Android 判定（2026-09-19 重写）：主 WebView UA 被 tauri.conf.json 硬编码成
  * Windows Chrome 79（wengine 指纹，Android 同样被覆盖）——UA 判定恒 false，
@@ -474,6 +495,7 @@ async function isAndroid(): Promise<boolean> {
 /** 桌面内置 OH：sidecar 从打包资源落进插件目录，注册/迁移注册表指向。
  *  在 activateInstalledPlugins 之前调用一次；无打包资源（开发未构建）则静默跳过。 */
 export async function seedBuiltinHarness(): Promise<void> {
+  if (!isPluginRuntimeOwner()) return;
   if (await isAndroid()) {
     // 内嵌核心（编进 App 进程）：种入/自愈内置 manifest。APK 更新=内置清单可能变
     // （新设置字段/权限），老注册表不清则设置 sheet 永远看不到新字段。

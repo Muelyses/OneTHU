@@ -332,4 +332,30 @@ for (const brokenFile of ['caldav.cfg', 'caldav.cache', 'caldav.local']) {
   await f.mod.configureCloudCal('new@test', 'fake'); gate.resolve(); await load;
   eq(f.mod.getCloudCalEmail(), 'new@test', 'slow old credential load cannot overwrite a successful explicit replacement');
 }
+{
+  const f = await fixture({ files: new Map([['caldav.cfg', JSON.stringify({ email: 'guard@test', secret: 'fake' })]]) });
+  let allowed = true, checked = 0;
+  f.setIntercept(request => { if (request.method === 'PROPFIND') allowed = false; });
+  await rejects(() => f.mod.putCloudEvent(item('guard'), async () => { checked++; if (!allowed) throw Error('CLI_DISABLED'); }), /CLI_DISABLED/, 'revocation during DAV discovery stops final PUT');
+  eq(checked, 1, 'guard executes after asynchronous calendar discovery');
+  eq(f.requests.filter(request => request.method === 'PUT').length, 0, 'revoked request sends no PUT');
+  eq(f.store('guard@test').size, 0, 'remote calendar unchanged after guard rejection');
+}
+{
+  const f = await fixture({ files: new Map([['caldav.cfg', JSON.stringify({ email: 'guard@test', secret: 'fake' })]]) });
+  f.add('guard@test', [item('keep')]); await f.mod.syncCloudCal();
+  await rejects(() => f.mod.deleteCloudEvent('keep', undefined, async () => { throw Error('CLI_DISABLED'); }), /CLI_DISABLED/, 'delete carries a per-call guard');
+  eq(f.requests.filter(request => request.method === 'DELETE').length, 0, 'rejected deletion sends no DELETE');
+  eq(f.store('guard@test').size, 1, 'rejected deletion preserves remote event');
+  let checked = 0;
+  await rejects(() => f.mod.saveCalendarEvent(item('keep'), { cloud: false, originalCloud: true }, async () => { if (++checked === 2) throw Error('CLI_DISABLED'); }), /两侧日程均保留/, 'revocation between move stages preserves both copies');
+  eq(f.mod.getLocalEvents().length, 1, 'move destination retained');
+  eq(f.store('guard@test').size, 1, 'move source retained after revoked cleanup');
+}
+{
+  const f = await fixture();
+  await rejects(() => f.mod.putLocalEvent(item('blocked'), async () => { throw Error('CLI_DISABLED'); }), /CLI_DISABLED/, 'queued local calendar write has the same guard');
+  eq(f.mod.getLocalEvents().length, 0, 'rejected local event never appears');
+  check(!f.files.has('caldav.local'), 'rejected local event never persists');
+}
 console.log(`cloud calendar: ${checks} offline integration checks passed`);

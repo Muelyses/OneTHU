@@ -1,0 +1,3687 @@
+[
+  {
+    "name": "cal.add",
+    "description": "新建日程（云同步已配置且 local≠true 时写云端，否则本地）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "dateYmd"
+        },
+        {
+          "type": "string",
+          "title": "startHm"
+        },
+        {
+          "type": "string",
+          "title": "endHm"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "allDay": {
+              "type": "boolean"
+            },
+            "local": {
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "cal.agenda",
+    "description": "时间窗内的日程出现（云+本地合并展开；日期缺省=今天起 14 天）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "startYmd"
+        },
+        {
+          "type": "string",
+          "title": "endYmd"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "cal.edit",
+    "description": "修改已有日程：只传要改的字段（未传的保留原值）；location/note 传空串=清除",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "uid"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string"
+            },
+            "start": {
+              "type": "string"
+            },
+            "end": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "allDay": {
+              "type": "boolean"
+            },
+            "toCloud": {
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "ch"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "cal.remove",
+    "description": "删除日程（按 uid，自动路由云端/本地）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "uid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "card.info",
+    "description": "card.info",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "card.transactions",
+    "description": "消费流水（YYYY-MM-DD 起/止）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "start"
+        },
+        {
+          "type": "string",
+          "title": "end"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "cloud.list",
+    "description": "目录内容",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "repoId"
+        },
+        {
+          "type": "string",
+          "title": "path"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "cloud.repos",
+    "description": "资料库列表",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "cloud.search",
+    "description": "库内搜索（文件名）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "repoId"
+        },
+        {
+          "type": "string",
+          "title": "query"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "cloud.share",
+    "description": "分享链接（expireDays=0 永久）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "repoId"
+        },
+        {
+          "type": "string",
+          "title": "path"
+        },
+        {
+          "type": "number",
+          "title": "expireDays"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "contacts.get",
+    "description": "Read an actual contact id from list, without shared-channel credentials or card images.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "contacts.list",
+    "description": "List saved OneTHU friends, optionally filter by name/note. Excludes organization cards by default.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "query"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "personal"
+              ]
+            },
+            {
+              "enum": [
+                "organization"
+              ]
+            },
+            {
+              "enum": [
+                "all"
+              ]
+            }
+          ],
+          "title": "kind"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "coursex.detail",
+    "description": "coursex.detail",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "coursex.search",
+    "description": "coursex.search",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "q"
+        },
+        {
+          "type": "string",
+          "title": "semester"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "coursex.semesters",
+    "description": "coursex.semesters",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "dorm.elePayRecord",
+    "description": "dorm.elePayRecord",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "dorm.eleRemainder",
+    "description": "dorm.eleRemainder",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "exthw.refresh",
+    "description": "触发全源刷新（网络请求；各源按自身频控）",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "exthw.snapshot",
+    "description": "外部作业源快照：各源作业条目/错误/自动登录状态/上次刷新时间",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.assignees",
+    "description": "指派（写操作；userIds 传空数组取消全部指派）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 10000,
+          "title": "userIds"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.awards",
+    "description": "表情回应（award emoji）：挂在议题 / 合并请求本体，或挂在某条评论上（传 noteId）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "number",
+          "title": "noteId"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.branches",
+    "description": "分支列表（默认分支排在最前）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.comment",
+    "description": "评论 Issue 或合并请求（写操作）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "string",
+          "title": "body"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.createIssue",
+    "description": "新建 Issue（写操作）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "description"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.createMergeRequest",
+    "description": "新建合并请求（写操作；源分支与目标分支不能相同）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "sourceBranch"
+        },
+        {
+          "type": "string",
+          "title": "targetBranch"
+        },
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "description"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.deleteComment",
+    "description": "删除一条评论（写操作；GitLab 只允许作者本人删）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "string",
+          "title": "discussionId"
+        },
+        {
+          "type": "number",
+          "title": "noteId"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.discussions",
+    "description": "讨论（评论线程）：首条评论 + 回复；`individual_note` 为真的讨论只有一条",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.file",
+    "description": "文件正文（sha 取自 tree 返回元素的 id；二进制文件会得到乱码）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "sha"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.issue",
+    "description": "gitlab.issue",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.issueNotes",
+    "description": "Issue 评论（含系统动态，`system: true` 的条目为状态变更记录）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.issues",
+    "description": "gitlab.issues",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "opened"
+                  ]
+                },
+                {
+                  "enum": [
+                    "closed"
+                  ]
+                },
+                {
+                  "enum": [
+                    "all"
+                  ]
+                }
+              ]
+            },
+            "search": {
+              "type": "string"
+            },
+            "page": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.jobs",
+    "description": "某次流水线的作业",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "pipelineId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.jobTrace",
+    "description": "作业日志（纯文本，带 ANSI 颜色码）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "jobId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.mergeMergeRequest",
+    "description": "合入合并请求（写操作；不代删源分支、不改提交信息）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.mergeRequest",
+    "description": "gitlab.mergeRequest",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.mergeRequestChanges",
+    "description": "合并请求的文件变更与差异",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.mergeRequestNotes",
+    "description": "gitlab.mergeRequestNotes",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.mergeRequests",
+    "description": "gitlab.mergeRequests",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "state": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "opened"
+                  ]
+                },
+                {
+                  "enum": [
+                    "closed"
+                  ]
+                },
+                {
+                  "enum": [
+                    "all"
+                  ]
+                }
+              ]
+            },
+            "search": {
+              "type": "string"
+            },
+            "page": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.pipelines",
+    "description": "流水线记录（ref 传分支名，空串为全部）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string"
+            },
+            "page": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.project",
+    "description": "项目详情",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.projects",
+    "description": "我参与的项目（page 从 1 起，每页 50 条）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.react",
+    "description": "贴一个表情回应（写操作；name 取 thumbsup / thumbsdown / laugh / hooray / confused / heart / eyes / rocket）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "string",
+          "title": "name"
+        },
+        {
+          "type": "number",
+          "title": "noteId"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.reply",
+    "description": "回复某条评论（写操作，附在该讨论末尾）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "string",
+          "title": "discussionId"
+        },
+        {
+          "type": "string",
+          "title": "body"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.requestCounts",
+    "description": "议题 / 合并请求的条数（服务端 x-total：进行中 / 已关闭 / 全部）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.resolveDiscussion",
+    "description": "解决 / 重新打开整个讨论（写操作；GitLab 网页上评论右侧那个 Resolve）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "string",
+          "title": "discussionId"
+        },
+        {
+          "type": "boolean",
+          "title": "resolved"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.search",
+    "description": "按名称搜索项目",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "search"
+        },
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.setState",
+    "description": "关闭或重新打开（写操作；kind 取 \"issue\" 或 \"mr\"，state 取 \"close\" 或 \"reopen\"）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "close"
+              ]
+            },
+            {
+              "enum": [
+                "reopen"
+              ]
+            }
+          ],
+          "title": "state"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.starred",
+    "description": "我星标的项目",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.tree",
+    "description": "目录内容：path 传空串表示根目录，ref 传分支名",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "path"
+        },
+        {
+          "type": "string",
+          "title": "ref"
+        },
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "gitlab.unreact",
+    "description": "取消某个表情回应（写操作；awardId 取自 awards 元素的 id）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "number",
+          "title": "awardId"
+        },
+        {
+          "type": "number",
+          "title": "noteId"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "gitlab.updateComment",
+    "description": "改写自己已有的评论（写操作；noteId 取自 issueNotes / mergeRequestNotes 的元素 id，\nGitLab 只允许作者本人改）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "issue"
+              ]
+            },
+            {
+              "enum": [
+                "mr"
+              ]
+            }
+          ],
+          "title": "kind"
+        },
+        {
+          "type": "number",
+          "title": "id"
+        },
+        {
+          "type": "number",
+          "title": "iid"
+        },
+        {
+          "type": "number",
+          "title": "noteId"
+        },
+        {
+          "type": "string",
+          "title": "body"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "info.assessmentList",
+    "description": "info.assessmentList",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.bankPayments",
+    "description": "info.bankPayments",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.classroomList",
+    "description": "空教室：楼栋列表 / 指定周次各教室占用",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.classroomState",
+    "description": "info.classroomState",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "building"
+        },
+        {
+          "type": "number",
+          "title": "week"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.deadlines",
+    "description": "学校重要事项（倒计时列表）",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.dormScore",
+    "description": "info.dormScore",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.exams",
+    "description": "info.exams",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.graduateIncome",
+    "description": "info.graduateIncome",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "begin"
+        },
+        {
+          "type": "string",
+          "title": "end"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.invoices",
+    "description": "电子发票 / 银行代扣 / 助研津贴",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.news",
+    "description": "新闻列表（page 从 1 起）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.newsDetail",
+    "description": "info.newsDetail",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "xxid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.newsSub",
+    "description": "订阅动态（用户在信息页配置的订阅源聚合流）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        },
+        {
+          "type": "string",
+          "title": "subscriptionId"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.physicalExam",
+    "description": "info.physicalExam",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.report",
+    "description": "成绩单",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.schedule",
+    "description": "课表（YYYY-MM-DD 起/止）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "startDate"
+        },
+        {
+          "type": "string",
+          "title": "endDate"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.schoolCalendar",
+    "description": "校历节点",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "info.searchNews",
+    "description": "info.searchNews",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "keyword"
+        },
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "kongjian.book",
+    "description": "kongjian.book",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "bookUrl"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "sid": {
+              "type": "string"
+            },
+            "tel": {
+              "type": "string"
+            },
+            "other": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "sid",
+            "tel",
+            "other"
+          ],
+          "additionalProperties": false,
+          "title": "info_"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "kongjian.cancel",
+    "description": "kongjian.cancel",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "target"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "kongjian.my",
+    "description": "kongjian.my",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "kongjian.page",
+    "description": "kongjian.page",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "spaceId": {
+              "type": "string"
+            },
+            "roomId": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "learn.bbsBoards",
+    "description": "learn.bbsBoards",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "learn.bbsPosts",
+    "description": "learn.bbsPosts",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        },
+        {
+          "type": "string",
+          "title": "threadId"
+        },
+        {
+          "type": "number",
+          "title": "pageNum"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "learn.bbsThread",
+    "description": "learn.bbsThread",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        },
+        {
+          "type": "string",
+          "title": "threadId"
+        },
+        {
+          "type": "string",
+          "title": "bqId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "learn.bbsThreads",
+    "description": "learn.bbsThreads",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "bqid": {
+              "type": "string"
+            },
+            "kind": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "yb"
+                  ]
+                },
+                {
+                  "enum": [
+                    "jh"
+                  ]
+                },
+                {
+                  "enum": [
+                    "cy"
+                  ]
+                }
+              ]
+            },
+            "start": {
+              "type": "number"
+            },
+            "length": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "learn.post",
+    "description": "learn.post",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        },
+        {
+          "type": "string",
+          "title": "bqid"
+        },
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "html"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "learn.reply",
+    "description": "learn.reply",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "wlkcid"
+        },
+        {
+          "type": "string",
+          "title": "threadId"
+        },
+        {
+          "type": "string",
+          "title": "content"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "learn.semesters",
+    "description": "learn.semesters",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "library.book",
+    "description": "预约座位（seat = seats() 元素；sectionId 为所属区域 id）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "title": "seat"
+        },
+        {
+          "type": "number",
+          "title": "sectionId"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                0
+              ]
+            },
+            {
+              "enum": [
+                1
+              ]
+            }
+          ],
+          "title": "dateChoice"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "library.cancel",
+    "description": "library.cancel",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "recordId"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "library.floors",
+    "description": "楼层（dateChoice：0=今天 1=明天）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "libraryId"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                0
+              ]
+            },
+            {
+              "enum": [
+                1
+              ]
+            }
+          ],
+          "title": "dateChoice"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "library.list",
+    "description": "library.list",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "library.records",
+    "description": "我的预约记录",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "library.seats",
+    "description": "library.seats",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "zhNameTrace": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "zhNameTrace"
+          ],
+          "additionalProperties": false,
+          "title": "section"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                0
+              ]
+            },
+            {
+              "enum": [
+                1
+              ]
+            }
+          ],
+          "title": "dateChoice"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "library.sections",
+    "description": "区域（floor = floors() 返回的元素）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "zhNameTrace": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "zhNameTrace"
+          ],
+          "additionalProperties": false,
+          "title": "floor"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                0
+              ]
+            },
+            {
+              "enum": [
+                1
+              ]
+            }
+          ],
+          "title": "dateChoice"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "libroom.book",
+    "description": "预约（start/end = \"YYYY-MM-DD HH:00\"；memberAccNos 为成员 accNo 列表，可空）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "required": [
+            "devId",
+            "devName",
+            "kindId",
+            "roomId"
+          ],
+          "properties": {
+            "devId": {
+              "type": "number"
+            },
+            "devName": {
+              "type": "string"
+            },
+            "kindId": {
+              "type": "number"
+            },
+            "roomId": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": true,
+          "title": "roomRes"
+        },
+        {
+          "type": "string",
+          "title": "start"
+        },
+        {
+          "type": "string",
+          "title": "end"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 10000,
+          "title": "memberAccNos"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "libroom.cancel",
+    "description": "libroom.cancel",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "uuid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "libroom.fuzzyMember",
+    "description": "按姓名/学号模糊搜成员（拼团用）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "keyword"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "libroom.list",
+    "description": "研讨间类型列表",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "libroom.records",
+    "description": "libroom.records",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "libroom.resources",
+    "description": "某日某类型的可预约资源（date=YYYY-MM-DD）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "date"
+        },
+        {
+          "type": "number",
+          "title": "kindId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "mail.list",
+    "description": "最新邮件（folder=\"INBOX\"|\"Sent Items\"；返回总数+头列表）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "folder"
+        },
+        {
+          "type": "number",
+          "title": "limit"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "mail.read",
+    "description": "读一封（读后自动标已读）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "folder"
+        },
+        {
+          "type": "number",
+          "title": "uid"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "mail.search",
+    "description": "全箱搜索（服务器端主题/发件人）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "folder"
+        },
+        {
+          "type": "string",
+          "title": "query"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "mail.send",
+    "description": "发信（to/cc 多址由应用侧拆分）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "to"
+        },
+        {
+          "type": "string",
+          "title": "cc"
+        },
+        {
+          "type": "string",
+          "title": "subject"
+        },
+        {
+          "type": "string",
+          "title": "body"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "memory.list",
+    "description": "目录/标签清单（不读正文）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "memory.read",
+    "description": "按 permalink 读全文（超 8KB 截断）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "permalink"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "memory.ready",
+    "description": "memory.ready",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "memory.search",
+    "description": "四段检索（无向量）：query 空格分词 + tags/type/folder 过滤 → 命中列表",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 10000
+            },
+            "type": {
+              "type": "string"
+            },
+            "folder": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "q"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "nav.go",
+    "description": "应用内跳转（page 见接口指南「页面路由」；params 如 { reserveTab: \"room\" }）",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "page"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {},
+          "title": "params"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "network.accountInfo",
+    "description": "network.accountInfo",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "network.balance",
+    "description": "network.balance",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "network.deviceCount",
+    "description": "network.deviceCount",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "network.devices",
+    "description": "network.devices",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "organizations.create",
+    "description": "Create a local organization index and owner record. Shared collaboration is enabled explicitly in the organization page. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "name"
+        },
+        {
+          "type": "string",
+          "title": "brief"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "organizations.get",
+    "description": "Read members, projects, announcements and cloud/GitLab resource ids. Verifies live membership for remote organizations.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "organizations.list",
+    "description": "List the current OneTHU organization index. Detailed remote membership is verified by get.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "query"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "organizations.removeAnnouncement",
+    "description": "Remove one organization announcement. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "announcementId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "organizations.removeProject",
+    "description": "Remove one organization project entry; preserves linked repositories and files. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "projectId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "organizations.saveAnnouncement",
+    "description": "Create/update an organization announcement. announcementId comes from get when editing. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "body"
+        },
+        {
+          "type": "boolean",
+          "title": "pinned"
+        },
+        {
+          "type": "string",
+          "title": "announcementId"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 5,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "organizations.saveProject",
+    "description": "Create/update an organization project. id comes from get when editing; remote edits verify membership and use revision checks. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "name"
+        },
+        {
+          "type": "string",
+          "title": "description"
+        },
+        {
+          "anyOf": [
+            {
+              "enum": [
+                "planned"
+              ]
+            },
+            {
+              "enum": [
+                "active"
+              ]
+            },
+            {
+              "enum": [
+                "done"
+              ]
+            }
+          ],
+          "title": "status"
+        },
+        {
+          "type": "string",
+          "title": "owner"
+        },
+        {
+          "type": "string",
+          "title": "projectId"
+        }
+      ],
+      "minItems": 5,
+      "maxItems": 6,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "organizations.update",
+    "description": "Edit organization name/description with live owner authorization and revision checks for shared organizations. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "brief": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "patch"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "services.open",
+    "description": "在应用内打开某个服务官方页（桌面独立窗口 / Android 全屏 WebView，共享同一登录态）。\nurl 必须来自 search 结果；打不开（无 url / 宿主不支持）返回 false",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "service"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "services.search",
+    "description": "按名字检索服务目录（**会发起校园请求**：先校验会话再取目录，仅在没有本地缓存时才该调用）。\n匹配容忍口语简称（「亲友预约」能命中「亲友来访预约」，甚至「亲友入校报备」这类\n换了后半截的名字也会以低分进候选），最多 limit 条（缺省 10、上限 50）。\n`score` 见 lib/serviceMatch.ts：≥40 = 有把握可直达，20~39 = 只作候选，务必先向用户确认。\n结果同时写入本机原子缓存，之后 nav.searchAtoms / nav.openAtom 即可离线命中",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "query"
+        },
+        {
+          "type": "number",
+          "title": "limit"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "session.status",
+    "description": "\"booting\"|\"connecting\"|\"2fa\"|\"logged-out\"|\"ready\"",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "session.username",
+    "description": "当前登录名（学号/用户名；未登录 null）",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "user.info",
+    "description": "基本信息（姓名/学号/院系/邮箱）",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "vault.addAtom",
+    "description": "Store a real registered atom reference (kind/key), using its actual title. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "kind"
+        },
+        {
+          "type": "string",
+          "title": "key"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.addFile",
+    "description": "Store a verified cloud file reference after checking the actual parent directory. Requires cloud read permission and confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "repoId"
+        },
+        {
+          "type": "string",
+          "title": "path"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.addText",
+    "description": "Store text in a real box. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "title"
+        },
+        {
+          "type": "string",
+          "title": "text"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.create",
+    "description": "Create a named temporary box. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "name"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.importCode",
+    "description": "Receive a vault sharing code into a new box. Never replaces the active box or accepts unrelated contact/org invites. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "code"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.item",
+    "description": "Read one selected item including safe text/payload metadata. References can be followed with school/cloud tools.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "itemId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "vault.items",
+    "description": "Read a box's text, titles and file/atom references; excludes credentials, payload internals and local staged paths.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "vault.list",
+    "description": "List OneTHU temporary boxes without their share codes.",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "vault.readText",
+    "description": "Read a known stored UTF-8 text file in explicit character ranges, with totalChars/nextOffset/complete. Binary formats require the file preview.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "itemId"
+        },
+        {
+          "type": "number",
+          "title": "offset"
+        },
+        {
+          "type": "number",
+          "title": "maxChars"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 4,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "vault.removeItem",
+    "description": "Remove one selected stored item; preserves the source object and files. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "itemId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.rename",
+    "description": "Rename a real box from list. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "string",
+          "title": "name"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "vault.share",
+    "description": "Generate/reuse an online short sharing code for a box. Requires vault/cloud write permission and confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "venue.cancel",
+    "description": "venue.cancel",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "resvUuid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "venue.currentPage",
+    "description": "venue.currentPage",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "sceneUuid": {
+              "type": "string"
+            },
+            "reserveDate": {
+              "type": "string"
+            },
+            "classTypeUuid": {
+              "type": "string"
+            },
+            "siteType": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sceneUuid",
+            "reserveDate"
+          ],
+          "additionalProperties": false,
+          "title": "params"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "venue.jump",
+    "description": "venue.jump",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "sceneUuid"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "venue.myRecords",
+    "description": "venue.myRecords",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "venue.scenes",
+    "description": "venue.scenes",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "visit.fill",
+    "description": "visit.fill",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "additionalProperties": {},
+          "title": "patch"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "open": {
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "xiaoda.agents",
+    "description": "List Qingxiaoda built-in agents after authenticating the current account.",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.ask",
+    "description": "Send a question to an actual Qingxiaoda agent from agents, creating a separate conversation. Requires explicit consent and confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "agentId"
+        },
+        {
+          "type": "string",
+          "title": "question"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "xiaoda.balance",
+    "description": "xiaoda.balance",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.conversation",
+    "description": "Read the full messages of a real conversation id from conversations.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.conversations",
+    "description": "List this account's Qingxiaoda conversations with official pagination.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.enableSkill",
+    "description": "Enable/disable an installed skill. Unsupported runtimes remain unavailable. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        },
+        {
+          "type": "boolean",
+          "title": "enabled"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "xiaoda.importSkill",
+    "description": "Download and inspect a skill into the private local skill library; enable it separately after checking compatibility. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "xiaoda.installed",
+    "description": "List all locally installed skills, including disabled and external-agent-only skills with requirements.",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.models",
+    "description": "Read Qingxiaoda model choices and account credit balance.",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.removeSkill",
+    "description": "Remove one installed skill from this account's private library. Requires confirmation.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": true
+  },
+  {
+    "name": "xiaoda.skill",
+    "description": "Read skill plaza details using the actual id from skills.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "id"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.skills",
+    "description": "Browse/search the Qingxiaoda skill plaza. page starts at 1; response includes school pagination metadata.",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "query"
+        },
+        {
+          "type": "number",
+          "title": "page"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xiaoda.status",
+    "description": "Read current Qingxiaoda account availability and name without returning its token.",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xk.catalog",
+    "description": "xk.catalog",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "sem"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xk.detail",
+    "description": "xk.detail",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "teacherId"
+        },
+        {
+          "type": "string",
+          "title": "code"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xk.reviews",
+    "description": "xk.reviews",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "course"
+        },
+        {
+          "type": "string",
+          "title": "teacher"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xk.search",
+    "description": "xk.search",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "kcm": {
+              "type": "string"
+            },
+            "kch": {
+              "type": "string"
+            },
+            "teacher": {
+              "type": "string"
+            },
+            "semester": {
+              "type": "string"
+            },
+            "page": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false,
+          "title": "opts"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "xk.selected",
+    "description": "xk.selected",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "sem"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.contents",
+    "description": "雨课堂 / Rain Classroom 全部可获取内容目录：课件、视频、作业、试卷、公告等；可按课堂筛选。",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "classroomId"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 1,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.courses",
+    "description": "雨课堂全部课程，含课堂 id、名称、教师；供后续内容查询定位。",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.homework",
+    "description": "雨课堂作业与截止／提交状态：保留既往作业，未来截止默认30天以内，days 可扩展到3660。",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "classroomId"
+        },
+        {
+          "type": "number",
+          "title": "days"
+        }
+      ],
+      "minItems": 0,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.homeworkDetail",
+    "description": "雨课堂作业题目与已有作答详情；参数取自 homework/contents，不提交作业。",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "classroomId"
+        },
+        {
+          "type": "string",
+          "title": "leafTypeId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.leafDetail",
+    "description": "雨课堂课件／视频／图文详情；参数取自 contents。",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "classroomId"
+        },
+        {
+          "type": "string",
+          "title": "leafId"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.noticeDetail",
+    "description": "雨课堂公告正文；noticeIds 取自 contents 的 noticeIdCandidates 或 noticeId。",
+    "parameters": {
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "title": "classroomId"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10000,
+          "title": "noticeIds"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "additionalItems": false
+    },
+    "mutation": false
+  },
+  {
+    "name": "yuketang.status",
+    "description": "雨课堂 / Rain Classroom 登录配置状态与扫码入口，不返回 Cookie。",
+    "parameters": {
+      "type": "array",
+      "items": [],
+      "minItems": 0,
+      "maxItems": 0,
+      "additionalItems": false
+    },
+    "mutation": false
+  }
+]

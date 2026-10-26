@@ -125,4 +125,14 @@ await test("InfoClient 2FA requires user interaction and never enters a second c
   assert.equal(posts.length, 1);
   assertCredentialBody(posts[0]);
 });
+await test("Cloud recovery consumes the exact credential callback without starting a second CAS login", async () => {
+  const callbacks=[];let posts=0;
+  const http={lastCookieNames:'',lastDebug:'',text:async()=>formHtml,request:async(url,init)=>{
+    if(init.method==='POST'){posts++;assertCredentialBody(init.body);return new Response('登录成功 <a href="https://oauth.tsinghua.edu.cn/callback?ticket=fixture">继续</a>');}
+    callbacks.push(url);return new Response('Cloud profile');
+  }};
+  const client=new InfoClient(http);client.setIdCredentials(()=>credentials);
+  assert.equal(await client.ensureDirectIdLogin(formUrl,{consumeServiceTicket:true}),true);
+  assert.equal(posts,1);assert.deepEqual(callbacks,['https://oauth.tsinghua.edu.cn/callback?ticket=fixture']);
+});
 console.log(`${passed} CAS recovery trust scenarios passed (offline).`);

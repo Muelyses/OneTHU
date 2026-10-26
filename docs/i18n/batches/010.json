@@ -1,7 +1,947 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorerprefssection.563b252befe6",
+      "source": "再点一次确认清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
+          "line": 61,
+          "context": "arming ? i18n(\"components.explorerprefssection.563b252befe6\") : i18n(\"components.explorerprefssection.80e015bfff38\")"
+        }
+      ],
+      "translation": "Tap again to confirm clearing",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorerprefssection.80e015bfff38",
+      "source": "清空记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
+          "line": 61,
+          "context": "arming ? i18n(\"components.explorerprefssection.563b252befe6\") : i18n(\"components.explorerprefssection.80e015bfff38\")"
+        }
+      ],
+      "translation": "Clear records",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorerprefssection.faa18ef93208",
+      "source": "搜索与胶囊",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
+          "line": 42,
+          "context": "{i18n(\"components.explorerprefssection.faa18ef93208\")}"
+        }
+      ],
+      "translation": "Search & capsule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.problembody.cd833817789d",
+      "source": "题目内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/ProblemBody.tsx",
+          "line": 157,
+          "context": "title = i18n(\"components.exthw.problembody.cd833817789d\")"
+        }
+      ],
+      "translation": "Problem statement",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.39c1233830b4",
+      "source": "{title} 第 {value} 页",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(title)"
+        },
+        {
+          "name": "value",
+          "expression": "String(idx + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 66,
+          "context": "{i18n(\"components.exthw.yktcontentbody.39c1233830b4\", { title: String(title), value: String(idx + 1) })}"
+        }
+      ],
+      "translation": "Page {value} of {title}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.87a7c227bdf5",
+      "source": "文档在应用内预览（可翻页 / 缩放 / 另存），不跳转官方网页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 56,
+          "context": "{i18n(\"components.exthw.yktcontentbody.87a7c227bdf5\")}"
+        }
+      ],
+      "translation": "Documents are previewed inside the app (page through, zoom, or save a copy); it does not jump to the official website.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.8a8542f69648",
+      "source": "下一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 74,
+          "context": "{i18n(\"components.exthw.yktcontentbody.8a8542f69648\")}"
+        }
+      ],
+      "translation": "Next page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.8e86f9b1d54f",
+      "source": "复制链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 92,
+          "context": "{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}"
+        }
+      ],
+      "translation": "Copy link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.94e6755106d8",
+      "source": "这条内容没有可直接渲染的正文（可能是直播、讨论或需要互动的类型）。{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "fallbackUrl ? (\n          <Btn variant=\"ghost\" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}</Btn>\n        ) : null"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 91,
+          "context": "{i18nRich(\"components.exthw.yktcontentbody.94e6755106d8\", { value: fallbackUrl ? (\n          <Btn variant=\"ghost\" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}</Btn>\n        ) : null })}"
+        }
+      ],
+      "translation": "This item has no body that can be rendered directly (it may be a live stream, a discussion, or an interactive type). {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.c9b9ae7a6144",
+      "source": "上一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 70,
+          "context": "{i18n(\"components.exthw.yktcontentbody.c9b9ae7a6144\")}"
+        }
+      ],
+      "translation": "Previous page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentbody.f79a5a5c204e",
+      "source": "用内置预览打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
+          "line": 55,
+          "context": "{i18n(\"components.exthw.yktcontentbody.f79a5a5c204e\")}"
+        }
+      ],
+      "translation": "Open with built-in preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.21bd738e0d71",
+      "source": "正在加载…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 113,
+          "context": "isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.2b1fde913dc6",
+      "source": "正在加载内容…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 121,
+          "context": "{i18n(\"components.exthw.yktcontentlist.2b1fde913dc6\")}"
+        }
+      ],
+      "translation": "Loading content…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.3afccd0197f6",
+      "source": "点击收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 113,
+          "context": "isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
+        }
+      ],
+      "translation": "Click to collapse",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.7965aadb4537",
+      "source": "这条公告没有取到可用的内容标识。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 54,
+          "context": "error: i18n(\"components.exthw.yktcontentlist.7965aadb4537\")"
+        }
+      ],
+      "translation": "No usable content ID was found for this announcement.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.ca6001f90452",
+      "source": "这条内容没有可内嵌渲染的正文。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 75,
+          "context": "error: i18n(\"components.exthw.yktcontentlist.ca6001f90452\")"
+        }
+      ],
+      "translation": "This item has no body that can be rendered inline.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.dc91444c4449",
+      "source": "加载失败，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 81,
+          "context": "e instanceof Error ? e.message : i18n(\"components.exthw.yktcontentlist.dc91444c4449\")"
+        }
+      ],
+      "translation": "Failed to load. Please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.ddbd641e1d5c",
+      "source": "没取到这条公告的正文，请稍后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 59,
+          "context": "error: i18n(\"components.exthw.yktcontentlist.ddbd641e1d5c\")"
+        }
+      ],
+      "translation": "The body of this announcement could not be fetched. Please try again later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.f053f24bd333",
+      "source": "雨课堂 · {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 113,
+          "context": "{i18nRich(\"components.exthw.yktcontentlist.f053f24bd333\", { value: isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\") })}"
+        }
+      ],
+      "translation": "Rain Classroom · {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktcontentlist.f0b19fcb3a58",
+      "source": "点击查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
+          "line": 113,
+          "context": "isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
+        }
+      ],
+      "translation": "Click to view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.075910113c11",
+      "source": "独立成行（display 模式）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 376,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.075910113c11\")}"
+        }
+      ],
+      "translation": "On its own line (display mode)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.1edb50ac35be",
+      "source": "📷 拍照上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 356,
+          "context": "isAndroid ? i18n(\"components.exthw.yktsubjectiveeditor.1edb50ac35be\") : i18n(\"components.exthw.yktsubjectiveeditor.6126742dc24f\")"
+        }
+      ],
+      "translation": "📷 Take photo to upload",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 386,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.3878a2a84b5d",
+      "source": "粘贴的图片读取失败，请用「插图」按钮重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 245,
+          "context": "onError?.(i18n(\"components.exthw.yktsubjectiveeditor.3878a2a84b5d\"))"
+        }
+      ],
+      "translation": "Failed to read the pasted image. Please retry with the Insert image button",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 365,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.6126742dc24f",
+      "source": "📎 从文件上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 356,
+          "context": "isAndroid ? i18n(\"components.exthw.yktsubjectiveeditor.1edb50ac35be\") : i18n(\"components.exthw.yktsubjectiveeditor.6126742dc24f\")"
+        }
+      ],
+      "translation": "📎 Upload from file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.6687b327b24f",
+      "source": "渲染器加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 381,
+          "context": "latexBundle ? i18n(\"components.exthw.yktsubjectiveeditor.edeea1592b3d\") : i18n(\"components.exthw.yktsubjectiveeditor.6687b327b24f\")"
+        }
+      ],
+      "translation": "Loading renderer…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.700c885fd7e5",
+      "source": "图片上传中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 354,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.700c885fd7e5\")}"
+        }
+      ],
+      "translation": "Uploading image…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.85fbe03102bd",
+      "source": "插入公式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 387,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.85fbe03102bd\")}"
+        }
+      ],
+      "translation": "Insert formula",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.8e2f0b394d65",
+      "source": "插入公式（LaTeX）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 260,
+          "context": "btn.title = i18n(\"components.exthw.yktsubjectiveeditor.8e2f0b394d65\")"
+        },
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 364,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.8e2f0b394d65\")}"
+        }
+      ],
+      "translation": "Insert formula (LaTeX)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.a2a00684a717",
+      "source": "插图上传失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 186,
+          "context": "onError?.(i18n(\"components.exthw.yktsubjectiveeditor.a2a00684a717\", { msg: String(msg) }))"
+        }
+      ],
+      "translation": "Image upload failed: {msg}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.ba8c366b11da",
+      "source": "在此作答…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 326,
+          "context": "props.placeholder ?? i18n(\"components.exthw.yktsubjectiveeditor.ba8c366b11da\")"
+        }
+      ],
+      "translation": "Type your answer here…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.edeea1592b3d",
+      "source": "预览：输入 LaTeX 后实时显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 381,
+          "context": "latexBundle ? i18n(\"components.exthw.yktsubjectiveeditor.edeea1592b3d\") : i18n(\"components.exthw.yktsubjectiveeditor.6687b327b24f\")"
+        }
+      ],
+      "translation": "Preview: updates live as you type LaTeX",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktsubjectiveeditor.f339cc2aea2c",
+      "source": "例如：{example}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "example",
+          "expression": "LaTeX syntax example; preserve verbatim"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
+          "line": 372,
+          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.f339cc2aea2c\", { example: String.raw`\\vec{u}=(1,2,3)  /  \\frac{a}{b}` })}"
+        }
+      ],
+      "translation": "For example: {example}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktvideoplayer.0e09b5f31d3c",
+      "source": "播放组件加载失败，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
+          "line": 53,
+          "context": "setErr(i18n(\"components.exthw.yktvideoplayer.0e09b5f31d3c\"))"
+        }
+      ],
+      "translation": "Failed to load the player. Please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktvideoplayer.19a7e7a919c4",
+      "source": "当前环境不支持 HLS 播放，可复制直链用其它播放器打开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
+          "line": 33,
+          "context": "setErr(i18n(\"components.exthw.yktvideoplayer.19a7e7a919c4\"))"
+        }
+      ],
+      "translation": "HLS playback is not supported in this environment. Copy the direct link and open it in another player.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktvideoplayer.6a4fbd94df3d",
+      "source": "视频播放失败，请刷新后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
+          "line": 43,
+          "context": "data.type === Hls.ErrorTypes.NETWORK_ERROR\n                ? i18n(\"components.exthw.yktvideoplayer.e76486fc8553\")\n                : i18n(\"components.exthw.yktvideoplayer.6a4fbd94df3d\")"
+        }
+      ],
+      "translation": "Video playback failed. Please refresh and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktvideoplayer.aedc355f35ae",
+      "source": "复制直链",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
+          "line": 75,
+          "context": "{i18n(\"components.exthw.yktvideoplayer.aedc355f35ae\")}"
+        }
+      ],
+      "translation": "Copy direct link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthw.yktvideoplayer.e76486fc8553",
+      "source": "视频分片加载失败（可能是地址已过期），请刷新后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
+          "line": 42,
+          "context": "data.type === Hls.ErrorTypes.NETWORK_ERROR\n                ? i18n(\"components.exthw.yktvideoplayer.e76486fc8553\")\n                : i18n(\"components.exthw.yktvideoplayer.6a4fbd94df3d\")"
+        }
+      ],
+      "translation": "Failed to load video segments (the URL may have expired). Please refresh and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.0a5f3151f8a9",
+      "source": "官方网页登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.exthwloginmodal.0a5f3151f8a9\");"
+        }
+      ],
+      "translation": "Sign in on the official website",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.0bcb1544085c",
+      "source": "已打开官方登录窗口，请在其中完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.0bcb1544085c\")}"
+        }
+      ],
+      "translation": "The official sign-in window is open. Please complete sign-in there",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.20cc23f01ce2",
+      "source": "刷新二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 205,
+          "context": "{i18n(\"components.exthwloginmodal.20cc23f01ce2\")}"
+        }
+      ],
+      "translation": "Refresh QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.2246ac32dbba",
+      "source": "二维码已过期，正在刷新…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 143,
+          "context": "status === \"expired\"\n        ? i18n(\"components.exthwloginmodal.2246ac32dbba\")\n        : status === \"error\"\n          ? null\n          : i18n(\"components.exthwloginmodal.eb13f4204eea\")"
+        }
+      ],
+      "translation": "QR code expired, refreshing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.25c27fb1eedc",
+      "source": "另一台设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.exthwloginmodal.25c27fb1eedc\")}"
+        }
+      ],
+      "translation": "another device",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 206,
+          "context": "{i18n(\"components.exthwloginmodal.2cd0f3be8738\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 304,
+          "context": "{i18n(\"components.exthwloginmodal.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.3161f2096285",
+      "source": "手机号 + 图形验证码 + 短信验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.3161f2096285\")}"
+        }
+      ],
+      "translation": "Phone number + captcha + SMS code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.346ff60e6c7c",
+      "source": "读取中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 303,
+          "context": "phase === \"reading\" ? i18n(\"components.exthwloginmodal.346ff60e6c7c\") : i18n(\"components.exthwloginmodal.81c3e95469e8\")"
+        }
+      ],
+      "translation": "Reading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 187,
+          "context": "status === \"error\" ? \"—\" : i18n(\"components.exthwloginmodal.4927a53bcc88\")"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.5f3fad354ea2",
+      "source": "建议用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.exthwloginmodal.5f3fad354ea2\")}"
+        }
+      ],
+      "translation": "We recommend using ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.78c3c2e4d511",
+      "source": "微信扫码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 47,
+          "context": "return i18n(\"components.exthwloginmodal.78c3c2e4d511\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.78c3c2e4d511\")}"
+        }
+      ],
+      "translation": "WeChat QR scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.7a78a769870e",
+      "source": "二维码约 5 分钟有效，过期自动刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 192,
+          "context": "{i18n(\"components.exthwloginmodal.7a78a769870e\")}"
+        }
+      ],
+      "translation": "The QR code is valid for about 5 minutes and refreshes automatically when it expires",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.81c3e95469e8",
+      "source": "我已登录，读取登录信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 303,
+          "context": "phase === \"reading\" ? i18n(\"components.exthwloginmodal.346ff60e6c7c\") : i18n(\"components.exthwloginmodal.81c3e95469e8\")"
+        }
+      ],
+      "translation": "I'm signed in — read my session",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.8373be2175f3",
+      "source": "（平板 / 电脑微信）扫码，并",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.exthwloginmodal.8373be2175f3\")}"
+        }
+      ],
+      "translation": " to scan the code (tablet / desktop WeChat), and ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.8a4ef3e48e4e",
+      "source": "已开启",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 198,
+          "context": "{i18n(\"components.exthwloginmodal.8a4ef3e48e4e\")}"
+        }
+      ],
+      "translation": "Enabled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.9122f70abae5",
+      "source": "扫码保活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 198,
+          "context": "{i18n(\"components.exthwloginmodal.9122f70abae5\")}"
+        }
+      ],
+      "translation": "QR keep-alive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.96b3620be2f0",
+      "source": "登录未完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 124,
+          "context": "r.message ?? i18n(\"components.exthwloginmodal.96b3620be2f0\")"
+        }
+      ],
+      "translation": "Sign-in not completed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.exthwloginmodal.97528819c903",
       "source": "保持本页在前台",
@@ -403,1139 +1343,6 @@
         }
       ],
       "translation": "Username and password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.177a41a28139",
-      "source": "导出失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 269,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.177a41a28139\", { value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "Export failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.1a3f0617d6de",
-      "source": "用户名",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 624,
-          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 658,
-          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 693,
-          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
-        }
-      ],
-      "translation": "Username",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.1c907131183c",
-      "source": "雨课堂登录状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 283,
-          "context": "name: i18n(\"components.exthwsettingssection.1c907131183c\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 764,
-          "context": "{i18n(\"components.exthwsettingssection.1c907131183c\")}"
-        }
-      ],
-      "translation": "Rain Classroom sign-in state",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.1e2df9c3075a",
-      "source": "登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 626,
-          "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 660,
-          "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 674,
-          "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 695,
-          "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 716,
-          "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 731,
-          "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        }
-      ],
-      "translation": "Sign in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.1f2ada659e8f",
-      "source": "会话已失效（{value}）——可扫码重登，或导入其他设备导出的 Cookie。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 242,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.1f2ada659e8f\", { value: String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")) }))"
-        }
-      ],
-      "translation": "Session expired ({value}). Scan to sign in again, or import cookies exported from another device.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.27e7d6344316",
-      "source": "登录状态：尚未检查（应用启动后会自动检查，约每 6 小时一次，也可手动检查）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 524,
-          "context": "ext.yktSession.checkedAt === null\n                  ? i18n(\"components.exthwsettingssection.27e7d6344316\")\n                  : ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.e"
-        }
-      ],
-      "translation": "Sign-in state: not yet checked (checked automatically after the app starts, about every 6 hours, or checked manually).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.2f58b6eddc08",
-      "source": "导入中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 534,
-          "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
-        }
-      ],
-      "translation": "Importing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.30060dffb676",
-      "source": "Tyche 登录成功，已保存。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 378,
-          "context": "tycheRemember ? i18n(\"components.exthwsettingssection.e9da66a5f095\") : i18n(\"components.exthwsettingssection.30060dffb676\")"
-        }
-      ],
-      "translation": "Signed in to Tyche successfully and saved.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.32eed2adc456",
-      "source": "已登录{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(via ? `·${via}` : \"\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 65,
-          "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
-        }
-      ],
-      "translation": "Signed in: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.38b9eabcae1b",
-      "source": "雨课堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 480,
-          "context": "{i18n(\"components.exthwsettingssection.38b9eabcae1b\")}"
-        },
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 6,
-          "context": "return t(\"components.exthwsettingssection.38b9eabcae1b\");"
-        }
-      ],
-      "translation": "Rain Classroom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.3afccd0197f6",
-      "source": "点击收起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 591,
-          "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
-        }
-      ],
-      "translation": "Click to collapse",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.3e7440664c75",
-      "source": "点击展开登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 591,
-          "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
-        }
-      ],
-      "translation": "Click to expand sign-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.3f06ed8f8c38",
-      "source": "登录中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 613,
-          "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 626,
-          "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 647,
-          "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 660,
-          "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 695,
-          "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 731,
-          "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        }
-      ],
-      "translation": "Signing in…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.40c00674621e",
-      "source": "不勾选则只保存本次登录状态，失效后需手动重新登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 702,
-          "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
-        }
-      ],
-      "translation": "If unchecked, only the current session is saved; you'll need to sign in manually after it expires.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.434a1a95686a",
-      "source": "刷新失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 224,
-          "context": "notify(\"range\", i18n(\"components.exthwsettingssection.434a1a95686a\", { value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "Refresh failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.44ff02182964",
-      "source": "按个人情况登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 577,
-          "context": "{i18n(\"components.exthwsettingssection.44ff02182964\")}"
-        }
-      ],
-      "translation": "Sign in with the method that suits you",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.4803e2da0873",
-      "source": "退出中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 486,
-          "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 611,
-          "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 645,
-          "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 672,
-          "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 714,
-          "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        }
-      ],
-      "translation": "Signing out…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.498e1d59b4d7",
-      "source": "退出",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 486,
-          "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 611,
-          "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 645,
-          "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 672,
-          "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 714,
-          "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
-        }
-      ],
-      "translation": "Sign out",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.498e524101ad",
-      "source": "粘贴后点击上方「保存」生效。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 769,
-          "context": "{i18n(\"components.exthwsettingssection.498e524101ad\")}"
-        }
-      ],
-      "translation": "Paste, then click Save above to apply.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.4acec185ba86",
-      "source": "登录状态：未知（上次检查时网络异常，不判定为失效）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 529,
-          "context": "ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
-        }
-      ],
-      "translation": "Sign-in state: unknown (network error at last check; not treated as expired)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.4ba279389d5a",
-      "source": "导入其他已登录设备导出的登录状态文件，免扫码直接恢复登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 534,
-          "context": "{i18n(\"components.exthwsettingssection.4ba279389d5a\")}"
-        }
-      ],
-      "translation": "Import a sign-in state file exported from another signed-in device to restore sign-in without scanning",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.52ca90b5c7ad",
-      "source": "检查未成功：网络异常，登录状态未知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 243,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.52ca90b5c7ad\"))"
-        }
-      ],
-      "translation": "Check unsuccessful: network error, sign-in state unknown",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.5492e8498b9c",
-      "source": "雨课堂已开启图形验证码：请用微信扫码，或选「官方网页登录」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 512,
-          "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
-        }
-      ],
-      "translation": "Rain Classroom now requires a captcha: scan with WeChat, or choose \"Sign in on the official website\".",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.5510d7040d50",
-      "source": "记住密码（登录状态失效后自动登录）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 698,
-          "context": "{i18n(\"components.exthwsettingssection.5510d7040d50\")}"
-        }
-      ],
-      "translation": "Remember password (auto sign-in after the session expires)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.58d2b2a8dc03",
-      "source": "只保留未来",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 749,
-          "context": "{i18n(\"components.exthwsettingssection.58d2b2a8dc03\")}"
-        }
-      ],
-      "translation": "Keep only future ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.59e30b592976",
-      "source": "已导出到 {path}。⚠️ 该文件等同账号凭据：勿放同步盘 / 群聊 / 仓库，导入完成后请删除。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "path",
-          "expression": "String(path)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 266,
-          "context": "return i18n(\"components.exthwsettingssection.59e30b592976\", { path: String(path) });"
-        }
-      ],
-      "translation": "Exported to {path}. ⚠️ This file is equivalent to your account credentials: do not put it in a synced drive, group chat, or repository, and delete it after importing.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.5fd4a0702e98",
-      "source": "已退出{label}登录。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "label",
-          "expression": "String(label)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 433,
-          "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.5fd4a0702e98\", { label: String(label) }))"
-        }
-      ],
-      "translation": "Signed out of {label}.",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthwsettingssection.65493396ab5b",
-      "source": "自动登录未成功{value}——可点「统一认证登录」重试。",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "st.message ? `（${st.message.slice(0, 160)}）` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 458,
-          "context": "{i18nRich(\"components.exthwsettingssection.65493396ab5b\", { value: st.message ? `（${st.message.slice(0, 160)}）` : \"\" })}"
-        }
-      ],
-      "translation": "Automatic sign-in did not succeed{value}. Click \"Unified Authentication sign-in\" to retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.6ac888d9d8a4",
-      "source": "已导入雨课堂登录状态，正在刷新外部作业。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 299,
-          "context": "return i18n(\"components.exthwsettingssection.6ac888d9d8a4\");"
-        }
-      ],
-      "translation": "Rain Classroom sign-in state imported; refreshing external assignments.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.6c0cdf48d1b3",
-      "source": "TUOJ（AI 版）登录状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 765,
-          "context": "{i18n(\"components.exthwsettingssection.6c0cdf48d1b3\")}"
-        }
-      ],
-      "translation": "TUOJ (AI edition) sign-in state",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.73075237fd0f",
-      "source": "邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 729,
-          "context": "{i18n(\"components.exthwsettingssection.73075237fd0f\")}"
-        }
-      ],
-      "translation": "Email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.738b37dc7cba",
-      "source": "未配置雨课堂登录状态——请先登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 238,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.738b37dc7cba\"))"
-        }
-      ],
-      "translation": "Rain Classroom sign-in state is not configured. Please sign in first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.7a334a5f33f2",
-      "source": "导入失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 302,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.7a334a5f33f2\", { value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "Import failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.7c1c6d7e68c6",
-      "source": "统一认证登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 613,
-          "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 647,
-          "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
-        }
-      ],
-      "translation": "Unified Authentication sign-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.7cf1f3f97fff",
-      "source": "浏览器预览不支持导出，请在桌面端操作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 254,
-          "context": "new Error(i18n(\"components.exthwsettingssection.7cf1f3f97fff\"))"
-        }
-      ],
-      "translation": "Export is not supported in the browser preview; use the desktop app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.7f3c8312816f",
-      "source": "刷新中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 756,
-          "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
-        }
-      ],
-      "translation": "Refreshing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.81c77d061430",
-      "source": "{value} 登录成功，已保存。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(SOURCE_NAMES[source])"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 355,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(labelForId(SOURCE_NAMES[source])) }))"
-        }
-      ],
-      "translation": "{value} signed in successfully and saved.",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthwsettingssection.8230bba29c97",
-      "source": "短信验证码（暂不可用）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 503,
-          "context": "{i18n(\"components.exthwsettingssection.8230bba29c97\")}"
-        }
-      ],
-      "translation": "SMS verification code (currently unavailable)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.84880323c334",
-      "source": "已取消导出。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 265,
-          "context": "return i18n(\"components.exthwsettingssection.84880323c334\");"
-        }
-      ],
-      "translation": "Export cancelled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.8a21d7219a96",
-      "source": "检查登录状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 532,
-          "context": "busy === \"ykt-check\" ? i18n(\"components.exthwsettingssection.fb11aa6f2982\") : i18n(\"components.exthwsettingssection.8a21d7219a96\")"
-        }
-      ],
-      "translation": "Check sign-in state",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.8aee3f656a95",
-      "source": "需重新登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 781,
-          "context": "{i18n(\"components.exthwsettingssection.8aee3f656a95\")}"
-        }
-      ],
-      "translation": "Sign-in required",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.8b512420e036",
-      "source": "会话健康：有效{value} · 检查于 {value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\")"
-        },
-        {
-          "name": "value2",
-          "expression": "String(new Date(ext.yktSession.checkedAt).toLocaleTimeString())"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 526,
-          "context": "ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
-        }
-      ],
-      "translation": "Session health: valid{value} · checked at {value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.8da916259f48",
-      "source": "DSA OJ 登录失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 398,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.8da916259f48\", { value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "DSA OJ sign-in failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.9249fcc53449",
-      "source": "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 513,
-          "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
-        }
-      ],
-      "translation": "Rain Classroom now requires a captcha, so direct SMS sign-in is unavailable for now. Please scan with WeChat or the Yudou app.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.92559c8f277f",
-      "source": "{count} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count",
-          "expression": "String(count)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 781,
-          "context": "err ? <OGText tone=\"error\">{i18n(\"components.exthwsettingssection.8aee3f656a95\")}</OGText> : i18n(\"components.exthwsettingssection.92559c8f277f\", { count: String(count) })"
-        }
-      ],
-      "translation": "{count} items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.9332d0724ed2",
-      "source": "确定退出{label}登录？将清除本机保存的{label2}凭据，不影响其他源。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "label",
-          "expression": "String(label)"
-        },
-        {
-          "name": "label2",
-          "expression": "String(label)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 405,
-          "context": "confirmOk(i18nMsg(\"components.exthwsettingssection.9332d0724ed2\", { label: String(label), label2: String(label) }))"
-        }
-      ],
-      "translation": "Sign out of {label}? This clears the {label2} credentials saved on this device and does not affect other sources.",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthwsettingssection.94cd45f219ce",
-      "source": "Tyche 登录失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 381,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.94cd45f219ce\", { value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "Tyche sign-in failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.97434a01ddf6",
-      "source": "{value}重新登录",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "tycheFormOpen ? \"▾\" : \"▸\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 679,
-          "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: tycheFormOpen ? \"▾\" : \"▸\" })}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 721,
-          "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: dsaFormOpen ? \"▾\" : \"▸\" })}"
-        }
-      ],
-      "translation": "{value}sign in again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.99e398c6de5c",
-      "source": "统一认证",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 604,
-          "context": "tuojVia === \"cas\" || ext.tuojAuto.tuoj.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 638,
-          "context": "classicVia === \"cas\" || ext.tuojAuto.tuojClassic.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
-        }
-      ],
-      "translation": "Unified Authentication",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.9e0181f35fc5",
-      "source": "微信扫码登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 492,
-          "context": "yktQrOpen ? i18n(\"components.exthwsettingssection.dd647f03c880\") : i18n(\"components.exthwsettingssection.9e0181f35fc5\")"
-        }
-      ],
-      "translation": "Sign in with WeChat QR",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.a1a9da9ee6ed",
-      "source": "未知原因",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 242,
-          "context": "st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")"
-        }
-      ],
-      "translation": "Unknown reason",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.a3030bf8f16d",
-      "source": "保存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 755,
-          "context": "{i18n(\"components.exthwsettingssection.a3030bf8f16d\")}"
-        }
-      ],
-      "translation": "Save",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.a33c8a6739b3",
-      "source": "{value} 登录失败：{value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(SOURCE_NAMES[source])"
-        },
-        {
-          "name": "value2",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 327,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 358,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "{value} sign-in failed: {value2}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthwsettingssection.a61cd4faa5ed",
-      "source": "雨课堂扫码登录成功，已保存。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 554,
-          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.a61cd4faa5ed\"))"
-        }
-      ],
-      "translation": "Rain Classroom QR sign-in succeeded and saved.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.a621ab606db2",
-      "source": "密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 625,
-          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 659,
-          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 694,
-          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 730,
-          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
-        }
-      ],
-      "translation": "Password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.aaa8da9598f1",
-      "source": "密码以密文存在本机，不上传、不进日志；退出登录即清除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 701,
-          "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
-        }
-      ],
-      "translation": "The password is stored encrypted on this device, never uploaded or written to logs, and cleared when you sign out.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

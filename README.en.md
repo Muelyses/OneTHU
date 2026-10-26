@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11.3 · Revolution**
+**0.11.4 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -14,9 +14,9 @@ Your campus. In one place.
 
 OneTHU is an unofficial Tsinghua campus application for macOS, Windows and Android. Version 0.11 unifies interaction with OneGUI while keeping themes, wallpapers and layouts customizable, with minimal, practical and full experience modes. Search and the OH capsule are available in all three. Full mode adds free whiteboards, staging and sharing, organizations, plugins, OneTHU Harness and Xiaoda.
 
-## 0.11.3 maintenance update
+## 0.11.4 update
 
-This update improves university sign-in and session recovery, reuses the existing device identity, and brings release announcements, manual checks and downloads to the sign-in screen. All three modes can obtain fixes while university sign-in is unavailable. Available for macOS, Windows and Android. See the [release notes](docs/en/release-0.11.3.md).
+Adds a standalone OneTHU CLI and SDK, with a resident desktop backend sharing sign-in and tasks. OH gains Rain Classroom, contacts, organizations, Xiaoda skills and staging-box tools. This release also fixes notice attachment filenames, cloud reconnection and IM session isolation, and includes glass and interface improvements. Available for macOS, Windows and Android. See the [release notes](docs/en/release-0.11.4.md).
 
 ## Real interface. Fictional data.
 
@@ -80,6 +80,7 @@ pnpm dev
 A browser preview is not the native host. Native builds need Rust and Tauri platform dependencies; Android additionally needs a JDK, SDK and NDK. The active development branch is dev3.
 
 - [Developer center and builds](docs/en/developers.md)
+- [OneTHU CLI, SDK and resident assistant](docs/en/onethu-cli.md): independent sign-in, course archives, scheduled checks and IM notifications, with MCP access for other agents. These are current source-development capabilities; see the guide for installation and validation limits.
 - [All contributors and major contributors](docs/en/contributors.md)
 - [Plugin development](docs/en/plugin-development.md) · [API](docs/en/api-surface.md) · [OneTHU Harness](https://github.com/smartThise/OneTHU-Harness)
 - [Architecture](docs/en/architecture.md) · [OneGUI](docs/en/design-language.md) · [Documentation and historical status](docs/en/documentation-catalog.md)

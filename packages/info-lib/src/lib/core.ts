@@ -23,7 +23,7 @@ import {
 } from "../constants/strings";
 import * as cheerio from "cheerio";
 import {InfoHelper} from "../index";
-import {clearCookies, getRedirectUrl, platformFetchWith, stringify, uFetch} from "../utils/network";
+import {clearCookies, getRedirectUrl, platformFetchWith, ResponseStatusError, stringify, uFetch} from "../utils/network";
 import {IdAuthError, LibError, LoginError, LoginPreparationError, UrlError} from "../utils/error";
 import {sm2} from "sm-crypto";
 
@@ -769,6 +769,51 @@ export const roamingWrapperWithMocks = async <R>(
     helper.mocked()
         ? Promise.resolve(fallback)
         : roamingWrapper(helper, policy, payload, operation);
+
+/** A mutation gets one attempt. An explicit HTTP 401 at the original endpoint
+ * means the server rejected it; that case may recover auth and
+ * try once more. Network/timeout/5xx/parse failures leave the outcome unknown.
+ * Keep the read wrapper's existing recovery policy independent of this path. */
+export const roamingWriteWrapper = async <R>(
+    helper: InfoHelper,
+    policy: RoamingPolicy | undefined,
+    payload: string,
+    operation: (param?: string) => Promise<R>,
+): Promise<R> => {
+    if (helper.userId === "" || helper.password === "") {
+        const error = new LoginError("Please login.");
+        helper.loginErrorHook && helper.loginErrorHook(error);
+        throw error;
+    }
+    const owner = helper.userId;
+    const attempt = async (param?: string): Promise<R> => {
+        const sameOwner = () => {
+            if (helper.userId !== owner) throw Object.assign(new Error("Account changed during the write operation."), {code: "AUTH_SESSION_CHANGED"});
+        };
+        sameOwner();
+        const result = await operation(param);
+        sameOwner();
+        return result;
+    };
+    try {
+        return await attempt();
+    } catch (error) {
+        if (!(error instanceof ResponseStatusError) || error.status !== 401 || !error.directResponse) throw error;
+        // There is deliberately no catch around this recovery or second write:
+        // a failed response must never fall into another implicit replay tier.
+        if (policy) return attempt(await roam(helper, policy, payload));
+        if (await verifyAndReLogin(helper)) return attempt();
+        throw error;
+    }
+};
+
+export const roamingWriteWrapperWithMocks = async <R>(
+    helper: InfoHelper,
+    policy: RoamingPolicy | undefined,
+    payload: string,
+    operation: (param?: string) => Promise<R>,
+    fallback: R,
+): Promise<R> => helper.mocked() ? Promise.resolve(fallback) : roamingWriteWrapper(helper, policy, payload, operation);
 
 export const forgetDevice = async (helper: InfoHelper): Promise<void> => {
     await roam(helper, "id_website", "");

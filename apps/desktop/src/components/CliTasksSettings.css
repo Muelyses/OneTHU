@@ -1,0 +1,18 @@
+.cli-task-manager { min-width: 0; padding-block: var(--og-space-4, 16px); }
+.cli-task-manager .og-text { overflow-wrap: anywhere; }
+.cli-task-course-list { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; padding: var(--og-space-1, 4px); }
+
+.cli-task-manager { container-type: inline-size; }
+.cli-task-manager > .og-inline { align-items: flex-start; }
+.cli-task-card, .cli-task-form { min-width: 0; }
+.cli-task-card > .og-stack, .cli-task-form > .og-stack { min-width: 0; }
+.cli-task-actions { row-gap: var(--og-space-2, 8px); }
+.cli-task-history { border-top: 1px solid var(--og-border, #dededb); padding-top: var(--og-space-3, 12px); }
+.cli-task-history-item { display: grid; gap: var(--og-space-1, 4px); }
+.cli-task-inbox { display: grid; gap: var(--og-space-3, 12px); }
+.cli-task-inbox-list { max-height: 420px; overflow-y: auto; overscroll-behavior: contain; }
+.cli-task-message { white-space: pre-wrap; }
+@container (max-width: 480px) {
+  .cli-task-manager .cli-task-actions > .og-btn { flex: 1 1 auto; }
+  .cli-task-manager .cli-task-course-list { max-height: 200px; }
+}

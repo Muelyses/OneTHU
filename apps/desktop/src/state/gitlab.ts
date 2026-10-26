@@ -2,9 +2,9 @@ import { t as i18n } from "../i18n/index.js";
 /**
  * 清华 GitLab（git.tsinghua.edu.cn）状态层。
  *
- * 认证：复用统一认证会话。lib 的 roamingWrapper 在 API 返回非 2xx 时自动走
- * 「GitLab 登录页 → 清华 OAuth → id 登录页 → 回调换票」并重放那次请求，
- * 因此本层只负责把凭据灌进 helper，不自己处理登录跳转。
+ * 认证：复用统一认证会话。读取沿用 lib 的漫游恢复；写入使用独立的
+ * roamingWriteWrapper，仅在 HTTP 401 明确拒绝写入时换票后重试一次。
+ * 断网、超时、5xx 或成功回执无法解析时保留结果未确认状态，由用户刷新核对。
  * 数据：项目 / 目录 / 文件 / Issue / 合并请求 / 流水线全部走带失效的键缓存，
  * 进页刷新，写操作后按前缀失效。
  */
@@ -405,9 +405,10 @@ export async function gitlabReply(
   iid: number,
   discussionId: string,
   body: string,
+  beforeWrite?: () => Promise<void>,
 ): Promise<GitNote> {
   await requireSession();
-  const note = await helper.addGitDiscussionNote(kind, id, iid, discussionId, body);
+  const note = await helper.addGitDiscussionNote(kind, id, iid, discussionId, body, beforeWrite);
   invalidateGitlab(`discussions:${kind}:${id}:${iid}:`);
   invalidateGitlab(`${kind}:${id}:${iid}`);
   return note;
@@ -433,9 +434,10 @@ export async function gitlabDeleteNote(
   iid: number,
   discussionId: string,
   noteId: number,
+  beforeWrite?: () => Promise<void>,
 ): Promise<void> {
   await requireSession();
-  await helper.deleteGitDiscussionNote(kind, id, iid, discussionId, noteId);
+  await helper.deleteGitDiscussionNote(kind, id, iid, discussionId, noteId, beforeWrite);
   invalidateGitlab(`discussions:${kind}:${id}:${iid}:`);
   invalidateGitlab(`${kind}:${id}:${iid}`);
 }
@@ -446,9 +448,10 @@ export async function gitlabResolveDiscussion(
   iid: number,
   discussionId: string,
   resolved: boolean,
+  beforeWrite?: () => Promise<void>,
 ): Promise<void> {
   await requireSession();
-  await helper.resolveGitDiscussion(kind, id, iid, discussionId, resolved);
+  await helper.resolveGitDiscussion(kind, id, iid, discussionId, resolved, beforeWrite);
   invalidateGitlab(`discussions:${kind}:${id}:${iid}:`);
 }
 
@@ -458,9 +461,10 @@ export async function gitlabAssign(
   id: number,
   iid: number,
   userIds: number[],
+  beforeWrite?: () => Promise<void>,
 ): Promise<void> {
   await requireSession();
-  await helper.assignGitTo(kind, id, iid, userIds);
+  await helper.assignGitTo(kind, id, iid, userIds, beforeWrite);
   invalidateGitlab(`${kind}:${id}:${iid}`);
   invalidateGitlab(`${kind === "issue" ? "issues" : "mrs"}:${id}:`);
 }
@@ -488,9 +492,10 @@ export async function gitlabAddAward(
   iid: number,
   name: string,
   noteId?: number,
+  beforeWrite?: () => Promise<void>,
 ): Promise<GitAward> {
   await requireSession();
-  const award = await helper.addGitAward(kind, id, iid, name, noteId);
+  const award = await helper.addGitAward(kind, id, iid, name, noteId, beforeWrite);
   invalidateGitlab(awardsKey(kind, id, iid, noteId));
   return award;
 }
@@ -501,9 +506,10 @@ export async function gitlabRemoveAward(
   iid: number,
   awardId: number,
   noteId?: number,
+  beforeWrite?: () => Promise<void>,
 ): Promise<void> {
   await requireSession();
-  await helper.removeGitAward(kind, id, iid, awardId, noteId);
+  await helper.removeGitAward(kind, id, iid, awardId, noteId, beforeWrite);
   invalidateGitlab(awardsKey(kind, id, iid, noteId));
 }
 
@@ -520,16 +526,17 @@ export async function gitlabCreateMergeRequest(
   targetBranch: string,
   title: string,
   description: string,
+  beforeWrite?: () => Promise<void>,
 ): Promise<GitMergeRequest> {
   await requireSession();
-  const mr = await helper.createGitMergeRequest(id, sourceBranch, targetBranch, title, description);
+  const mr = await helper.createGitMergeRequest(id, sourceBranch, targetBranch, title, description, beforeWrite);
   invalidateGitlab(`mrs:${id}:`);
   return mr;
 }
 
-export async function gitlabMerge(id: number, iid: number): Promise<GitMergeRequest> {
+export async function gitlabMerge(id: number, iid: number, beforeWrite?: () => Promise<void>): Promise<GitMergeRequest> {
   await requireSession();
-  const mr = await helper.mergeGitMergeRequest(id, iid);
+  const mr = await helper.mergeGitMergeRequest(id, iid, beforeWrite);
   invalidateGitlab(`mrs:${id}:`);
   invalidateGitlab(`mr:${id}:${iid}`);
   return mr;
@@ -537,9 +544,9 @@ export async function gitlabMerge(id: number, iid: number): Promise<GitMergeRequ
 
 /* ══════════ 写操作 ══════════ */
 
-export async function gitlabCreateIssue(id: number, title: string, description: string): Promise<GitIssue> {
+export async function gitlabCreateIssue(id: number, title: string, description: string, beforeWrite?: () => Promise<void>): Promise<GitIssue> {
   await requireSession();
-  const issue = await helper.createGitProjectIssue(id, title, description);
+  const issue = await helper.createGitProjectIssue(id, title, description, beforeWrite);
   invalidateGitlab(`issues:${id}:`);
   return issue;
 }
@@ -549,11 +556,12 @@ export async function gitlabAddNote(
   id: number,
   iid: number,
   body: string,
+  beforeWrite?: () => Promise<void>,
 ): Promise<GitNote> {
   await requireSession();
   const note = kind === "issue"
-    ? await helper.addGitIssueNote(id, iid, body)
-    : await helper.addGitMergeRequestNote(id, iid, body);
+    ? await helper.addGitIssueNote(id, iid, body, beforeWrite)
+    : await helper.addGitMergeRequestNote(id, iid, body, beforeWrite);
   invalidateGitlab(kind === "issue" ? `issue:${id}:${iid}` : `mr:${id}:${iid}`);
   return note;
 }
@@ -563,10 +571,11 @@ export async function gitlabSetState(
   id: number,
   iid: number,
   state: "close" | "reopen",
+  beforeWrite?: () => Promise<void>,
 ): Promise<void> {
   await requireSession();
-  if (kind === "issue") await helper.setGitIssueState(id, iid, state);
-  else await helper.setGitMergeRequestState(id, iid, state);
+  if (kind === "issue") await helper.setGitIssueState(id, iid, state, beforeWrite);
+  else await helper.setGitMergeRequestState(id, iid, state, beforeWrite);
   invalidateGitlab(kind === "issue" ? `issues:${id}:` : `mrs:${id}:`);
   invalidateGitlab(`${kind === "issue" ? "issue" : "mr"}:${id}:${iid}`);
 }
@@ -578,11 +587,12 @@ export async function gitlabUpdateNote(
   iid: number,
   noteId: number,
   body: string,
+  beforeWrite?: () => Promise<void>,
 ): Promise<GitNote> {
   await requireSession();
   const note = kind === "issue"
-    ? await helper.updateGitIssueNote(id, iid, noteId, body)
-    : await helper.updateGitMergeRequestNote(id, iid, noteId, body);
+    ? await helper.updateGitIssueNote(id, iid, noteId, body, beforeWrite)
+    : await helper.updateGitMergeRequestNote(id, iid, noteId, body, beforeWrite);
   invalidateGitlab(kind === "issue" ? `issue:${id}:${iid}` : `mr:${id}:${iid}`);
   return note;
 }
@@ -688,8 +698,8 @@ export function useGitlabQuery<T>(key: string | null, load: () => Promise<T>): G
 }
 
 /** Fresh authenticated organization API: caller cannot bypass session restoration. */
-export async function gitlabOrganizationApi() {
+export async function gitlabOrganizationApi(beforeWrite?: () => Promise<void>) {
   await requireSession();
   const { organizationGitApi } = await import("@onethu/info-lib");
-  return organizationGitApi(helper);
+  return organizationGitApi(helper, beforeWrite);
 }

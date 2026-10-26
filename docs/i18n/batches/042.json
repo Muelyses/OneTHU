@@ -1,7 +1,935 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.xklogic.f9aa11dbb15c",
+      "source": "周六",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 14
+        }
+      ],
+      "translation": "Sat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktassets.29516ecba0fc",
+      "source": "图片代理响应非图片（mime={value} bytes={value2}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(out?.mime ?? \"空\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(out?.data?.length ?? 0)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktAssets.ts",
+          "line": 146,
+          "context": "new Error(i18n(\"lib.yktassets.29516ecba0fc\", { value: String(out?.mime ?? \"空\"), value2: String(out?.data?.length ?? 0) }))"
+        }
+      ],
+      "translation": "Image proxy response is not an image (mime={value} bytes={value2})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktassets.5950a346694f",
+      "source": "非 Tauri 环境无图片代理通道",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktAssets.ts",
+          "line": 139,
+          "context": "new Error(i18n(\"lib.yktassets.5950a346694f\"))"
+        }
+      ],
+      "translation": "No image proxy channel outside the Tauri environment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktbody.d24c10d37db0",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 320,
+          "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 334,
+          "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
+        }
+      ],
+      "translation": "Image",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktbody.e4eb68f7fdd0",
+      "source": "{name}（图片加载失败）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "\"__YKT_IMAGE_NAME__\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 713,
+          "context": "failedImage: i18n(\"lib.yktbody.e4eb68f7fdd0\", { name: \"__YKT_IMAGE_NAME__\" })"
+        }
+      ],
+      "translation": "{name} (image failed to load)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.3865ba32b6b5",
+      "source": "已交未批",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 82,
+          "context": "text: i18n(\"lib.yktdetail.3865ba32b6b5\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 122,
+          "context": "text: i18n(\"lib.yktdetail.3865ba32b6b5\")"
+        }
+      ],
+      "translation": "Submitted, not graded",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.41bb47e4b848",
+      "source": "无题目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 113,
+          "context": "text: i18n(\"lib.yktdetail.41bb47e4b848\")"
+        }
+      ],
+      "translation": "No title",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.8032af4a590f",
+      "source": "未提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 121,
+          "context": "text: i18n(\"lib.yktdetail.8032af4a590f\")"
+        }
+      ],
+      "translation": "Not submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.9b2367542d68",
+      "source": "已批 {value} 分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(yktScoreText(p.myScore))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 79,
+          "context": "text: i18n(\"lib.yktdetail.9b2367542d68\", { value: String(yktScoreText(p.myScore)) })"
+        }
+      ],
+      "translation": "Graded {value} points",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.b5f241af1539",
+      "source": "未作答",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 83,
+          "context": "text: i18n(\"lib.yktdetail.b5f241af1539\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 114,
+          "context": "text: i18n(\"lib.yktdetail.b5f241af1539\")"
+        }
+      ],
+      "translation": "Not answered",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.d42baf1647c8",
+      "source": "已批改",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 80,
+          "context": "text: i18n(\"lib.yktdetail.d42baf1647c8\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 115,
+          "context": "text: i18n(\"lib.yktdetail.d42baf1647c8\")"
+        }
+      ],
+      "translation": "Graded",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktdetail.ef020c5a8603",
+      "source": "已批 {graded}/{total} 题",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "graded",
+          "expression": "String(graded)"
+        },
+        {
+          "name": "total",
+          "expression": "String(total)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktDetail.ts",
+          "line": 116,
+          "context": "text: i18n(\"lib.yktdetail.ef020c5a8603\", { graded: String(graded), total: String(total) })"
+        }
+      ],
+      "translation": "{graded}/{total} questions graded",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktimageprep.982e69733466",
+      "source": "图片编码失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktImagePrep.ts",
+          "line": 65,
+          "context": "new Error(i18n(\"lib.yktimageprep.982e69733466\"))"
+        }
+      ],
+      "translation": "Image encoding failed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktimageprep.9acbcc843b8f",
+      "source": "canvas 不可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktImagePrep.ts",
+          "line": 57,
+          "context": "new Error(i18n(\"lib.yktimageprep.9acbcc843b8f\"))"
+        }
+      ],
+      "translation": "Canvas unavailable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktsubmitwebview.00598e3b8d46",
+      "source": "应用内作答需在 OneTHU App 内使用（浏览器预览不可用）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktSubmitWebview.ts",
+          "line": 25,
+          "context": "new Error(i18n(\"lib.yktsubmitwebview.00598e3b8d46\"))"
+        }
+      ],
+      "translation": "In-app answering requires the OneTHU App (not available in browser preview).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktsubmitwebview.feded33a22ee",
+      "source": "官方作答页地址非法（仅允许 http(s)）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktSubmitWebview.ts",
+          "line": 26,
+          "context": "new Error(i18n(\"lib.yktsubmitwebview.feded33a22ee\"))"
+        }
+      ],
+      "translation": "The official answer page URL is invalid (only http(s) is allowed).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktwebview.4aa36272b60e",
+      "source": "尚未检测到雨课堂登录会话（请先在窗口内完成扫码或短信登录）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 89,
+          "context": "new Error(i18n(\"lib.yktwebview.4aa36272b60e\"))"
+        }
+      ],
+      "translation": "No Rain Classroom login session detected yet (please complete QR code or SMS sign-in in the window first).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktwebview.745473448800",
+      "source": "读取失败。请在电脑浏览器登录 pro.yuketang.cn 后，用下方「高级：手动粘贴 Cookie」粘贴会话（浏览器 F12 → Application → Cookies）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 22,
+          "context": "() => i18n(\"lib.yktwebview.745473448800\")"
+        }
+      ],
+      "translation": "Sign-in failed. Please sign in to pro.yuketang.cn in a desktop browser, then paste the session using \"Advanced: Paste cookie manually\" below (browser F12 → Application → Cookies).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktwebview.9df0abd7d05e",
+      "source": "官方网页登录需在 OneTHU App 内使用（浏览器预览不可用）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 54,
+          "context": "new Error(i18n(\"lib.yktwebview.9df0abd7d05e\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 86,
+          "context": "new Error(i18n(\"lib.yktwebview.9df0abd7d05e\"))"
+        }
+      ],
+      "translation": "The official web sign-in must be used inside the OneTHU app (browser preview is unavailable).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.2c7d571eccc7",
+      "source": "ZIP 局部文件头损坏，无法解压该条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 91,
+          "context": "new Error(i18n(\"lib.ziptree.2c7d571eccc7\"))"
+        }
+      ],
+      "translation": "The ZIP local file header is corrupted; this entry cannot be extracted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.310739c83167",
+      "source": "不支持的压缩算法（method={method}），请下载查看",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "method",
+          "expression": "String(entry.method)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 105,
+          "context": "new Error(i18n(\"lib.ziptree.310739c83167\", { method: String(entry.method) }))"
+        }
+      ],
+      "translation": "Unsupported compression method (method={method}); please download to view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.465bf7f89508",
+      "source": "压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 230,
+          "context": "new Error(i18n(\"lib.ziptree.465bf7f89508\"))"
+        }
+      ],
+      "translation": "ppt/slides/slideN.xml not found in the archive (it may not be a .pptx)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.732ef6430c80",
+      "source": "ZIP 数据越界，文件可能损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 97,
+          "context": "new Error(i18n(\"lib.ziptree.732ef6430c80\"))"
+        }
+      ],
+      "translation": "ZIP data is out of bounds; the file may be corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.802ee7801233",
+      "source": "未找到 ZIP 目录结尾（EOCD），文件可能损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 47,
+          "context": "new Error(i18n(\"lib.ziptree.802ee7801233\"))"
+        }
+      ],
+      "translation": "ZIP end of central directory (EOCD) not found; the file may be corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.8bcdc7156f9f",
+      "source": "暂不支持 ZIP64 格式，请下载查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 50,
+          "context": "new Error(i18n(\"lib.ziptree.8bcdc7156f9f\"))"
+        }
+      ],
+      "translation": "ZIP64 format is not supported yet; please download to view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.8ec67ebd5d24",
+      "source": "解压后内容超过预览大小限制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 88,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 102,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 112,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        }
+      ],
+      "translation": "Extracted content exceeds the preview size limit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.97befa4e485c",
+      "source": "当前环境不支持解压（缺 DecompressionStream），请下载查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 107,
+          "context": "new Error(i18n(\"lib.ziptree.97befa4e485c\"))"
+        }
+      ],
+      "translation": "Extraction is not supported in this environment (DecompressionStream missing); please download to view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.c63d5a292e55",
+      "source": "该条目是目录，无法解压",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 87,
+          "context": "new Error(i18n(\"lib.ziptree.c63d5a292e55\"))"
+        }
+      ],
+      "translation": "This entry is a directory and cannot be extracted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.d9346a6de600",
+      "source": "ZIP 目录为空或解析失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 76,
+          "context": "new Error(i18n(\"lib.ziptree.d9346a6de600\"))"
+        }
+      ],
+      "translation": "ZIP directory is empty or failed to parse",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "library.session.expired",
+      "source": "图书馆登录状态已失效，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/libraryErrorText.ts",
+          "line": 13,
+          "context": "return t(\"library.session.expired\");"
+        }
+      ],
+      "translation": "Your library session has expired. Please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "library.session.recoveryFailed",
+      "source": "图书馆登录状态未能恢复，请先重试；若仍失败，请在设置中重新登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/libraryErrorText.ts",
+          "line": 7,
+          "context": "return t(\"library.session.recoveryFailed\");"
+        }
+      ],
+      "translation": "Your library session could not be restored. Try again; if it still fails, sign in again in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "library.session.unavailable",
+      "source": "暂时无法连接图书馆账号，请重试；若仍失败，请在设置中重新登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/libraryErrorText.ts",
+          "line": 10,
+          "context": "return t(\"library.session.unavailable\");"
+        }
+      ],
+      "translation": "Your library account could not be connected. Try again; if it still fails, sign in again in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.changeMethod",
+      "source": "当前验证码已绑定原验证方式。请返回登录页重新登录，再选择其他方式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 33,
+          "context": "return t(\"login.error.changeMethod\");"
+        }
+      ],
+      "translation": "The current code is tied to the original verification method. Return to sign-in and choose another method in a new verification session.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.confirmationLoop",
+      "source": "统一认证反复要求确认设备，本次登录已停止。请稍等后重试；也可到 id.tsinghua.edu.cn 检查信任设备。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 40,
+          "context": "return t(\"login.error.confirmationLoop\");"
+        }
+      ],
+      "translation": "University authentication repeatedly requested device confirmation, so this sign-in was stopped. Wait before retrying, or check trusted devices at id.tsinghua.edu.cn.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.cooldown",
+      "source": "刚刚已尝试登录，请等待 {seconds} 秒后再试。刷新不会缩短等待时间。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "seconds"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 24,
+          "context": "return t(\"login.error.cooldown\", { seconds });"
+        }
+      ],
+      "translation": "A sign-in was just attempted. Wait {seconds} seconds before trying again. Refreshing will not shorten the wait.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.gatewayUnavailable",
+      "source": "学校登录或 WebVPN 暂时未返回可用页面。请稍后重试，避免连续刷新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 36,
+          "context": "return t(\"login.error.gatewayUnavailable\");"
+        }
+      ],
+      "translation": "University sign-in or WebVPN is temporarily returning an unavailable page. Please wait before retrying and avoid repeated refreshes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.inProgress",
+      "source": "已有登录正在进行，请完成验证，或返回登录页后再试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 26,
+          "context": "return t(\"login.error.inProgress\");"
+        }
+      ],
+      "translation": "A sign-in is already in progress. Complete verification, or go back to the sign-in page to start again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.invalidForm",
+      "source": "统一认证返回了无法安全处理的登录表单，已停止提交。请稍后重试；若仍失败，请复制诊断摘要。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 39,
+          "context": "return t(\"login.error.invalidForm\");"
+        }
+      ],
+      "translation": "University authentication returned a sign-in form that cannot be processed safely. Submission was stopped. Try again later; if it persists, copy the diagnostic summary.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.prepareFailed",
+      "source": "统一认证没有返回可用的登录表单。请稍等后重试；若仍失败，请复制诊断摘要协助排查。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 41,
+          "context": "return t(\"login.error.prepareFailed\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 44,
+          "context": "return t(\"login.error.prepareFailed\");"
+        }
+      ],
+      "translation": "University authentication did not return a usable sign-in form. Wait before retrying; if it persists, copy the diagnostic summary for troubleshooting.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.restartVerification",
+      "source": "本次验证流程已结束，请重新发送验证码，或返回登录页重新验证。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 32,
+          "context": "return t(\"login.error.restartVerification\");"
+        }
+      ],
+      "translation": "This verification session has ended. Request a new code, or return to the sign-in page to verify again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.restricted",
+      "source": "服务器暂时限制了请求，请稍等后再试，避免连续登录或刷新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 34,
+          "context": "return t(\"login.error.restricted\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 38,
+          "context": "return t(\"login.error.restricted\");"
+        }
+      ],
+      "translation": "The server is temporarily limiting requests. Wait before retrying, and avoid repeated sign-ins or refreshes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.sessionChanged",
+      "source": "登录状态已变化，请重试当前操作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 28,
+          "context": "return t(\"login.error.sessionChanged\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 31,
+          "context": "return t(\"login.error.sessionChanged\");"
+        }
+      ],
+      "translation": "Your sign-in state has changed. Please retry this action.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.sessionConflict",
+      "source": "本机登录记录不一致，请重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 30,
+          "context": "return t(\"login.error.sessionConflict\");"
+        }
+      ],
+      "translation": "The sign-in records on this device do not match. Please sign in again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.trustLimit",
+      "source": "统一认证提示信任设备数量已达上限。请到 id.tsinghua.edu.cn 管理旧的信任设备，再返回登录；验证时也可以不勾选「信任此设备」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 37,
+          "context": "return t(\"login.error.trustLimit\");"
+        }
+      ],
+      "translation": "University authentication reports that the trusted device limit has been reached. Manage old trusted devices at id.tsinghua.edu.cn, then sign in again. You can also leave “Trust this device” unchecked during verification.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.22ac782381ea",
+      "source": "连续 15+ 位数字（疑似证件号/卡号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 252,
+          "context": "return i18n(\"memory.format.22ac782381ea\");"
+        }
+      ],
+      "translation": "15+ consecutive digits (likely an ID or card number)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.6b1a70ac9eb1",
+      "source": "疑似 GitHub Token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 250,
+          "context": "return i18n(\"memory.format.6b1a70ac9eb1\");"
+        }
+      ],
+      "translation": "Likely a GitHub token",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.7ba456c0f242",
+      "source": "疑似 LLM API Key（sk-…）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 249,
+          "context": "return i18n(\"memory.format.7ba456c0f242\");"
+        }
+      ],
+      "translation": "Likely an LLM API key (sk-…)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.9ba2145bd66a",
+      "source": "疑似 HTTP Bearer Token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 251,
+          "context": "return i18n(\"memory.format.9ba2145bd66a\");"
+        }
+      ],
+      "translation": "Likely an HTTP bearer token",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.ce72f2106e4f",
+      "source": "疑似明文密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 254,
+          "context": "return i18n(\"memory.format.ce72f2106e4f\");"
+        }
+      ],
+      "translation": "Likely a plaintext password",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.d79be29d7fb5",
+      "source": "疑似验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 253,
+          "context": "return i18n(\"memory.format.d79be29d7fb5\");"
+        }
+      ],
+      "translation": "Likely a verification code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.6383fb8dcdcc",
+      "source": "记忆写入被拦截：{bad}——凭据类内容不允许进入长期记忆",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "bad",
+          "expression": "String(bad)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 67,
+          "context": "new Error(i18n(\"memory.operations.6383fb8dcdcc\", { bad: String(bad) }))"
+        }
+      ],
+      "translation": "Memory write blocked: {bad} — credential-like content is not allowed into long-term memory",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.ccc5a5900f02",
+      "source": "未找到待替换文本（{value}…）——请先 memory_read 核对原文",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(find.slice(0, 30))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 174,
+          "context": "new Error(i18n(\"memory.operations.ccc5a5900f02\", { value: String(find.slice(0, 30)) }))"
+        }
+      ],
+      "translation": "Text to replace not found ({value}…) — use memory_read to check the original first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "memory.operations.e613fe77a194",
       "source": "已存在同名记忆「{title}」（{permalink}）——用 memory_append 追加观察",
@@ -177,12 +1105,12 @@
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 110,
+          "line": 109,
           "context": "layoutStep?i18n(\"mobile.layout.title\"):intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 138,
+          "line": 137,
           "context": "layoutStep?i18n(\"mobile.layout.title\"):intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
@@ -539,983 +1467,6 @@
       "translation": "{count} days left",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.days.one",
-      "source": "还有 {count} 天",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} day left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.days.other",
-      "source": "还有 {count} 天",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} days left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.days.two",
-      "source": "还有 {count} 天",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} days left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.days.zero",
-      "source": "还有 {count} 天",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} days left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddlRow",
-      "source": "DDL {title}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "title"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "DDL {title}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.few",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadlines",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.many",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadlines",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.one",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadline",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.other",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadlines",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.two",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadlines",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ddls.zero",
-      "source": "{count} 个截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} deadlines",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.detail",
-      "source": "详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.empty",
-      "source": "今天没有课与截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "No classes or deadlines today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.emptySlot",
-      "source": "尚无插件占用此槽位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "No plugin occupies this slot yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.event",
-      "source": "日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Schedule",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.eventRow",
-      "source": "日程 {title}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "title"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Schedule {title}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.few",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.many",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.one",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule item",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.other",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.two",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.events.zero",
-      "source": "{count} 项日程",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} schedule items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.favorites",
-      "source": "收藏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Favorites",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.homework",
-      "source": "作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Assignments",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.few",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hours left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.many",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hours left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.one",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hour left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.other",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hours left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.two",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hours left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.hours.zero",
-      "source": "还有 {count} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} hours left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.joiner",
-      "source": " · ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": " · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.few",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minutes left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.many",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minutes left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.one",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minute left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.other",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minutes left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.two",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minutes left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.minutes.zero",
-      "source": "还有 {count} 分钟",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} minutes left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.few",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.many",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.one",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.other",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.two",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.zero",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.ongoing",
-      "source": "正在上课",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Class in progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.pluginTitle",
-      "source": "OneTHU 插件小组件 {slot}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "slot"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneTHU plugin widget {slot}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.relativeRow",
-      "source": "{day} {time} · {remaining}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "day"
-        },
-        {
-          "name": "remaining"
-        },
-        {
-          "name": "time"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{day} {time} · {remaining}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.title",
-      "source": "今天 {month}月{day}日",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "day"
-        },
-        {
-          "name": "month"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Today, {month}/{day}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.today",
-      "source": "今天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "nfc.unstableNotice",
-      "source": "NFC 目前可用性不稳定，请尽量使用口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExchangeFeedback.tsx",
-          "line": 7,
-          "context": "{i18n(\"nfc.unstableNotice\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 71,
-          "context": "i18n(\"nfc.unstableNotice\")}`"
-        },
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 50,
-          "context": "i18n(\"nfc.unstableNotice\")} ${"
-        },
-        {
-          "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 38,
-          "context": "i18n(\"nfc.unstableNotice\")} ${"
-        }
-      ],
-      "translation": "NFC is currently unreliable. Please use a share code whenever possible.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "overlay.collapse",
-      "source": "收起悬浮窗",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/overlayAndroid.ts",
-          "line": 427,
-          "context": "collapseLabel: i18n(\"overlay.collapse\")"
-        }
-      ],
-      "translation": "Collapse OH",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.boardlistpage.00d53679d665",
-      "source": "{value} · {count} 个组件{value2}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "b.kind === \"system\" ? i18n(\"pages.boardlistpage.97778650b3ab\") : \"OnePage\""
-        },
-        {
-          "name": "count",
-          "expression": "b.count"
-        },
-        {
-          "name": "value2",
-          "expression": "b.active ? i18n(\"pages.boardlistpage.a983d701044a\") : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 94,
-          "context": "{i18nRich(\"pages.boardlistpage.00d53679d665\", { value: b.kind === \"system\" ? i18n(\"pages.boardlistpage.97778650b3ab\") : \"OnePage\", count: b.count, value2: b.active ? i18n(\"pages.boardlistpage.a983d701044a\") : \"\" })}"
-        }
-      ],
-      "translation": "{value} · {count} widgets{value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.boardlistpage.0c898fe25ba6",
-      "source": "重命名 OnePage",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 46,
-          "context": "openFormModal(i18nMsg(\"pages.boardlistpage.0c898fe25ba6\"), [{ key: \"name\", label: i18nMsg(\"pages.boardlistpage.6773310492a9\"), required: true, default: name }])"
-        }
-      ],
-      "translation": "Rename OnePage",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

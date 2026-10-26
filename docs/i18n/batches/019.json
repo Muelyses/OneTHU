@@ -1,7 +1,962 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.notifysettingssection.e402488b7e96",
+      "source": "　以上通知由插件自行管理，不受总开关影响。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 240,
+          "context": "{i18n(\"components.notifysettingssection.e402488b7e96\")}"
+        }
+      ],
+      "translation": " The notifications above are managed by the plugin itself and are not affected by the master switch.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.e8b6b0ba7d86",
+      "source": "通知权限未开启，请在系统设置中打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 108,
+          "context": "st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")"
+        }
+      ],
+      "translation": "Notification permission is off; please enable it in System Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.f56c6c82203b",
+      "source": "提示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 297,
+          "context": "st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
+        }
+      ],
+      "translation": "Tip",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.f6ecd7571f77",
+      "source": "课程与日程提前量",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 155,
+          "context": "{i18n(\"components.notifysettingssection.f6ecd7571f77\")}"
+        }
+      ],
+      "translation": "Class & schedule lead time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.fb11aa6f2982",
+      "source": "检查中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 214,
+          "context": "busy ? i18n(\"components.notifysettingssection.fb11aa6f2982\") : i18n(\"components.notifysettingssection.40ff6300f981\")"
+        }
+      ],
+      "translation": "Checking…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.fe593e7c8ef9",
+      "source": "每日早报",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 174,
+          "context": "{i18n(\"components.notifysettingssection.fe593e7c8ef9\")}"
+        }
+      ],
+      "translation": "Daily briefing",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.ff1625eb34eb",
+      "source": "已重排（排程 {scheduled} 条 / 撤销 {cancelled} 条）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "scheduled",
+          "expression": "String(r.scheduled)"
+        },
+        {
+          "name": "cancelled",
+          "expression": "String(r.cancelled)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 281,
+          "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.ff1625eb34eb\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
+        }
+      ],
+      "translation": "Rescheduled ({scheduled} scheduled / {cancelled} cancelled)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.23f0474b0502",
+      "source": "学校 MadModel（免费）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 76,
+          "context": "label: i18n(\"components.ohmodelsourcecard.23f0474b0502\")"
+        }
+      ],
+      "translation": "School MadModel (free)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.ohmodelsourcecard.279475c2940d",
+      "source": "已配置 API Key；地址与模型在下方「小 OH · 自己的 API」里调整。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 84,
+          "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
+        }
+      ],
+      "translation": "API key configured; adjust the endpoint and model under “Little OH · Your own API” below.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.2a0bbb86011e",
+      "source": "有效期未知（以服务端为准）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 24,
+          "context": "return i18n(\"components.ohmodelsourcecard.2a0bbb86011e\");"
+        }
+      ],
+      "translation": "Validity unknown (subject to the server)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.2c8fd279faba",
+      "source": "学校登录状态已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 48,
+          "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.2c8fd279faba\"))"
+        }
+      ],
+      "translation": "School sign-in status updated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.35843c4cc623",
+      "source": "续签中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 67,
+          "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
+        }
+      ],
+      "translation": "Renewing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.54e8c9587c83",
+      "source": "当前：自己的 API · {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 63,
+          "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
+        }
+      ],
+      "translation": "Current: your own API · {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.621e4cb3a245",
+      "source": "改用学校 MadModel",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 69,
+          "context": "{i18n(\"components.ohmodelsourcecard.621e4cb3a245\")}"
+        }
+      ],
+      "translation": "Switch to school MadModel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.68ec985f4e52",
+      "source": "约 {value} 天有效",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(h / 24))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 27,
+          "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
+        }
+      ],
+      "translation": "Valid for about {value} days",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.760af7198e4d",
+      "source": "当前：学校 MadModel 免费档 · {model}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "model",
+          "expression": "String(model)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 63,
+          "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
+        }
+      ],
+      "translation": "Current: school MadModel free tier · {model}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.7d44e665e640",
+      "source": "{value}。请求限流时请稍后重试。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(expireText(token))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 82,
+          "context": "isMad\n            ? i18n(\"components.ohmodelsourcecard.7d44e665e640\", { value: String(expireText(token)) })\n            : apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
+        }
+      ],
+      "translation": "{value}. Please retry later if requests are rate-limited.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.904cae8267a3",
+      "source": "约 {h} 小时有效",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "h",
+          "expression": "String(h)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 27,
+          "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
+        }
+      ],
+      "translation": "Valid for about {h} hours",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.a0e70984b929",
+      "source": "未填模型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 63,
+          "context": "model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")"
+        }
+      ],
+      "translation": "No model set",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.a2b21883b5f3",
+      "source": "一键续签",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 67,
+          "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
+        }
+      ],
+      "translation": "One-click renew",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.b5ad43409b01",
+      "source": "自己的 API 的地址、Key 与模型在下方「小 OH · 自己的 API」里填写。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 85,
+          "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
+        }
+      ],
+      "translation": "Enter the endpoint, key, and model of your own API under “Little OH · Your own API” below.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.d11b082f9ce4",
+      "source": "已过期 · 点一键续签",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 25,
+          "context": "return i18n(\"components.ohmodelsourcecard.d11b082f9ce4\");"
+        }
+      ],
+      "translation": "Expired · tap one-click renew",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.d58d1914534e",
+      "source": "续签失败：{value}（可改用自己的 API）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 51,
+          "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.d58d1914534e\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Renewal failed: {value} (you can switch to your own API)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohmodelsourcecard.ef1b0e23a0a5",
+      "source": "自己的 API",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 77,
+          "context": "label: i18n(\"components.ohmodelsourcecard.ef1b0e23a0a5\")"
+        }
+      ],
+      "translation": "Your own API",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.ohmodelsourcecard.f3230e3c122f",
+      "source": "小 OH · 模型源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
+          "line": 61,
+          "context": "{i18n(\"components.ohmodelsourcecard.f3230e3c122f\")}"
+        }
+      ],
+      "translation": "Little OH · Model source",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.02fe3492daa4",
+      "source": "（已跳转系统应用设置页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 179,
+          "context": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
+        }
+      ],
+      "translation": "(Jumped to the system app settings page)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.0407dbdaf0dd",
+      "source": "打开系统设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 187,
+          "context": "{i18n(\"components.ohsettingspage.0407dbdaf0dd\")}"
+        }
+      ],
+      "translation": "Open System Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.066c7402ec5f",
+      "source": "模型来源、自费 Key、模型名与「多模态（图片输入）」在插件的 设置面板里就地配置——插件页 → OneTHU Harness → 高级配置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 249,
+          "context": "{i18n(\"components.ohsettingspage.066c7402ec5f\")}"
+        }
+      ],
+      "translation": "Model source, self-paid key, model name, and “Multimodal (image input)” are configured in place in the plugin’s settings panel — plugin page → OneTHU Harness → Advanced configuration.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.0e5b7545605e",
+      "source": "OH 模型配置 / 花费上限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 162,
+          "context": "{i18n(\"components.ohsettingspage.0e5b7545605e\")}"
+        }
+      ],
+      "translation": "OH model configuration / spending cap",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.1dda1d69edf9",
+      "source": "连接外部 MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.ohsettingspage.1dda1d69edf9\");"
+        }
+      ],
+      "translation": "Connect external MCP servers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.2613429ed9e3",
+      "source": "模型 / 配额预算 / MCP / 命令与日志 / 权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 53,
+          "context": "return i18n(\"components.ohsettingspage.2613429ed9e3\");"
+        }
+      ],
+      "translation": "Model / quota budget / MCP / commands & logs / permissions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.26e02469dd36",
+      "source": "额度不足或过期时点重新签一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 49,
+          "context": "return i18n(\"components.ohsettingspage.26e02469dd36\");"
+        }
+      ],
+      "translation": "When quota runs low or the token expires, tap renew once more",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.359213279505",
+      "source": "IM 通道（进阶）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 272,
+          "context": "{i18n(\"components.ohsettingspage.359213279505\")}"
+        }
+      ],
+      "translation": "IM channels (advanced)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.36a045ebcc6d",
+      "source": "高级配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 212,
+          "context": "id === \"basic\" ? i18n(\"components.ohsettingspage.692873ddd8f4\") : i18n(\"components.ohsettingspage.36a045ebcc6d\")"
+        }
+      ],
+      "translation": "Advanced configuration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.3c02623c9a2b",
+      "source": "保活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 267,
+          "context": "{i18n(\"components.ohsettingspage.3c02623c9a2b\")}"
+        }
+      ],
+      "translation": "Keep alive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.3f0404bdc67a",
+      "source": "模型 / MCP / 日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.ohsettingspage.3f0404bdc67a\")}"
+        }
+      ],
+      "translation": "Model / MCP / logs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.444fd1f85256",
+      "source": "模型与多模态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 245,
+          "context": "{i18n(\"components.ohsettingspage.444fd1f85256\")}"
+        }
+      ],
+      "translation": "Model & multimodal",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.465962a0ceba",
+      "source": "让 OH 调用外部 MCP server 的工具（增删改在插件页高级档）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.ohsettingspage.465962a0ceba\");"
+        }
+      ],
+      "translation": "Let OH call tools on external MCP servers (add/remove on the plugin page’s advanced tier)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.4f0d5e092ff1",
+      "source": "免费额度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 242,
+          "context": "{i18n(\"components.ohsettingspage.4f0d5e092ff1\")}"
+        }
+      ],
+      "translation": "Free quota",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.5a639744982a",
+      "source": "让本机其它助手连上 OneTHU（默认关闭）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.ohsettingspage.5a639744982a\");"
+        }
+      ],
+      "translation": "Let other assistants on this device connect to OneTHU (off by default)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.5ac4509019c2",
+      "source": "OH 的基础设置与高级配置入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 48,
+          "context": "return i18n(\"components.ohsettingspage.5ac4509019c2\");"
+        }
+      ],
+      "translation": "Basic settings for OH and the entry to advanced configuration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.605427ab6130",
+      "source": "模型 / 花费上限 / MCP / 日志在插件子页就地配置——插件页 → OneTHU Harness → 高级配置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 163,
+          "context": "{i18n(\"components.ohsettingspage.605427ab6130\")}"
+        }
+      ],
+      "translation": "Model / spending cap / MCP / logs are configured in place on the plugin subpage — plugin page → OneTHU Harness → Advanced configuration.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.675459adb527",
+      "source": "OH 配置档位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 217,
+          "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 218,
+          "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
+        }
+      ],
+      "translation": "OH configuration tier",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.692873ddd8f4",
+      "source": "基础设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 212,
+          "context": "id === \"basic\" ? i18n(\"components.ohsettingspage.692873ddd8f4\") : i18n(\"components.ohsettingspage.36a045ebcc6d\")"
+        }
+      ],
+      "translation": "Basic settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.6d47abc2d3c7",
+      "source": "IM 基础（扫码绑定 / 解绑）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 263,
+          "context": "{i18n(\"components.ohsettingspage.6d47abc2d3c7\")}"
+        }
+      ],
+      "translation": "IM basics (scan to bind / unbind)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.6e2846f3e5bb",
+      "source": "应用启动管理设手动管理并允许自启动/关联启动/后台活动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 52,
+          "context": "return i18n(\"components.ohsettingspage.6e2846f3e5bb\");"
+        }
+      ],
+      "translation": "Set app launch management to manual and allow auto-launch / associated launch / background activity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.72704d8e1e47",
+      "source": "悬浮球",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 239,
+          "context": "{i18n(\"components.ohsettingspage.72704d8e1e47\")}"
+        }
+      ],
+      "translation": "Floating ball",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.75be22d41cd1",
+      "source": "OneTHU Harness / 小OH 设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 48,
+          "context": "return i18n(\"components.ohsettingspage.75be22d41cd1\");"
+        }
+      ],
+      "translation": "OneTHU Harness / Little OH settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.898487493b0d",
+      "source": "OH 模型 / 多模态开关",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 50,
+          "context": "return i18n(\"components.ohsettingspage.898487493b0d\");"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 248,
+          "context": "{i18n(\"components.ohsettingspage.898487493b0d\")}"
+        }
+      ],
+      "translation": "OH model / multimodal switch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.89fcbbfdca16",
+      "source": "语音",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 236,
+          "context": "{i18n(\"components.ohsettingspage.89fcbbfdca16\")}"
+        }
+      ],
+      "translation": "Voice",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.9f8a1c12cbdf",
+      "source": "模型来源、Key、模型名与多模态（图片输入）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 50,
+          "context": "return i18n(\"components.ohsettingspage.9f8a1c12cbdf\");"
+        }
+      ],
+      "translation": "Model source, key, model name, and multimodal (image input)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.a2b21883b5f3",
+      "source": "一键续签",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 143,
+          "context": "{i18n(\"components.ohsettingspage.a2b21883b5f3\")}"
+        }
+      ],
+      "translation": "One-click renew",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.af7a3fa54da7",
+      "source": "OH MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.ohsettingspage.af7a3fa54da7\");"
+        }
+      ],
+      "translation": "OneTHU CLI & MCP",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.be90f17a88bf",
+      "source": "当前使用自费 API；切换模型源后检查免费档。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 133,
+          "context": "!madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
+        }
+      ],
+      "translation": "Currently using a self-paid API; after switching model sources, check the free tier.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.cccadd30d14d",
+      "source": "打开插件设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 165,
+          "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 251,
+          "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
+        }
+      ],
+      "translation": "Open plugin settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.d096e4516aa5",
+      "source": "后台保活（华为 / 荣耀）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 52,
+          "context": "return i18n(\"components.ohsettingspage.d096e4516aa5\");"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 178,
+          "context": "{i18n(\"components.ohsettingspage.d096e4516aa5\")}"
+        }
+      ],
+      "translation": "Background keep-alive (Huawei / HONOR)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.ohsettingspage.d09e846cd4ab",
       "source": "系统设置 → 应用 → 应用启动管理 → OneTHU 设「手动管理」，并允许自启动、关联启动、后台活动； 再把 OneTHU 加入电池优化白名单。设置完悬浮球与语音在后台才不会被系统掐掉。{value}",
@@ -318,27 +1273,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 111,
+          "line": 110,
           "context": "{i18n(\"components.onboardingtour.069d9b73883f\")}"
         }
       ],
       "translation": "Tour chapters",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.09c7b2e4141f",
-      "source": "已开启：本机客户端可连 127.0.0.1:8787",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 128,
-          "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
-        }
-      ],
-      "translation": "On: local clients can connect to 127.0.0.1:8787",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -350,7 +1289,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.0e633d7479ee\")}"
         }
       ],
@@ -371,7 +1310,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 127,
+          "line": 126,
           "context": "{i18n(\"components.onboardingtour.19f469fec604\", { title: String(item.title) })}"
         }
       ],
@@ -387,7 +1326,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 138,
+          "line": 137,
           "context": "last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
@@ -403,7 +1342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 127,
+          "line": 126,
           "context": "{i18n(\"components.onboardingtour.1b47dc7fdca4\")}"
         }
       ],
@@ -419,909 +1358,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 119,
+          "line": 118,
           "context": "{i18n(\"components.onboardingtour.20fe3342156f\")}"
         }
       ],
       "translation": "Pick one first; you can switch anytime.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.24e75cb57392",
-      "source": "打开真实页面，随时回来继续",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 133,
-          "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
-        }
-      ],
-      "translation": "Open the real page and come back to continue anytime",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.28f2aed32976",
-      "source": "选择扫码连接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 124,
-          "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
-        }
-      ],
-      "translation": "Connect via QR code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.307ebc489657",
-      "source": "OH MCP 服务器开关",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 128,
-          "context": "{i18n(\"components.onboardingtour.307ebc489657\")}"
-        }
-      ],
-      "translation": "OH MCP server toggle",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.368669b4e8f4",
-      "source": "扫码连接雨课堂，或在微信、飞书里使用 OH。现在跳过也可以。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
-        }
-      ],
-      "translation": "Scan to connect Rain Classroom, or use OH in WeChat and Feishu. You can skip this for now.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.3c442701f378",
-      "source": "默认关闭；开启后本机其他应用可把 OneTHU 当工具调用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 128,
-          "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
-        }
-      ],
-      "translation": "Off by default. When on, other apps on this device can call OneTHU as a tool",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.427f33ee91af",
-      "source": "向本机应用开放 OH MCP",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 128,
-          "context": "{i18n(\"components.onboardingtour.427f33ee91af\")}"
-        }
-      ],
-      "translation": "Expose OH MCP to local apps",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.4d572d8843d7",
-      "source": "你的 OneTHU，准备好了",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
-        }
-      ],
-      "translation": "Your OneTHU is ready",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.715ee9dc842f",
-      "source": "开始使用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
-          "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
-        },
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
-          "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
-        }
-      ],
-      "translation": "Get started",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.7d38695ada28",
-      "source": "请先完成当前操作，再打开导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 65,
-          "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
-        }
-      ],
-      "translation": "Finish the current action before opening the tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.7f93bdddc69a",
-      "source": "收起连接选项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 124,
-          "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
-        }
-      ],
-      "translation": "Hide connection options",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.8dc51de059fe",
-      "source": "OneTHU 使用导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 102,
-          "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
-        }
-      ],
-      "translation": "OneTHU tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.9352315ee32a",
-      "source": "你想怎样使用 OneTHU？",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 119,
-          "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
-        }
-      ],
-      "translation": "How would you like to use OneTHU?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.a8ab98831f5c",
-      "source": "继续探索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 110,
-          "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
-        },
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 127,
-          "context": "{i18n(\"components.onboardingtour.a8ab98831f5c\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 131,
-          "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
-        }
-      ],
-      "translation": "Keep exploring",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.aa4142e144b8",
-      "source": "按此模式开始",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
-          "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
-        }
-      ],
-      "translation": "Start with this mode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.ac794a015ee3",
-      "source": "使用导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 110,
-          "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
-        }
-      ],
-      "translation": "Tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.acb7923e4be1",
-      "source": "当前操作仍在进行，完成后再继续导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 99,
-          "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
-        }
-      ],
-      "translation": "The current action is still running; continue the tour after it finishes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.acfc4e74a650",
-      "source": "下一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
-          "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
-        }
-      ],
-      "translation": "Next",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.b92a02095b87",
-      "source": "切换只改变界面。已有标签、白板和设置都会保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 121,
-          "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
-        }
-      ],
-      "translation": "Switching only changes the interface. Existing tabs, boards, and settings are all kept.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.bfa8ac132dd5",
-      "source": "返回完成页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
-          "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
-        }
-      ],
-      "translation": "Back to the finish page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.bfd00f0d13de",
-      "source": "跳到：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(CHAPTERS[item.id])"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
-          "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
-        }
-      ],
-      "translation": "Jump to: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.c0b3fbff51cc",
-      "source": "完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
-          "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
-        }
-      ],
-      "translation": "Done",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.ccc045ffd9b7",
-      "source": "选择你的方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 110,
-          "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
-        }
-      ],
-      "translation": "Choose your way",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.board",
-      "source": "白板",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.board\");"
-        }
-      ],
-      "translation": "Board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.campus",
-      "source": "校园服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.campus\");"
-        }
-      ],
-      "translation": "Campus services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.code",
-      "source": "口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.code\");"
-        }
-      ],
-      "translation": "Share codes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.customize",
-      "source": "外观",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.customize\");"
-        }
-      ],
-      "translation": "Appearance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.data",
-      "source": "数据与同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.data\");"
-        }
-      ],
-      "translation": "Data & sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.explorer",
-      "source": "标签与工作区",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.explorer\");"
-        }
-      ],
-      "translation": "Tabs & workspaces",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.more",
-      "source": "更多功能",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.more\");"
-        }
-      ],
-      "translation": "More features",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.nfc",
-      "source": "碰一碰",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.nfc\");"
-        }
-      ],
-      "translation": "Tap to share",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.onego",
-      "source": "OneGO!",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.onego\");"
-        }
-      ],
-      "translation": "OneGO!",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.organization",
-      "source": "组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.organization\");"
-        }
-      ],
-      "translation": "Organizations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.plugin",
-      "source": "插件与 OH",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.plugin\");"
-        }
-      ],
-      "translation": "Plugins & OH",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.quick",
-      "source": "五个入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.quick\");"
-        }
-      ],
-      "translation": "Five shortcuts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.swap",
-      "source": "常用入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.swap\");"
-        }
-      ],
-      "translation": "Your shortcuts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.today",
-      "source": "今天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.today\");"
-        }
-      ],
-      "translation": "Today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.chapter.vault",
-      "source": "暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.onboardingtour.chapter.vault\");"
-        }
-      ],
-      "translation": "Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.d4208c3cace4",
-      "source": "从适合你的方式开始",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 119,
-          "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
-        }
-      ],
-      "translation": "Start in the way that suits you",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.d69e80a19484",
-      "source": "跳过导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 105,
-          "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
-        }
-      ],
-      "translation": "Skip tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.da336fdc0dbd",
-      "source": "上一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
-          "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
-        }
-      ],
-      "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.e2ee720ea747",
-      "source": "把校园生活，组织成你的样子",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 31,
-          "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
-        }
-      ],
-      "translation": "Organize campus life your way",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.f1804844a899",
-      "source": "准备好了，按自己的节奏开始。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
-          "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
-        }
-      ],
-      "translation": "All set — begin at your own pace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.f60b58eb72b6",
-      "source": "需要时，再连接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
-        }
-      ],
-      "translation": "Connect later, when needed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.fa24c12c5962",
-      "source": "选择体验模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 138,
-          "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
-        }
-      ],
-      "translation": "Choose a trial mode",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.onboardingtour.modeintro.practical",
-      "source": "常用顺手，功能齐全",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 31,
-          "context": "return i18n(\"components.onboardingtour.modeintro.practical\");"
-        }
-      ],
-      "translation": "Your essentials at hand, with every feature available",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtour.modeintro.simple",
-      "source": "把今天放在眼前",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 31,
-          "context": "return i18n(\"components.onboardingtour.modeintro.simple\");"
-        }
-      ],
-      "translation": "Keep today in view",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.0195603ee49e",
-      "source": "OnePage：你的一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 80,
-          "context": "return i18n(\"components.onboardingtourmobile.0195603ee49e\");"
-        }
-      ],
-      "translation": "OnePage: your single page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.1ef4be486cc7",
-      "source": "标签页抽屉",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 68,
-          "context": "return i18n(\"components.onboardingtourmobile.1ef4be486cc7\");"
-        }
-      ],
-      "translation": "Tab drawer",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.1f5a2b96e178",
-      "source": "完成标记：此后不再自动出现",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 142,
-          "context": "{i18n(\"components.onboardingtourmobile.1f5a2b96e178\")}"
-        }
-      ],
-      "translation": "Completion mark: it will not appear automatically again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.21d113f5a8e8",
-      "source": "底栏中央那颗胶囊，不只是输入框。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 86,
-          "context": "return i18n(\"components.onboardingtourmobile.21d113f5a8e8\");"
-        }
-      ],
-      "translation": "The pill at the center of the bottom bar is more than an input field.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.285daf1ff2f1",
-      "source": "关闭本次导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 158,
-          "context": "{i18n(\"components.onboardingtourmobile.285daf1ff2f1\")}"
-        }
-      ],
-      "translation": "Close this tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.28bf4e9d8cc7",
-      "source": "抽屉里还有工作区面板，手机同样能解散与建组。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 82
-        }
-      ],
-      "translation": "The drawer also has a workspace panel; on mobile you can disband groups and build them too.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.29b54acdd26a",
-      "source": "OneTHU 手机导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 136,
-          "context": "{i18n(\"components.onboardingtourmobile.29b54acdd26a\")}"
-        }
-      ],
-      "translation": "OneTHU mobile tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.2a93d6c21509",
-      "source": "手机横竖都没有标签条：换标签、开新页都走这个抽屉。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "On mobile there is no tab strip in either orientation: switching tabs and opening new pages all happen in this drawer.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.37533b435eb5",
-      "source": "底栏「标签页」一按，全在抽屉里。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 69,
-          "context": "return i18n(\"components.onboardingtourmobile.37533b435eb5\");"
-        }
-      ],
-      "translation": "Tap “Tabs” in the bottom bar — it is all in the drawer.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

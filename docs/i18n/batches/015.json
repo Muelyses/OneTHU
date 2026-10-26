@@ -1,7 +1,973 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.homewidgets.1156e9912bf8",
+      "source": "没有未提交的作业，享受今天吧。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 255,
+          "context": "{i18n(\"components.homewidgets.1156e9912bf8\")}"
+        }
+      ],
+      "translation": "No unsubmitted assignments. Enjoy your day!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.115a5e14e269",
+      "source": "今天已截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 59,
+          "context": "days === 0 ? i18n(\"components.homewidgets.115a5e14e269\") : i18n(\"components.homewidgets.16612dac51bc\") + -days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        }
+      ],
+      "translation": "Deadline passed today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.119099ab1bad",
+      "source": "今日课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 539,
+          "context": "{i18n(\"components.homewidgets.119099ab1bad\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 539,
+          "context": "{i18n(\"components.homewidgets.119099ab1bad\")}"
+        }
+      ],
+      "translation": "Today's classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.1236edf41da0",
+      "source": "未交作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 533,
+          "context": "{i18n(\"components.homewidgets.1236edf41da0\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 534,
+          "context": "{i18n(\"components.homewidgets.1236edf41da0\")}"
+        }
+      ],
+      "translation": "Unsubmitted assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.1645edf73a88",
+      "source": "明天截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 61,
+          "context": "text: i18n(\"components.homewidgets.1645edf73a88\")"
+        }
+      ],
+      "translation": "Due tomorrow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.16612dac51bc",
+      "source": "逾期 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 59,
+          "context": "i18n(\"components.homewidgets.16612dac51bc\") + -days"
+        }
+      ],
+      "translation": "Overdue ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.1a1f6f3d0815",
+      "source": "还有 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 578,
+          "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil"
+        }
+      ],
+      "translation": "Due in ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.1b2515c676f0",
+      "source": "待办作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 543,
+          "context": "nearest.title || i18n(\"components.homewidgets.1b2515c676f0\")"
+        }
+      ],
+      "translation": "Assignments to do",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.homewidgets.2073bb9744cb",
+      "source": "看本周课表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 384,
+          "context": "{i18n(\"components.homewidgets.2073bb9744cb\")}"
+        }
+      ],
+      "translation": "View this week's timetable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.414869e94ef0",
+      "source": "数据加载后可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 163,
+          "context": "disabled ? i18n(\"components.homewidgets.414869e94ef0\") : undefined"
+        }
+      ],
+      "translation": "Available after data loads",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.4a61ef7cac46",
+      "source": "去待办看看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 256,
+          "context": "{i18n(\"components.homewidgets.4a61ef7cac46\")}"
+        }
+      ],
+      "translation": "Check your Tasks",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.4ce3054e7c4d",
+      "source": " 天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 59,
+          "context": "i18n(\"components.homewidgets.16612dac51bc\") + -days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 463,
+          "context": "i18n(\"components.homewidgets.c9f6e2ad23fd\") + days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 467,
+          "context": "i18n(\"components.homewidgets.b4768eecdbfd\") + days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 578,
+          "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        }
+      ],
+      "translation": " days",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.56209f0a5989",
+      "source": " 签到",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 360,
+          "context": "hm(r.start) + i18n(\"components.homewidgets.56209f0a5989\")"
+        }
+      ],
+      "translation": " check-in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.60367daaba0b",
+      "source": "未开始 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 462,
+          "context": "i18n(\"components.homewidgets.60367daaba0b\") + days"
+        }
+      ],
+      "translation": "Not started · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 630,
+          "context": "data?.courses.find((c) => c.id === courseId)?.name ?? i18n(\"components.homewidgets.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.6699d0be5ff8",
+      "source": "校内通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 422,
+          "context": "n.source || i18n(\"components.homewidgets.6699d0be5ff8\")"
+        }
+      ],
+      "translation": "Campus notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.6dbfc7966582",
+      "source": "三日内截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 538,
+          "context": "{i18n(\"components.homewidgets.6dbfc7966582\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 538,
+          "context": "{i18n(\"components.homewidgets.6dbfc7966582\")}"
+        }
+      ],
+      "translation": "Due within 3 days",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.7979e047afe2",
+      "source": "校园卡（加载中）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 441,
+          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
+        }
+      ],
+      "translation": "Campus card (loading)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.79bfedfa5fcb",
+      "source": " 天后截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 62,
+          "context": "days + i18n(\"components.homewidgets.79bfedfa5fcb\")"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 63,
+          "context": "days + i18n(\"components.homewidgets.79bfedfa5fcb\")"
+        }
+      ],
+      "translation": " days to deadline",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.7bd9d53b62f0",
+      "source": "座位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 367,
+          "context": "r.kind === \"seat\" ? i18n(\"components.homewidgets.7bd9d53b62f0\") : i18n(\"components.homewidgets.e4d40b4d6759\")"
+        }
+      ],
+      "translation": "Seat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.849f9c17224f",
+      "source": "已完成 {externalProgress} 题",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "externalProgress",
+          "expression": "String(h.externalProgress)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 297,
+          "context": "{i18n(\"components.homewidgets.849f9c17224f\", { externalProgress: String(h.externalProgress) })}"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 297,
+          "context": "{i18nRich(\"components.homewidgets.849f9c17224f\", { externalProgress: h.externalProgress })}"
+        }
+      ],
+      "translation": "{externalProgress} problems completed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.8e88f8b0acf1",
+      "source": "未知截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 55,
+          "context": "text: i18n(\"components.homewidgets.8e88f8b0acf1\")"
+        }
+      ],
+      "translation": "Unknown due date",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.954daea3eaaa",
+      "source": "校历 · 星期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 577,
+          "context": "i18n(\"components.homewidgets.954daea3eaaa\") + WEEKDAYS[n.date.getDay()]"
+        }
+      ],
+      "translation": "Academic calendar · weekday",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.98d8baebd69d",
+      "source": "去网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 323,
+          "context": "{i18n(\"components.homewidgets.98d8baebd69d\")}"
+        }
+      ],
+      "translation": "Open Web Learning",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.9b0b6c84ccb6",
+      "source": "今天开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 461,
+          "context": "text: i18n(\"components.homewidgets.9b0b6c84ccb6\")"
+        }
+      ],
+      "translation": "Starts today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.a0d4cfb9759e",
+      "source": "重要事项 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 597,
+          "context": "i18n(\"components.homewidgets.a0d4cfb9759e\") + (d.begin ?? \"\").slice(5, 16)"
+        }
+      ],
+      "translation": "Important · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.aff97ddc4f4d",
+      "source": " 天后",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 462,
+          "context": "i18n(\"components.homewidgets.60367daaba0b\") + days + i18n(\"components.homewidgets.aff97ddc4f4d\")"
+        }
+      ],
+      "translation": " days from now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.b4768eecdbfd",
+      "source": "进行中 · 剩 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 467,
+          "context": "i18n(\"components.homewidgets.b4768eecdbfd\") + days"
+        }
+      ],
+      "translation": "In progress · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.bc37a6110a07",
+      "source": "已提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 57,
+          "context": "text: i18n(\"components.homewidgets.bc37a6110a07\")"
+        }
+      ],
+      "translation": "Submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 440,
+          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.caf1f095b108\")"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 441,
+          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
+        }
+      ],
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.c9f6e2ad23fd",
+      "source": "未开始 · 还有 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 463,
+          "context": "i18n(\"components.homewidgets.c9f6e2ad23fd\") + days"
+        }
+      ],
+      "translation": "Not started · in ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 440,
+          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.caf1f095b108\")"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.d26ef0190d6c",
+      "source": "考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 284,
+          "context": "{i18n(\"components.homewidgets.d26ef0190d6c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 284,
+          "context": "{i18n(\"components.homewidgets.d26ef0190d6c\")}"
+        }
+      ],
+      "translation": "Exams",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.d42baf1647c8",
+      "source": "已批改",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 56,
+          "context": "text: i18n(\"components.homewidgets.d42baf1647c8\")"
+        }
+      ],
+      "translation": "Graded",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 578,
+          "context": "n.daysUntil === 0 ? i18n(\"components.homewidgets.d5f5a7a01073\") : i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.dba6c45f9f3a",
+      "source": "其他平台作业同步中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 530,
+          "context": "{i18n(\"components.homewidgets.dba6c45f9f3a\")}"
+        }
+      ],
+      "translation": "Syncing assignments from other platforms",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.e272d62dae3f",
+      "source": "{value} 截止",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "h.deadline.slice(11, 16)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 278,
+          "context": "{i18nRich(\"components.homewidgets.e272d62dae3f\", { value: h.deadline.slice(11, 16) })}"
+        }
+      ],
+      "translation": "Due {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 367,
+          "context": "r.kind === \"seat\" ? i18n(\"components.homewidgets.7bd9d53b62f0\") : i18n(\"components.homewidgets.e4d40b4d6759\")"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.f7b18ee399fc",
+      "source": "旁听课堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 285,
+          "context": "{i18n(\"components.homewidgets.f7b18ee399fc\")}"
+        }
+      ],
+      "translation": "Audit classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.f8308b0b2728",
+      "source": "旁听",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 285,
+          "context": "{i18n(\"components.homewidgets.f8308b0b2728\")}"
+        }
+      ],
+      "translation": "Audit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homewidgets.fa22f0f0b501",
+      "source": "今天结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeWidgets.tsx",
+          "line": 466,
+          "context": "text: i18n(\"components.homewidgets.fa22f0f0b501\")"
+        }
+      ],
+      "translation": "Ends today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.07b65092ac19",
+      "source": "就要截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 28,
+          "context": "small: i18n(\"components.homeworkcarousel.07b65092ac19\")"
+        }
+      ],
+      "translation": "Due soon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.11ac26dfc826",
+      "source": "确定要忽略《{title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，可在「全部作业 → 已忽略」恢复。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(h.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 347,
+          "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
+        }
+      ],
+      "translation": "Ignore \"{title}\"?\n\nOnce ignored, it won't appear in the assignments area or schedule reminders. You can restore it under \"All assignments → Ignored\".",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.homeworkcarousel.13c68d134847",
+      "source": "已逾期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 26,
+          "context": "big: i18n(\"components.homeworkcarousel.13c68d134847\")"
+        }
+      ],
+      "translation": "Overdue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.4881997d6f3a",
+      "source": "还剩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 29,
+          "context": "small: i18n(\"components.homeworkcarousel.4881997d6f3a\")"
+        }
+      ],
+      "translation": "Due in ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.4bdb0fcd89b8",
+      "source": "作业都交完了，痛快去玩吧。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 183,
+          "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
+        }
+      ],
+      "translation": "All assignments are submitted. Go enjoy yourself!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.4ce3054e7c4d",
+      "source": " 天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 29,
+          "context": "days + i18n(\"components.homeworkcarousel.4ce3054e7c4d\")"
+        }
+      ],
+      "translation": " days",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.759af5356c1e",
+      "source": "[HAPTIC] 预烘焙不可用，降级路径={mode}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "mode",
+          "expression": "String(r.mode)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 138,
+          "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
+        }
+      ],
+      "translation": "[HAPTIC] Pre-baked haptics unavailable; fallback path={mode}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.7849c0828e15",
+      "source": "外部作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 41,
+          "context": "labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
+        }
+      ],
+      "translation": "External assignments",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.homeworkcarousel.8cc765f4b8b9",
+      "source": "收藏作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 355,
+          "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
+        }
+      ],
+      "translation": "Starred assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.a80f2d59cd5f",
+      "source": "交了 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 45,
+          "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
+        }
+      ],
+      "translation": "Submitted ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 41,
+          "context": "h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
+        }
+      ],
+      "translation": "Web Learning",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.homeworkcarousel.cac076fbec2f",
+      "source": "尽快处理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 26,
+          "context": "small: i18n(\"components.homeworkcarousel.cac076fbec2f\")"
+        }
+      ],
+      "translation": "Handle soon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.d4b1b25d27b2",
+      "source": "查看全部作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 185,
+          "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
+        }
+      ],
+      "translation": "View all assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.da7ecec544ad",
+      "source": "逾期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 49,
+          "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
+        }
+      ],
+      "translation": "Overdue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.e9d65d05f085",
+      "source": "忽略这条作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 342,
+          "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
+        }
+      ],
+      "translation": "Ignore this assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.homeworkcarousel.f299c513a8fc",
       "source": "<1 天",
@@ -393,1013 +1359,6 @@
         }
       ],
       "translation": "Saving",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imageviewer.a9769c635970",
-      "source": "查看图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageViewer.tsx",
-          "line": 448,
-          "context": "{i18n(\"components.imageviewer.a9769c635970\")}"
-        }
-      ],
-      "translation": "View image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imageviewer.f1326e4568dd",
-      "source": "保存失败：{msg}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "msg",
-          "expression": "String(msg)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageViewer.tsx",
-          "line": 442,
-          "context": "showToast(i18nMsg(\"components.imageviewer.f1326e4568dd\", { msg: String(msg) }), 9000)"
-        }
-      ],
-      "translation": "Save failed: {msg}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.020a11d70b94",
-      "source": "发起飞书扫码失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 163,
-          "context": "flash(i18n(\"components.imsettingssection.020a11d70b94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to start Feishu QR scan: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.021f76bfa953",
-      "source": "在本机？直接打开确认页（免扫码）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 230,
-          "context": "{i18n(\"components.imsettingssection.021f76bfa953\")}"
-        }
-      ],
-      "translation": "On this device? Open the confirmation page directly (no scan needed)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.0f8c1b732b2c",
-      "source": "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 242,
-          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
-        }
-      ],
-      "translation": "Not bound. Generate a bind code, then send \"/bind\" plus the code to the bot in a Feishu direct message.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.107fecedccba",
-      "source": "保存并连接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 326,
-          "context": "{i18n(\"components.imsettingssection.107fecedccba\")}"
-        }
-      ],
-      "translation": "Save and connect",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.14087a9867d2",
-      "source": "微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机， OH 回复原路发回。当前状态：{value}{value2}{value3}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase"
-        },
-        {
-          "name": "value2",
-          "expression": "wechatStatus.note ? `：${wechatStatus.note}` : \"\""
-        },
-        {
-          "name": "value3",
-          "expression": "cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 265,
-          "context": "{i18nRich(\"components.imsettingssection.14087a9867d2\", { value: PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase, value2: wechatStatus.note ? `：${wechatStatus.note}` : \"\", value3: cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\" })}"
-        }
-      ],
-      "translation": "After authorizing via WeChat QR scan you can chat (no App ID/Secret needed): messages reach this device by long polling over the official iLink channel, and OH replies are sent back the same way. Current status: {value}{value2}{value3}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.1c925e27fa1d",
-      "source": "扫码创建",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 220,
-          "context": "{i18n(\"components.imsettingssection.1c925e27fa1d\")}"
-        }
-      ],
-      "translation": "Create via QR scan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.2217f7c35158",
-      "source": "已绑定：{value}…（单主人模型：仅此人消息进入 OH）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(bound.slice(0, 12))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 241,
-          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
-        }
-      ],
-      "translation": "Bound: {value}… (single-owner model: only this person's messages reach OH)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.28690afd1ecd",
-      "source": "飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 314,
-          "context": "{i18n(\"components.imsettingssection.28690afd1ecd\")}"
-        }
-      ],
-      "translation": "Feishu Open Platform → Custom app → Credentials & basic info. Stored only on this device (encrypted).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 232,
-          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 286,
-          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.378eaca774bb",
-      "source": "扫码登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 268,
-          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
-        }
-      ],
-      "translation": "Sign in via QR scan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.390c8b791bcd",
-      "source": "手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。 不想扫码时用「高级配置」里的手工填入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 218,
-          "context": "{i18n(\"components.imsettingssection.390c8b791bcd\")}"
-        }
-      ],
-      "translation": "Scan with the Feishu mobile app → confirm creation on the opened page → App ID/Secret are fetched automatically and connected (the app owner is bound as the owner). If you'd rather not scan, enter credentials manually under Advanced configuration.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.394ee5935d8c",
-      "source": "通道连接状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.imsettingssection.394ee5935d8c\");"
-        }
-      ],
-      "translation": "Channel connection status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.3becaa3847a1",
-      "source": "长连接事件订阅",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 60,
-          "context": "return i18n(\"components.imsettingssection.3becaa3847a1\");"
-        }
-      ],
-      "translation": "Long-connection event subscription",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.3cbb7d58f5e4",
-      "source": "发起扫码失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 199,
-          "context": "flash(i18n(\"components.imsettingssection.3cbb7d58f5e4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to start QR scan: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.4a151de9633d",
-      "source": "桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。 收到的消息直达 OH，回复原路发回；附件后续经云盘归档。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 306,
-          "context": "{i18n(\"components.imsettingssection.4a151de9633d\")}"
-        }
-      ],
-      "translation": "The bot stays online while the desktop app runs: a Feishu Open Platform custom app (long-connection event subscription, no public endpoint needed). Incoming messages go straight to OH, replies are sent back the same way; attachments are archived to the cloud drive afterwards.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.516b7af343ed",
-      "source": "等待扫码…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 197,
-          "context": "setWxNote(i18n(\"components.imsettingssection.516b7af343ed\"))"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 229,
-          "context": "fsNote || i18n(\"components.imsettingssection.516b7af343ed\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 284,
-          "context": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
-        }
-      ],
-      "translation": "Waiting for scan…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.54821806e300",
-      "source": "飞书凭据已保存（密文落盘）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 101,
-          "context": "flash(i18n(\"components.imsettingssection.54821806e300\"))"
-        }
-      ],
-      "translation": "Feishu credentials saved (stored encrypted on disk)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.550c7a151569",
-      "source": "已启用，正在连接…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 120,
-          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
-        }
-      ],
-      "translation": "Enabled, connecting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.57afe4560634",
-      "source": "绑定码 10 分钟内有效",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 205,
-          "context": "flash(i18n(\"components.imsettingssection.57afe4560634\"))"
-        }
-      ],
-      "translation": "The bind code is valid for 10 minutes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.5f2af850764a",
-      "source": "生成绑定码 / 解除绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 57,
-          "context": "return i18n(\"components.imsettingssection.5f2af850764a\");"
-        }
-      ],
-      "translation": "Generate bind code / Unbind",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.6ec82af7b630",
-      "source": "在飞书私聊里发送：/bind {code}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "code",
-          "expression": "code"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 256,
-          "context": "{i18nRich(\"components.imsettingssection.6ec82af7b630\", { code: code })}"
-        }
-      ],
-      "translation": "In a Feishu direct message, send: /bind {code}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.7c546888c169",
-      "source": "手工填飞书应用凭据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 61,
-          "context": "return i18n(\"components.imsettingssection.7c546888c169\");"
-        }
-      ],
-      "translation": "Enter Feishu app credentials manually",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.8615725de235",
-      "source": "应用凭据（手工）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 61,
-          "context": "return i18n(\"components.imsettingssection.8615725de235\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 313,
-          "context": "{i18n(\"components.imsettingssection.8615725de235\")}"
-        }
-      ],
-      "translation": "App credentials (manual)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.86b11345bf97",
-      "source": "微信扫码绑定 / 重新扫码 / 解除绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 58,
-          "context": "return i18n(\"components.imsettingssection.86b11345bf97\");"
-        }
-      ],
-      "translation": "Bind via WeChat QR scan / Rescan / Unbind",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.89c4766afc85",
-      "source": "连接失败",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 44,
-          "context": "return i18n(\"components.imsettingssection.89c4766afc85\");"
-        }
-      ],
-      "translation": "Connection failed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.8c9a5097d028",
-      "source": "微信（iLink 官方 Bot · 扫码即用）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 58,
-          "context": "return i18n(\"components.imsettingssection.8c9a5097d028\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 264,
-          "context": "{i18n(\"components.imsettingssection.8c9a5097d028\")}"
-        }
-      ],
-      "translation": "WeChat (official iLink bot · ready after scanning)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.a379593b5b75",
-      "source": "重新扫码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 268,
-          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
-        }
-      ],
-      "translation": "Rescan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.a445a63759f6",
-      "source": "已解除绑定：之后的消息不再进入 OH",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 111,
-          "context": "flash(i18n(\"components.imsettingssection.a445a63759f6\"))"
-        }
-      ],
-      "translation": "Unbound: future messages will no longer reach OH",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.a84a8e151194",
-      "source": "飞书通道开关",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 308,
-          "context": "{i18n(\"components.imsettingssection.a84a8e151194\")}"
-        }
-      ],
-      "translation": "Feishu channel toggle",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.a8c3698b5b8c",
-      "source": "已停用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 120,
-          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
-        }
-      ],
-      "translation": "Disabled",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.b35839220413",
-      "source": "App ID（cli_ 开头）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 319,
-          "context": "{i18n(\"components.imsettingssection.b35839220413\")}"
-        }
-      ],
-      "translation": "App ID (starts with cli_)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.b8f945ea49ff",
-      "source": "连接状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.imsettingssection.b8f945ea49ff\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 295,
-          "context": "{i18n(\"components.imsettingssection.b8f945ea49ff\")}"
-        }
-      ],
-      "translation": "Connection status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.c432e0322b39",
-      "source": "飞书 bot（P0 通道）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 60,
-          "context": "return i18n(\"components.imsettingssection.c432e0322b39\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 305,
-          "context": "{i18n(\"components.imsettingssection.c432e0322b39\")}"
-        }
-      ],
-      "translation": "Feishu bot (P0 channel)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.d49461b1f610",
-      "source": "微信通道已启用（扫码登录成功）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 181,
-          "context": "flash(i18n(\"components.imsettingssection.d49461b1f610\"))"
-        }
-      ],
-      "translation": "WeChat channel enabled (QR sign-in succeeded)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.d5679a030605",
-      "source": "扫码创建飞书应用并自动绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 56,
-          "context": "return i18n(\"components.imsettingssection.d5679a030605\");"
-        }
-      ],
-      "translation": "Create the Feishu app via QR scan and bind automatically",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.e869014f4368",
-      "source": "飞书应用已创建并连接（扫码建应用成功）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 143,
-          "context": "flash(i18n(\"components.imsettingssection.e869014f4368\"))"
-        }
-      ],
-      "translation": "Feishu app created and connected (QR app creation succeeded)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.ecf1cf831460",
-      "source": "扫码创建应用（推荐，免手工配置）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 56,
-          "context": "return i18n(\"components.imsettingssection.ecf1cf831460\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 217,
-          "context": "{i18n(\"components.imsettingssection.ecf1cf831460\")}"
-        }
-      ],
-      "translation": "Create the app via QR scan (recommended, no manual setup)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.ee91e7a6f98f",
-      "source": "{value}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 284,
-          "context": "{i18nRich(\"components.imsettingssection.ee91e7a6f98f\", { value: wxNote || i18n(\"components.imsettingssection.516b7af343ed\") })}"
-        }
-      ],
-      "translation": "{value} (scan with WeChat; OneTHU on your phone can't scan itself, so use the Feishu channel first)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.f48f46f71775",
-      "source": "绑定主人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 57,
-          "context": "return i18n(\"components.imsettingssection.f48f46f71775\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 238,
-          "context": "{i18n(\"components.imsettingssection.f48f46f71775\")}"
-        }
-      ],
-      "translation": "Bind owner",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.f69e6a2f5669",
-      "source": "生成绑定码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 246,
-          "context": "{i18n(\"components.imsettingssection.f69e6a2f5669\")}"
-        }
-      ],
-      "translation": "Generate bind code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.f779d8072854",
-      "source": "{value}{value2}（最近入站 {value3}）",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "PHASE_TEXT[fs.phase] ?? fs.phase"
-        },
-        {
-          "name": "value2",
-          "expression": "fs.note ? `：${fs.note}` : \"\""
-        },
-        {
-          "name": "value3",
-          "expression": "fmtAt(fs.lastInboundAt)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 296,
-          "context": "{i18nRich(\"components.imsettingssection.f779d8072854\", { value: PHASE_TEXT[fs.phase] ?? fs.phase, value2: fs.note ? `：${fs.note}` : \"\", value3: fmtAt(fs.lastInboundAt) })}"
-        }
-      ],
-      "translation": "{value}{value2} (last inbound {value3})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.fb3f6cc3047d",
-      "source": "解除绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 248,
-          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 273,
-          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
-        }
-      ],
-      "translation": "Unbind",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imsettingssection.fea96ff7ab72",
-      "source": "请用手机飞书扫码，并在打开页确认创建智能体应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
-          "line": 161,
-          "context": "setFsNote(i18n(\"components.imsettingssection.fea96ff7ab72\"))"
-        }
-      ],
-      "translation": "Please scan with the Feishu mobile app and confirm creating the agent app on the opened page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.06657c279571",
-      "source": "通讯录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 106,
-          "context": "return i18n(\"components.layout.06657c279571\");"
-        }
-      ],
-      "translation": "Contacts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.0be1eb29d29d",
-      "source": "侧栏：完整 → 切换为窄（悬停展开）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 159,
-          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
-        }
-      ],
-      "translation": "Sidebar: full → switch to narrow (expands on hover)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 116,
-          "context": "return i18n(\"components.layout.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.1760b98532ec",
-      "source": "在线服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 119,
-          "context": "return i18n(\"components.layout.1760b98532ec\");"
-        }
-      ],
-      "translation": "Online services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.203c08e0d44a",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 231,
-          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 231,
-          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.352cdc807892",
-      "source": "预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 117,
-          "context": "return i18n(\"components.layout.352cdc807892\");"
-        }
-      ],
-      "translation": "Reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.487e926379fe",
-      "source": "我的名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 800,
-          "context": "label: i18n(\"components.layout.487e926379fe\")"
-        }
-      ],
-      "translation": "My card",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.layout.4ebe692f5dbb",
-      "source": "其他 Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 120,
-          "context": "return i18n(\"components.layout.4ebe692f5dbb\");"
-        }
-      ],
-      "translation": "Other Info apps",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.52fdbbaeda4c",
-      "source": "待办",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 100,
-          "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
-        }
-      ],
-      "translation": "Tasks",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.56043fcf0aa1",
-      "source": "竖屏取景框（dev）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 861,
-          "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
-        }
-      ],
-      "translation": "Portrait viewfinder (dev)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.layout.60458dfb4c14",
-      "source": "寻迹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 105,
-          "context": "return i18n(\"components.layout.60458dfb4c14\");"
-        }
-      ],
-      "translation": "Directions",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

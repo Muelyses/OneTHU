@@ -89,9 +89,15 @@ export interface LearnAttachment {
   size?: string;
 }
 
+export interface LearnRoleAttachment extends LearnAttachment {
+  role: "teacher" | "answer" | "submission" | "grade";
+}
+
 /** 作业详情页（/f/wlxt/kczy/zy/student/viewCj HTML）解析结果。
  *  附件四类与 thu-learn-lib parseHomeworkAtUrl 对应（div.list.fujian.clearfix 顺序）。 */
 export interface HomeworkPageDetail {
+  /** All visible attachments; legacy single slots below retain their first entry. */
+  attachments?: LearnRoleAttachment[];
   /** 页面作业说明（c55 div，一般与 JSON msg 一致；优先用 JSON msg） */
   description?: string;
   /** 上次提交的正文内容（boxbox 结构，learn-lib submittedContent 同源；提交面板预填用） */
@@ -113,6 +119,7 @@ export interface HomeworkPageDetail {
 
 /** 通知详情页（beforeViewXs HTML）解析结果 */
 export interface NotificationPageDetail {
+  attachments?: LearnAttachment[];
   attachment?: LearnAttachment;
 }
 

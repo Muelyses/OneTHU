@@ -558,6 +558,16 @@ export async function libVerify2FA(type: string, code: string, trust: boolean): 
 }
 
 /** 登出（lib 链 + 共享 jar） */
+export async function libAcceptSharedSession(username: string | null): Promise<void> {
+  await libAbandonLogin();
+  helper.userId = username ?? "";
+  helper.password = "";
+  gitlabSessionValue = "";
+  gitlabSessionRestored = true;
+  await persistGitlabSession(() => fileDelete(GITLAB_SESSION_FILE, { strict: true }));
+  await cookieBoundary.acceptVerifiedOwner(username);
+}
+
 export async function libDiscardLocalSession(): Promise<void> {
   await libAbandonLogin();
   helper.userId = "";

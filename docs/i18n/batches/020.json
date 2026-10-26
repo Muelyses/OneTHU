@@ -1,7 +1,857 @@
 {
-  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtour.24e75cb57392",
+      "source": "打开真实页面，随时回来继续",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 132,
+          "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
+        }
+      ],
+      "translation": "Open the real page and come back to continue anytime",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.28f2aed32976",
+      "source": "选择扫码连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 123,
+          "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
+        }
+      ],
+      "translation": "Connect via QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.368669b4e8f4",
+      "source": "扫码连接雨课堂，或在微信、飞书里使用 OH。现在跳过也可以。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 122,
+          "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
+        }
+      ],
+      "translation": "Scan to connect Rain Classroom, or use OH in WeChat and Feishu. You can skip this for now.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.4d572d8843d7",
+      "source": "你的 OneTHU，准备好了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 122,
+          "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
+        }
+      ],
+      "translation": "Your OneTHU is ready",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.715ee9dc842f",
+      "source": "开始使用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 105,
+          "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
+        },
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 105,
+          "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
+        }
+      ],
+      "translation": "Get started",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.7d38695ada28",
+      "source": "请先完成当前操作，再打开导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 64,
+          "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
+        }
+      ],
+      "translation": "Finish the current action before opening the tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.7f93bdddc69a",
+      "source": "收起连接选项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 123,
+          "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
+        }
+      ],
+      "translation": "Hide connection options",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.8dc51de059fe",
+      "source": "OneTHU 使用导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 101,
+          "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
+        }
+      ],
+      "translation": "OneTHU tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.9352315ee32a",
+      "source": "你想怎样使用 OneTHU？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 118,
+          "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
+        }
+      ],
+      "translation": "How would you like to use OneTHU?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.a8ab98831f5c",
+      "source": "继续探索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 109,
+          "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
+        },
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.onboardingtour.a8ab98831f5c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 130,
+          "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
+        }
+      ],
+      "translation": "Keep exploring",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.aa4142e144b8",
+      "source": "按此模式开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 105,
+          "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
+        }
+      ],
+      "translation": "Start with this mode",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.ac794a015ee3",
+      "source": "使用导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
+        }
+      ],
+      "translation": "Tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.acb7923e4be1",
+      "source": "当前操作仍在进行，完成后再继续导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 98,
+          "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
+        }
+      ],
+      "translation": "The current action is still running; continue the tour after it finishes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.acfc4e74a650",
+      "source": "下一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 105,
+          "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
+        }
+      ],
+      "translation": "Next",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.b92a02095b87",
+      "source": "切换只改变界面。已有标签、白板和设置都会保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 120,
+          "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
+        }
+      ],
+      "translation": "Switching only changes the interface. Existing tabs, boards, and settings are all kept.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.bfa8ac132dd5",
+      "source": "返回完成页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 103,
+          "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
+        }
+      ],
+      "translation": "Back to the finish page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.bfd00f0d13de",
+      "source": "跳到：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(CHAPTERS[item.id])"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 111,
+          "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
+        }
+      ],
+      "translation": "Jump to: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.c0b3fbff51cc",
+      "source": "完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 112,
+          "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
+        }
+      ],
+      "translation": "Done",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.ccc045ffd9b7",
+      "source": "选择你的方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 109,
+          "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
+        }
+      ],
+      "translation": "Choose your way",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.board",
+      "source": "白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.board\");"
+        }
+      ],
+      "translation": "Board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.campus",
+      "source": "校园服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.campus\");"
+        }
+      ],
+      "translation": "Campus services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.code",
+      "source": "口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.code\");"
+        }
+      ],
+      "translation": "Share codes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.customize",
+      "source": "外观",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.customize\");"
+        }
+      ],
+      "translation": "Appearance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.data",
+      "source": "数据与同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.data\");"
+        }
+      ],
+      "translation": "Data & sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.explorer",
+      "source": "标签与工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.explorer\");"
+        }
+      ],
+      "translation": "Tabs & workspaces",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.more",
+      "source": "更多功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.more\");"
+        }
+      ],
+      "translation": "More features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.nfc",
+      "source": "碰一碰",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.nfc\");"
+        }
+      ],
+      "translation": "Tap to share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.onego",
+      "source": "OneGO!",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.onego\");"
+        }
+      ],
+      "translation": "OneGO!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.organization",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.organization\");"
+        }
+      ],
+      "translation": "Organizations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.plugin",
+      "source": "插件与 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.plugin\");"
+        }
+      ],
+      "translation": "Plugins & OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.quick",
+      "source": "五个入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.quick\");"
+        }
+      ],
+      "translation": "Five shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.swap",
+      "source": "常用入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.swap\");"
+        }
+      ],
+      "translation": "Your shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.today",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.today\");"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.vault",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.onboardingtour.chapter.vault\");"
+        }
+      ],
+      "translation": "Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.d4208c3cace4",
+      "source": "从适合你的方式开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 118,
+          "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
+        }
+      ],
+      "translation": "Start in the way that suits you",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.d69e80a19484",
+      "source": "跳过导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 104,
+          "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
+        }
+      ],
+      "translation": "Skip tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.da336fdc0dbd",
+      "source": "上一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 103,
+          "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
+        }
+      ],
+      "translation": "Back",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.e2ee720ea747",
+      "source": "把校园生活，组织成你的样子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
+        }
+      ],
+      "translation": "Organize campus life your way",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.f1804844a899",
+      "source": "准备好了，按自己的节奏开始。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 115,
+          "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
+        }
+      ],
+      "translation": "All set — begin at your own pace.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.f60b58eb72b6",
+      "source": "需要时，再连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 122,
+          "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
+        }
+      ],
+      "translation": "Connect later, when needed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.fa24c12c5962",
+      "source": "选择体验模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 137,
+          "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
+        }
+      ],
+      "translation": "Choose a trial mode",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.onboardingtour.modeintro.practical",
+      "source": "常用顺手，功能齐全",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.onboardingtour.modeintro.practical\");"
+        }
+      ],
+      "translation": "Your essentials at hand, with every feature available",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.modeintro.simple",
+      "source": "把今天放在眼前",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.onboardingtour.modeintro.simple\");"
+        }
+      ],
+      "translation": "Keep today in view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.0195603ee49e",
+      "source": "OnePage：你的一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 80,
+          "context": "return i18n(\"components.onboardingtourmobile.0195603ee49e\");"
+        }
+      ],
+      "translation": "OnePage: your single page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.1ef4be486cc7",
+      "source": "标签页抽屉",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 68,
+          "context": "return i18n(\"components.onboardingtourmobile.1ef4be486cc7\");"
+        }
+      ],
+      "translation": "Tab drawer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.1f5a2b96e178",
+      "source": "完成标记：此后不再自动出现",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 142,
+          "context": "{i18n(\"components.onboardingtourmobile.1f5a2b96e178\")}"
+        }
+      ],
+      "translation": "Completion mark: it will not appear automatically again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.21d113f5a8e8",
+      "source": "底栏中央那颗胶囊，不只是输入框。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 86,
+          "context": "return i18n(\"components.onboardingtourmobile.21d113f5a8e8\");"
+        }
+      ],
+      "translation": "The pill at the center of the bottom bar is more than an input field.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.285daf1ff2f1",
+      "source": "关闭本次导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 158,
+          "context": "{i18n(\"components.onboardingtourmobile.285daf1ff2f1\")}"
+        }
+      ],
+      "translation": "Close this tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.28bf4e9d8cc7",
+      "source": "抽屉里还有工作区面板，手机同样能解散与建组。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "The drawer also has a workspace panel; on mobile you can disband groups and build them too.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.29b54acdd26a",
+      "source": "OneTHU 手机导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 136,
+          "context": "{i18n(\"components.onboardingtourmobile.29b54acdd26a\")}"
+        }
+      ],
+      "translation": "OneTHU mobile tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.2a93d6c21509",
+      "source": "手机横竖都没有标签条：换标签、开新页都走这个抽屉。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "On mobile there is no tab strip in either orientation: switching tabs and opening new pages all happen in this drawer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.37533b435eb5",
+      "source": "底栏「标签页」一按，全在抽屉里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 69,
+          "context": "return i18n(\"components.onboardingtourmobile.37533b435eb5\");"
+        }
+      ],
+      "translation": "Tap “Tabs” in the bottom bar — it is all in the drawer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourmobile.514adbf12726",
       "source": "在对话里说，它就动手。",
@@ -437,819 +1287,6 @@
         }
       ],
       "translation": "Play again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.5ca6730d4415",
-      "source": "工具",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 56,
-          "context": "return i18n(\"components.onboardingtourparticles.5ca6730d4415\");"
-        }
-      ],
-      "translation": "Tools",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.783d638053ea",
-      "source": "组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 58,
-          "context": "return i18n(\"components.onboardingtourparticles.783d638053ea\");"
-        }
-      ],
-      "translation": "Widgets",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.788db1cfec2a",
-      "source": "主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.onboardingtourparticles.788db1cfec2a\");"
-        }
-      ],
-      "translation": "Themes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.934e7ed8a02c",
-      "source": "粒子汇聚成才的示意动画：四散的微尘凝成一颗，再裂开成工具、流程、组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 275,
-          "context": "{i18n(\"components.onboardingtourparticles.934e7ed8a02c\")}"
-        }
-      ],
-      "translation": "A demo animation of particles converging into talent: scattered dust gathers into one, then splits into tools, flows, and widgets",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.bdd207e8c6e3",
-      "source": "流程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 57,
-          "context": "return i18n(\"components.onboardingtourparticles.bdd207e8c6e3\");"
-        }
-      ],
-      "translation": "Flows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.e806fbbe8ec6",
-      "source": "插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 61,
-          "context": "return i18n(\"components.onboardingtourparticles.e806fbbe8ec6\");"
-        }
-      ],
-      "translation": "Plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourparticles.e8898c88f026",
-      "source": "小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourParticles.tsx",
-          "line": 60,
-          "context": "return i18n(\"components.onboardingtourparticles.e8898c88f026\");"
-        }
-      ],
-      "translation": "Home screen widgets",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.0195603ee49e",
-      "source": "OnePage：你的一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 84,
-          "context": "return i18n(\"components.onboardingtourv3.0195603ee49e\");"
-        }
-      ],
-      "translation": "OnePage: your single page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.06d3cfb40d27",
-      "source": "自带一块可以自由摆组件的白板页。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 85,
-          "context": "return i18n(\"components.onboardingtourv3.06d3cfb40d27\");"
-        }
-      ],
-      "translation": "It comes with a board page where you can arrange widgets freely.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.0afabdd4308c",
-      "source": "两条路就够：去搜索，去市场。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 91,
-          "context": "return i18n(\"components.onboardingtourv3.0afabdd4308c\");"
-        }
-      ],
-      "translation": "Two paths are enough: go search, go to the marketplace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.0b3cb95bce97",
-      "source": "大时间与一级功能区是骨架；其余组件随你摆。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 74,
-          "context": "return i18n(\"components.onboardingtourv3.0b3cb95bce97\");"
-        }
-      ],
-      "translation": "The large clock and main features form the skeleton; the rest of the widgets are yours to arrange.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.0ca382e2edca",
-      "source": "底栏常驻：左「标签页」，中「搜索或问小OH」，右「OneGO!」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 81
-        }
-      ],
-      "translation": "The bottom bar stays put: “Tabs” on the left, “Search or ask Little OH” in the middle, “OneGO!” on the right.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.16db14984ce5",
-      "source": "右键标签可复制、关闭，或一星收进 OnePage。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Right-click a tab to copy, close it, or one-star it into OnePage.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.1878863a8e7b",
-      "source": "双击空白就地建便笺；画笔恒在最高层，可撤销清空。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 75
-        }
-      ],
-      "translation": "Double-click empty space to create a note in place; the pen always stays on top, with undo and clear.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.1f5a2b96e178",
-      "source": "完成标记：此后不再自动出现",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 213,
-          "context": "{i18n(\"components.onboardingtourv3.1f5a2b96e178\")}"
-        }
-      ],
-      "translation": "Completion mark: it will not appear automatically again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.23f450edd90e",
-      "source": "设置里可定默认样式；竖栏底部按钮可切「窄」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 81
-        }
-      ],
-      "translation": "Set the default style in Settings; the button at the bottom of the vertical sidebar switches to “Narrow”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.280832e11f57",
-      "source": "标签页与工作区",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 68,
-          "context": "return i18n(\"components.onboardingtourv3.280832e11f57\");"
-        }
-      ],
-      "translation": "Tabs & workspaces",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.281c7d16e5bd",
-      "source": "右上角 × 只关闭这一次，下次启动还会出现。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 65
-        }
-      ],
-      "translation": "The × in the top-right corner only closes it this once; it will appear again on the next launch.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.285daf1ff2f1",
-      "source": "关闭本次导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 229,
-          "context": "{i18n(\"components.onboardingtourv3.285daf1ff2f1\")}"
-        }
-      ],
-      "translation": "Close this tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.290f85ad4f6a",
-      "source": "右键空白（落点跟指针）或右侧 ＋：添加组件。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 75
-        }
-      ],
-      "translation": "Right-click empty space (the menu follows the pointer) or use the ＋ on the right to add widgets.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.2b6332b718e8",
-      "source": "「安装插件」支持仓库直装与市场一键安装。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 92
-        }
-      ],
-      "translation": "“Install plugin” supports installing straight from a repository and one-tap install from the marketplace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.2cbb006447b1",
-      "source": "检索同源：面板搜得到的，页面里也搜得到。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 93,
-          "context": "return i18n(\"components.onboardingtourv3.2cbb006447b1\");"
-        }
-      ],
-      "translation": "Search is shared: whatever the panel can find, the page can find too.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.2f8345141c89",
-      "source": "清华园随身工具箱。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 64,
-          "context": "return i18n(\"components.onboardingtourv3.2f8345141c89\");"
-        }
-      ],
-      "translation": "Your portable toolbox for the Tsinghua campus.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.30633ea11f9b",
-      "source": "命令面板（Ctrl+K）里也能直达你的白板。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 87,
-          "context": "return i18n(\"components.onboardingtourv3.30633ea11f9b\");"
-        }
-      ],
-      "translation": "The command palette (Ctrl+K) also takes you straight to your board.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.3313a0968f97",
-      "source": "底栏「标签页」「OneGO!」抽屉里同样能看到工作区面板。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "The workspace panel also appears in the bottom bar’s “Tabs” and “OneGO!” drawers.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.35915ce8d259",
-      "source": "回到导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 189,
-          "context": "{i18n(\"components.onboardingtourv3.35915ce8d259\")}"
-        }
-      ],
-      "translation": "Back to the tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.4ff4a0dbc4ef",
-      "source": "每步都可跳过；想重温，设置页右上角有「导览」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 65
-        }
-      ],
-      "translation": "Every step can be skipped; to revisit it later, “Tour” is in the top-right of Settings.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.5021907844de",
-      "source": "插件也有两下：给个仓库地址可当场安装。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 113,
-          "context": "{i18n(\"components.onboardingtourv3.5021907844de\")}"
-        }
-      ],
-      "translation": "Plugins get two extras: give it a repository URL and it installs on the spot.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.514adbf12726",
-      "source": "在对话里说，它就动手。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 125,
-          "context": "return i18n(\"components.onboardingtourv3.514adbf12726\");"
-        }
-      ],
-      "translation": "Just tell it in the conversation and it gets to work.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.5f0c74b96547",
-      "source": "一句话让 OH 建工具、跑流程、画组件、换主题、加手机小组件。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 112,
-          "context": "{i18n(\"components.onboardingtourv3.5f0c74b96547\")}"
-        }
-      ],
-      "translation": "One sentence and OH builds tools, runs flows, draws widgets, changes themes, and adds home screen widgets.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.62a2fe77cea8",
-      "source": "底部中央胶囊「搜索或问小OH」：点开打字即搜。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 92
-        }
-      ],
-      "translation": "The center-bottom pill “Search or ask Little OH”: tap it and type to search.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.67ab2cc6012c",
-      "source": "工具箱自己会长：说到哪，就长到哪。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 127,
-          "context": "return i18n(\"components.onboardingtourv3.67ab2cc6012c\");"
-        }
-      ],
-      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.6d3d4feb0c1a",
-      "source": "窄栏悬停在栏上即展开，移开即收。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 81
-        }
-      ],
-      "translation": "A narrow sidebar expands when you hover over it and collapses when you move away.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.715ee9dc842f",
-      "source": "开始使用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 215,
-          "context": "{i18n(\"components.onboardingtourv3.715ee9dc842f\")}"
-        }
-      ],
-      "translation": "Get started",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.768ddf66b868",
-      "source": "页面都住在标签页里；拖一拖，就长成工作区。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 69,
-          "context": "return i18n(\"components.onboardingtourv3.768ddf66b868\");"
-        }
-      ],
-      "translation": "Pages live in tabs; drag one onto another and it grows into a workspace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.794833cba26d",
-      "source": "横竖两副骨架",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 79,
-          "context": "return i18n(\"components.onboardingtourv3.794833cba26d\");"
-        }
-      ],
-      "translation": "Two skeletons, landscape and portrait",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.7c2809268e55",
-      "source": "OH：说一句，长一样本领",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 124,
-          "context": "return i18n(\"components.onboardingtourv3.7c2809268e55\");"
-        }
-      ],
-      "translation": "OH: say the word and it picks up the same skills",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.8a12026f5cee",
-      "source": "装插件、找一切",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 90,
-          "context": "return i18n(\"components.onboardingtourv3.8a12026f5cee\");"
-        }
-      ],
-      "translation": "Install plugins, find everything",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.8f2ad7768678",
-      "source": "横版：标签在顶部一排；竖版：标签在左侧一列。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 81
-        }
-      ],
-      "translation": "Landscape: tabs sit in a row on top; portrait: tabs sit in a column on the left.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.925a3ec4a592",
-      "source": "组件按住即拖，四角把手缩放，组件之间可以叠盖。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 75
-        }
-      ],
-      "translation": "Press a widget to drag it, resize with the four corner handles, and widgets can overlap.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.9552fe3bd366",
-      "source": "第 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 225,
-          "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1)"
-        }
-      ],
-      "translation": "Step ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.958b344e82b3",
-      "source": "OneTHU 桌面导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 207,
-          "context": "{i18n(\"components.onboardingtourv3.958b344e82b3\")}"
-        }
-      ],
-      "translation": "OneTHU desktop tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.99ffd3d1a875",
-      "source": "选中即浮出小工具条：置顶、透明度四档、删除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 75
-        }
-      ],
-      "translation": "Selecting one floats up a mini toolbar: keep on top, four opacity levels, delete.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.a2d3a4eeefd7",
-      "source": "不再显示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 213,
-          "context": "{i18n(\"components.onboardingtourv3.a2d3a4eeefd7\")}"
-        }
-      ],
-      "translation": "Don’t show again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.a2de4ccdce72",
-      "source": "底栏「标签页」抽屉里有横版／竖版切换。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 81
-        }
-      ],
-      "translation": "The bottom bar’s “Tabs” drawer has the landscape/portrait switch.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.aa01e1d7252b",
-      "source": "本地插件能发布上 GitHub，并向市场提交收录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 114,
-          "context": "{i18n(\"components.onboardingtourv3.aa01e1d7252b\")}"
-        }
-      ],
-      "translation": "Local plugins can be published to GitHub and submitted to the marketplace for listing.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.acfc4e74a650",
-      "source": "下一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 217,
-          "context": "{i18n(\"components.onboardingtourv3.acfc4e74a650\")}"
-        }
-      ],
-      "translation": "Next",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.b9f53c665e03",
-      "source": "顶部一排是标签页；换到竖版时在左侧栏。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "The row on top is the tabs; in portrait mode they move to the left sidebar.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.bcd7acd491b0",
-      "source": "卡片让开，你动手；点胶囊回来继续",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 246,
-          "context": "{i18n(\"components.onboardingtourv3.bcd7acd491b0\")}"
-        }
-      ],
-      "translation": "The card steps aside so you can act; tap the pill to come back and continue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.c0536a13ccc3",
-      "source": "把一张标签拖到另一张上，停 0.6 秒出灰框，松手合并。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Drag one tab onto another, wait for the gray frame (0.6 s), then release to merge.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.c071633e0902",
-      "source": "标签页右键「一星」：把内容收成一块 OnePage。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 86
-        }
-      ],
-      "translation": "Right-click a tab and choose “One-star”: the content is gathered into a OnePage.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.c57439b82df9",
-      "source": "七步一分钟，看完桌面端的主干。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 65
-        }
-      ],
-      "translation": "Seven steps in one minute for the desktop essentials.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

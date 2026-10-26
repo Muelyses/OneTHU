@@ -97,7 +97,7 @@ rm -f "$TARGETS"
 cd "$DESKTOP"
 export ORG_GRADLE_PROJECT_onethuDev=true
 export ONETHU_DEV=1
-pnpm exec tauri android build --apk --target aarch64
+ONETHU_MOBILE_BUILD=1 pnpm exec tauri android build --apk --target aarch64
 
 grep -rq "onethu.dev.badge.hidden" dist/assets || { echo "✗ dev 面板没进前端产物：ONETHU_DEV 未生效"; exit 1; }
 echo "· 前端产物含 dev 面板"

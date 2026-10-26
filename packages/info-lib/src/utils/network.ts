@@ -14,9 +14,12 @@ import iconvLite from "iconv-lite";
 
 export class ResponseStatusError extends Error {
     status: number;
-    constructor(message: string, status: number) {
+    /** The final response belongs to the requested URL, not a redirect target. */
+    readonly directResponse: boolean;
+    constructor(message: string, status: number, directResponse = false) {
         super(message);
         this.status = status;
+        this.directResponse = directResponse;
     }
 }
 
@@ -149,7 +152,9 @@ export const uFetchMethod = async (
         timeoutMs: timeout,
     });
     if (response.status !== 200 && response.status !== 201 && response.status !== 204) {
-        throw new ResponseStatusError(`Unexpected response status code: ${response.status} (${method} ${url})`, response.status);
+        let directResponse = false;
+        try { directResponse = new URL(response.finalUrl).href === new URL(url).href; } catch { /* Unknown target: do not authorize a write replay. */ }
+        throw new ResponseStatusError(`Unexpected response status code: ${response.status} (${method} ${url})`, response.status, directResponse);
     }
     return response.text;
 };

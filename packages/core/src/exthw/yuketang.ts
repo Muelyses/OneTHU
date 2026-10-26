@@ -749,6 +749,8 @@ export interface YuketangSourceHooks {
    *  侦查未见 GET 轮换证据——此钩子是「服务端若轮换则凭据不丢」的兜底；desktop 把
    *  新 Cookie 用 AES-GCM 信封存回凭据。回调内不得打印 Cookie。 */
   onCookieRefresh?: (cookie: string) => void;
+  /** Agent reads paginate and report individual classroom failures explicitly. */
+  query?: { classroomId?: string; onIssue(issue: { code: string; classroomId: string }): void };
 }
 
 /**
@@ -1585,6 +1587,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
           throw new Error(`雨课堂课程列表失败：errcode=${errcode}${msg}`);
         }
         const data = (coursesBody["data"] ?? {}) as Record<string, unknown>;
+        if (hooks?.query && !Array.isArray(data["list"])) throw new Error("YUKETANG_COURSES_UNEXPECTED");
         return Array.isArray(data["list"]) ? (data["list"] as Array<Record<string, unknown>>) : [];
       })().catch((e: unknown) => {
         coursesPromise = null;
@@ -1618,6 +1621,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
     if (!activitiesPromise) {
       activitiesPromise = (async () => {
         const list = await loadCourses();
+        if (hooks?.query?.classroomId && !list.some(course => String(course["classroom_id"]) === hooks.query!.classroomId)) {
+          throw new Error("YUKETANG_CLASSROOM_NOT_FOUND: Use the classroom id returned by courses.");
+        }
         // classroom_id → role（R9）：role 5=正式选课、6=旁听；其余未知值不标（保守）
         const roleByClassroom = new Map<string, unknown>();
         for (const c of list) {
@@ -1630,21 +1636,40 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
           const cid = c["classroom_id"];
           if (cid === undefined || cid === null) continue;
           const courseId = String(cid);
+          if (hooks?.query?.classroomId && hooks.query.classroomId !== courseId) continue;
           const course = (c["course"] ?? {}) as Record<string, unknown>;
           const courseName = String(c["name"] ?? course["name"] ?? "雨课堂课程");
           try {
+            const seenPages = new Set<string>();
+            const seenActivities = new Set<string>();
+            for (let page = 0; ; page++) {
             const logs = await getJson(
               yktFetch,
-              `${base}/v2/api/web/logs/learn/${cid}?page=0&offset=200&sort=0&actype=-1`,
+              `${base}/v2/api/web/logs/learn/${cid}?page=${page}&offset=200&sort=0&actype=-1`,
               curCookie,
             );
             const lerr = logs["errcode"];
+            if (lerr === 401000) throw new YktSessionError();
             if (typeof lerr === "number" && lerr !== 0) throw new Error(`errcode=${lerr}`);
             const ldata = (logs["data"] ?? {}) as Record<string, unknown>;
+            if (hooks?.query && !Array.isArray(ldata["activities"])) throw new Error("YUKETANG_LOGS_UNEXPECTED");
             const acts = Array.isArray(ldata["activities"])
               ? (ldata["activities"] as Array<Record<string, unknown>>)
               : [];
+            if (hooks?.query) {
+              const fingerprint = JSON.stringify(acts);
+              if (seenPages.has(fingerprint)) { hooks.query.onIssue({ code: "YUKETANG_PAGINATION_STALLED", classroomId: courseId }); break; }
+              seenPages.add(fingerprint);
+            }
+            let added = 0;
             for (const a of acts) {
+              if (hooks?.query) {
+                const id = a["id"] ?? a["courseware_id"];
+                const key = id == null ? JSON.stringify(a) : JSON.stringify([a["type"], id]);
+                if (seenActivities.has(key)) continue;
+                seenActivities.add(key);
+              }
+              added++;
               const classroomId = String(a["classroom_id"] ?? cid);
               out.push({
                 courseId,
@@ -1654,7 +1679,12 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
                 act: a,
               });
             }
-          } catch {
+            if (hooks?.query && acts.length && !added) { hooks.query.onIssue({ code: "YUKETANG_PAGINATION_STALLED", classroomId: courseId }); break; }
+            if (!hooks?.query || acts.length < 200) break;
+            }
+          } catch (error) {
+            if (hooks?.query && error instanceof YktSessionError) throw error;
+            hooks?.query?.onIssue({ code: "YUKETANG_CLASSROOM_UNAVAILABLE", classroomId: courseId });
             /* 单门课失败跳过，继续下一门 */
           }
         }
@@ -1721,7 +1751,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
               source: "yuketang",
               courseName: e.courseName,
               title: info.title || yktStr(a["title"]) || "试卷",
-              deadline: fmtLocal(info.deadlineMs),
+              deadline: info.deadlineMs > 0 ? fmtLocal(info.deadlineMs) : "",
               kind: "quiz",
               url: `${base}/v2/web/studentQuiz/${encodeURIComponent(quizId)}/2?pageIndex=1`,
               submitted: false,
@@ -1749,7 +1779,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
             source: "yuketang",
             courseName: e.courseName,
             title: String(a["title"] ?? "作业"),
-                deadline: fmtLocal(ms),
+                deadline: ms > 0 ? fmtLocal(ms) : "",
                 kind: type === 20 ? "exam" : "homework",
                 url: yktContentUrl(base, e.classroomId, e.courseId, type, leafStr),
                 submitted: false,
@@ -1785,8 +1815,13 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
               ? `${base}/v2/web/quizSummary/${encodeURIComponent(it.classroomId)}/${encodeURIComponent(it.quizId)}`
               : `${base}/v2/web/studentQuiz/${encodeURIComponent(it.quizId)}/2?pageIndex=1`;
           }
-        } catch {
-          /* 状态查询失败：保守保持未提交 */
+        } catch (error) {
+          // An agent must distinguish unavailable submission status from an
+          // actual unfinished assignment. The existing GUI keeps its fallback.
+          if (hooks?.query) {
+            if (isYktSessionError(error)) throw error;
+            hooks.query.onIssue?.({ code: "YUKETANG_STATUS_UNAVAILABLE", classroomId: it.classroomId });
+          }
         }
       });
 
@@ -1952,8 +1987,8 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
     async getNoticeDetail(classroomId: string, ids: string | string[]): Promise<YkNoticeDetail> {
       const list = (Array.isArray(ids) ? ids : [ids])
         .map((s) => String(s).trim())
-        .filter(Boolean)
-        .slice(0, 3);
+        .filter(Boolean);
+      if (!hooks?.query) list.splice(3);
       const shape: string[] = [];
       const uvHeader = (cred.uvId ?? "").trim() || "2598";
       const uniHeader = /(?:^|;\s*)university_id=([^;]*)/.exec(curCookie)?.[1]?.trim() || "2598";

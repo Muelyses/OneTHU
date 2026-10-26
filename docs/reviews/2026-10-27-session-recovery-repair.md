@@ -46,6 +46,20 @@
 
 实页还发现，CLI 接管已设置 helper.userId，但不携带密码；原恢复逻辑仅在 userId 为空时回填本机记住的凭据，旧式 roamingWrapper 会因此在首页待办／日历直接抛 `Please login.`。现在在恢复的账号与本机保存的账号相同、generation 仍有效时回填内存凭据，然后才发布 ready。其他账号的保存密码不回填、不进入 CLI。新增实际生产函数测试，私有移交检查为 **13/13**。
 
+最终原 dev 整页重载复核：恢复 **99ms**，没有重新提交密码／验证码，最新一轮 `PAGE-ERR TODAY-*` 为 **0**。最终前端生产构建成功，TypeScript 通过。
+
+## Windows 最终构建与产物
+
+- 源码：`db22eb5a3dcbebba5809c51cf46a0dd4e9b95ba9`，已同步 GitHub 与清华 GitLab 的 main / dev3。
+- [Actions 40368403050](https://github.com/smartThise/OneTHU/actions/runs/40368403050) **success**。Windows 实际 DACL、挂起启动恢复、私有移交 13 项、SDK 199 项，以及其余认证／账户／桌面检查全部通过，安装包上传成功。
+- [Windows 产物 12672671446](https://github.com/smartThise/OneTHU/actions/runs/40368403050/artifacts/12672671446)。ZIP 长度 **72,515,575** 字节；与 GitHub digest 相同的 SHA-256 为 `3b3aec913d2a301b722525794971e0aae33be93d06684992378342e7947caa77`。
+- `OneTHU_0.11.4_x64-setup.exe`：**54,401,676** 字节，SHA-256 `563aa9e743973f74ebbf3ead751a4cb34d756616b6fbfe991723c4db3a5ecf8d`。
+- 解包确认应用为 x64、PE 版本 0.11.4.0；NSIS 引导器本身为 x86，内含应用为 x64。安装后的应用与该次原始 exe 比对，只存在预期的 Tauri NSIS bundle 标记变化。
+- Harness 为 Windows x64，内置 CLI 0.11.4 / Node v22.23.4 x64。运行时 buildId `5e7cf9ea5bae6cde9769733942ff9d7c23394876c3ae84f71dadca173839575e`；36 个清单文件与 Node 解压后二进制哈希一致，开发者面板资源未包含。
+- 本地最终包：`output/session-recovery-20261027/final/installers/OneTHU_0.11.4_x64-setup.exe`；检查记录位于同一 final 目录。中间提交的重复安装包／解包目录已清理，保留校验记录。
+
+这里确认的是 Windows 操作系统上的协议／文件权限执行、构建和包内容。Windows GUI 的学校真实账号登录仍需要开发者使用本轮包复核，尚无该真机结果。
+
 ## 交付边界
 
 这些修复首先进入 main / dev3 和原 dev。既有 v0.11.4 标签与公开安装包保留；Windows Actions 产物用于开发者真机验证，不能将 Windows Node 协议测试表述为真实 Windows GUI 登录已经通过。正式渠道尚未替换。

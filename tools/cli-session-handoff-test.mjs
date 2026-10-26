@@ -73,7 +73,7 @@ await test('school login remains ready when background handoff is temporarily un
   await adoptSuccessfulDesktopLogin();
   assert.equal(state.state, 'ready'); assert.equal(state.username, 'account-a'); assert.deepEqual(notices, [true]);
 });
-function resumeFixture(importFails, { sharedState = "ready", local = null } = {}) {
+function resumeFixture(importFails, { sharedState = "ready", local = null, blockedServices = false } = {}) {
   const events = [], native = { cookies: [cookie], revision: 4 }, saved = { ...snapshot, cookiesJson: JSON.stringify([{ ...cookie, name: 'daemon-cookie' }]) };
   const session = { username: 'account-a', state: 'ready', fingerprint: 'device-a', reset() { events.push('reset-js'); this.state = 'idle'; }, injectCredentials() {} };
   const jar = label => ({ hydrate() { events.push(`hydrate-${label}`); } });
@@ -91,8 +91,8 @@ function resumeFixture(importFails, { sharedState = "ready", local = null } = {}
     http: { jar: jar('http') }, learnHttp: { jar: jar('learn') },
     learn: { applyCsrf() {}, resume: async () => true },
     probeLearnSession: async () => { events.push('learn-probe');return {ready:true,csrf:'fixture',page:'fixture',diagnostic:'fixture'}; },
-    info: { resume: async () => true }, store: { saveSession: async () => {} },
-    loadRemembered: async () => null, logLine: async () => {}, prepareSharedTasksAfterLogin: async () => {}, session,
+    info: { resume: async () => { events.push('info-warmup');if(blockedServices)await new Promise(()=>{});return true; } }, store: { saveSession: async () => {} },
+    loadRemembered: async () => null, logLine: async () => {}, prepareSharedTasksAfterLogin: async () => {events.push('prepare-tasks');if(blockedServices)await new Promise(()=>{});}, session,
   };
   const api = functionsAt('apps/desktop/src/lib/clients.ts', ['performResumeSession'], env, {
     './infoLib.js': { libAcceptSharedSession: async () => { events.push('accept-owner'); }, setLibFinger3() {}, helper: {} },
@@ -107,6 +107,12 @@ await test('daemon restore imports the native jar atomically before both JS mirr
   assert.ok(f.events.indexOf('hydrate-http') < f.events.indexOf('learn-probe'));
   assert.ok(f.events.indexOf('hydrate-learn') < f.events.indexOf('learn-probe'));
   assert.equal(f.native.cookies[0].name, 'daemon-cookie');
+});
+await test('Info warm-up and background task synchronization cannot hold the foreground sign-in mutex',async()=>{
+  const f=resumeFixture(false,{blockedServices:true});let timer;
+  try{assert.equal(await Promise.race([f.performResumeSession(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('foreground restore held by unrelated service')),100);})]),true);}
+  finally{clearTimeout(timer);}
+  assert.equal(f.session.state,'ready');assert.equal(f.events.includes('info-warmup'),false);assert.equal(f.events.includes('prepare-tasks'),true);
 });
 await test('failed atomic native import preserves old cookies and never overwrites the saved account', async () => {
   const f = resumeFixture(true);

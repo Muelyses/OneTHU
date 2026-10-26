@@ -940,10 +940,11 @@ async function performResumeSession(): Promise<boolean> {
     await logLine("RESUME fail (learn 探活失败——boot 将走静默重登)");
     return false;
   }
-  await info.resume().catch(() => false);
   if (generation !== resumeGeneration) return false;
   session.state = "ready";
-  mark("info.resume");
+  // Info has its own lazy service establishment. A best-effort warm-up here
+  // used to keep the sign-in mutex held even after Learn proved the session.
+  mark("会话就绪");
   // lib 凭据注入（2026-09-17）：快路径（learn 会话活）不跑 libLogin，
   // helper.userId 恒空 → card/日历/新闻等 lib 数据调用秒抛 Please login.
   // 有记住的密码就补上（roamingWrapper 需要账密才能按需漫游）。
@@ -960,7 +961,9 @@ async function performResumeSession(): Promise<boolean> {
   }
   await logLine("RESUME ok (lib 单管线)");
   mark("READY(总耗时)");
-  await prepareSharedTasksAfterLogin();
+  // Task-channel synchronization has an independent account/epoch guard and
+  // its own error reporting; it must not hold the foreground login mutex.
+  void prepareSharedTasksAfterLogin().catch(() => undefined);
   return true;
 }
 

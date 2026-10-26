@@ -30,6 +30,12 @@
 
 本地证据：`output/session-recovery-20261027/`，相关运行日志为 `/tmp/onethu-session-*.log`。Windows 验证包和构建结果将在下方补记。
 
+## Windows 原生检查补充
+
+第一轮 Actions `40359638345` 在 SDK 的实际 Windows 会话存储检查中出现 `AUTH_STORAGE_ACL_FAILED`，会话还没有进入学校网络探测就已失败。为取回失败日志并停止已经失败的测试等待，终止了本轮验证；既有发布构建未动。原始异常被通用 catch 隐去，不能据此断定具体 Windows 权限错误。
+
+后续将私有 DACL 构造改为明确的 .NET 构造函数和文件／目录 ACL API，保留当前用户唯一允许规则、受保护继承和所有者设置。PowerShell 调用有 15 秒期限，只传回固定阶段码，不输出带私人路径的 stderr。Windows smoke test 会在合成目录上实际验证 DACL、持久化、原子替换、剔除额外 Everyone 显式授权，且先于整套 SDK 测试执行。参考 [Directory.SetAccessControl](https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.setaccesscontrol?view=netframework-4.8.1) 和 [File.SetAccessControl](https://learn.microsoft.com/en-us/dotnet/api/system.io.file.setaccesscontrol?view=netframework-4.8.1) 的按修改区段持久化语义；最终有效性以 Windows 执行结果为准。
+
 ## 交付边界
 
 这些修复首先进入 main / dev3 和原 dev。既有 v0.11.4 标签与公开安装包保留；Windows Actions 产物用于开发者真机验证，不能将 Windows Node 协议测试表述为真实 Windows GUI 登录已经通过。正式渠道尚未替换。

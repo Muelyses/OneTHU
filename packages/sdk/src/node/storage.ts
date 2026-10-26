@@ -16,9 +16,17 @@ async function privateMode(target: string, directory: boolean): Promise<void> {
   if (process.platform !== 'win32') { await chmod(target, directory ? 0o700 : 0o600); return; }
   // Build a fresh protected DACL: /grant:r alone would leave unrelated explicit
   // grants intact. The path is an environment value, never executable syntax.
-  const script = `$ErrorActionPreference='Stop'; $sid=[System.Security.Principal.WindowsIdentity]::GetCurrent().User; $acl=New-Object System.Security.AccessControl.${directory ? 'DirectorySecurity' : 'FileSecurity'}; $acl.SetOwner($sid); $acl.SetAccessRuleProtection($true,$false); $rule=New-Object System.Security.AccessControl.FileSystemAccessRule($sid,'FullControl','${directory ? 'ContainerInherit,ObjectInherit' : 'None'}','None','Allow'); $acl.AddAccessRule($rule); Set-Acl -LiteralPath $env:ONETHU_PRIVATE_STORAGE_PATH -AclObject $acl`;
-  try { await exec('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], { windowsHide: true, env: {...process.env, ONETHU_PRIVATE_STORAGE_PATH:target} }); }
-  catch { throw authError('AUTH_STORAGE_ACL_FAILED'); }
+  // Explicit .NET constructors avoid PowerShell's New-Object argument binding;
+  // direct persistence writes the modified descriptor sections. Paths remain
+  // data, including quotes and Unicode, without a provider or wildcard lookup.
+  const script = `$ErrorActionPreference='Stop'; $step='identity'; try { $sid=[System.Security.Principal.WindowsIdentity]::GetCurrent().User; $step='descriptor'; $acl=[System.Security.AccessControl.${directory ? 'DirectorySecurity' : 'FileSecurity'}]::new(); $acl.SetOwner($sid); $acl.SetAccessRuleProtection($true,$false); $inheritance=[System.Security.AccessControl.InheritanceFlags]::${directory ? 'ContainerInherit -bor [System.Security.AccessControl.InheritanceFlags]::ObjectInherit' : 'None'}; $rule=[System.Security.AccessControl.FileSystemAccessRule]::new($sid,[System.Security.AccessControl.FileSystemRights]::FullControl,$inheritance,[System.Security.AccessControl.PropagationFlags]::None,[System.Security.AccessControl.AccessControlType]::Allow); $acl.AddAccessRule($rule); $step='apply'; [System.IO.${directory ? 'Directory' : 'File'}]::SetAccessControl($env:ONETHU_PRIVATE_STORAGE_PATH,$acl) } catch { [Console]::Error.WriteLine('ONETHU_ACL_STAGE='+$step+';TYPE='+$_.Exception.GetType().Name); exit 1 }`;
+  try { await exec('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], { windowsHide: true, timeout:15_000, env: {...process.env, ONETHU_PRIVATE_STORAGE_PATH:target} }); }
+  catch (error) {
+    // Never return PowerShell stderr: it can contain a user's private path.
+    const e=error as {killed?:boolean;stderr?:string};
+    const stage=/ONETHU_ACL_STAGE=(identity|descriptor|apply);/.exec(e.stderr??'')?.[1]??'launch';
+    throw Object.assign(authError('AUTH_STORAGE_ACL_FAILED'),{stage:'storage-acl',reason:e.killed?'acl-timeout':`acl-${stage}`});
+  }
 }
 async function checkFile(target: string, directory = false): Promise<void> {
   const stat = await lstat(target);

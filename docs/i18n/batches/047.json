@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.gitlabpage.cf945e21ddef",
-      "source": "回复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 953,
-          "context": "replying ? i18n(\"pages.gitlabpage.d346633d3a4e\") : i18n(\"pages.gitlabpage.cf945e21ddef\")"
-        }
-      ],
-      "translation": "Reply",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.cfcbf4636b9f",
-      "source": "重新打开讨论",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 955,
-          "context": "resolved ? i18n(\"pages.gitlabpage.cfcbf4636b9f\") : i18n(\"pages.gitlabpage.319f50e7c074\")"
-        }
-      ],
-      "translation": "Reopen discussion",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.gitlabpage.d1478089db85",
       "source": "选择回应",
@@ -1392,6 +1360,47 @@
         }
       ],
       "translation": "Campus card top-up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.780317fc7e6f",
+      "source": "生成微信收银台二维码，手机微信扫码支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 92,
+          "context": "return i18n(\"pages.info.cardtab.780317fc7e6f\");"
+        }
+      ],
+      "translation": "Generate the WeChat cashier QR code and pay by scanning it in WeChat on your phone",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.7c250813afe4",
+      "source": "刷新失败，当前显示 {value}的数据（{refreshError}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\"))"
+        },
+        {
+          "name": "refreshError",
+          "expression": "String(refreshError)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 450,
+          "context": "refreshError\n                ? i18n(\"pages.info.cardtab.7c250813afe4\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")), refreshError: String(refreshError) })\n                : i18n(\"pages.info.cardtab.705ff9657d5d\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")) })"
+        }
+      ],
+      "translation": "Refresh failed; showing data from {value} ({refreshError})",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

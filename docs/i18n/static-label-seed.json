@@ -1311,6 +1311,86 @@
     "login.error.sessionChanged": {
       "zh-CN": "登录状态已变化，请重试当前操作。",
       "en-US": "Your sign-in state has changed. Please retry this action."
+    },
+    "pages.learn.shared.inProgress": {
+      "zh-CN": "进行中",
+      "en-US": "In progress"
+    },
+    "pages.learn.shared.quiz": {
+      "zh-CN": "试卷",
+      "en-US": "Quiz"
+    },
+    "pages.plugins.efcccbda5d2b": {
+      "zh-CN": "外观",
+      "en-US": "Appearance"
+    },
+    "pages.settings.1d6e1d3ecceb": {
+      "zh-CN": "开启后按系统的深色模式自动切换：亮色用「白天主题/背景」，深色用「黑夜主题/背景」。{value}",
+      "en-US": "When enabled, switches automatically with the system dark mode: light theme/background in light mode, dark theme/background in dark mode. {value}"
+    },
+    "pages.taskspage.openDetailTab": {
+      "zh-CN": "打开详情",
+      "en-US": "Open details"
+    },
+    "settings.label.features": {
+      "zh-CN": "功能",
+      "en-US": "Features"
+    },
+    "settings.wallpaper.day": {
+      "zh-CN": "白天背景",
+      "en-US": "Day background"
+    },
+    "settings.wallpaper.night": {
+      "zh-CN": "黑夜背景",
+      "en-US": "Night background"
+    },
+    "settings.wallpaper.inherit": {
+      "zh-CN": "沿用常驻壁纸",
+      "en-US": "Use the regular wallpaper"
+    },
+    "settings.wallpaper.dayDesc": {
+      "zh-CN": "系统处于白天时使用；不指定则沿用常驻壁纸。",
+      "en-US": "Shown while the system is in light mode; falls back to the regular wallpaper."
+    },
+    "settings.wallpaper.nightDesc": {
+      "zh-CN": "系统处于黑夜时使用；不指定则沿用常驻壁纸。",
+      "en-US": "Shown while the system is in dark mode; falls back to the regular wallpaper."
+    },
+    "settings.tab.desc.account": {
+      "zh-CN": "登录、云同步与外部作业源都在这里。",
+      "en-US": "Account, sync and external homework sources."
+    },
+    "settings.tab.desc.notifications": {
+      "zh-CN": "课程、日程与作业提醒的推送方式。",
+      "en-US": "How course, schedule and homework reminders reach you."
+    },
+    "settings.tab.desc.features": {
+      "zh-CN": "使用模式、快捷入口、收藏夹与小组件。",
+      "en-US": "Experience mode, quick actions, favorites and widgets."
+    },
+    "settings.tab.desc.appearance": {
+      "zh-CN": "主题、壁纸、玻璃程度与首页布局。",
+      "en-US": "Theme, wallpaper, glass level and home layout."
+    },
+    "settings.tab.desc.downloads": {
+      "zh-CN": "下载目录与缓存管理。",
+      "en-US": "Download folder and cache management."
+    },
+    "settings.tab.desc.help": {
+      "zh-CN": "操作指南与重新运行新手导览。",
+      "en-US": "Guides and replaying the onboarding tour."
+    },
+    "settings.tab.desc.about": {
+      "zh-CN": "版本更新、诊断信息与开源项目。",
+      "en-US": "Version updates, diagnostics and the open-source project."
+    },
+    "settings.label.mode": {
+      "zh-CN": "使用模式",
+      "en-US": "Experience"
+    },
+    "settings.label.language": {
+      "zh-CN": "语言",
+      "en-US": "Language"
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1193,7 +1193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 229,
+          "line": 310,
           "context": "lit ? i18n(\"components.explorer.ohcapsule.825750d712cc\") : i18n(\"components.explorer.ohcapsule.009a73342eab\")"
         }
       ],
@@ -1209,7 +1209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 179,
+          "line": 253,
           "context": "isOpen ? undefined : i18n(\"components.explorer.ohcapsule.245c82d696b4\")"
         }
       ],
@@ -1225,12 +1225,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 178,
+          "line": 252,
           "context": "isOpen ? i18n(\"components.explorer.ohcapsule.3e11141c195b\") : i18n(\"components.explorer.ohcapsule.d134f5438ae2\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 199,
+          "line": 273,
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.4d403cab80e6\") : i18n(\"components.explorer.ohcapsule.3e11141c195b\")"
         }
       ],
@@ -1246,7 +1246,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 199,
+          "line": 273,
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.4d403cab80e6\") : i18n(\"components.explorer.ohcapsule.3e11141c195b\")"
         }
       ],
@@ -1262,7 +1262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 178,
+          "line": 252,
           "context": "ui.hint || i18n(\"components.explorer.ohcapsule.81f0f45f7ad2\")"
         }
       ],
@@ -1278,7 +1278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 229,
+          "line": 310,
           "context": "lit ? i18n(\"components.explorer.ohcapsule.825750d712cc\") : i18n(\"components.explorer.ohcapsule.009a73342eab\")"
         }
       ],
@@ -1294,7 +1294,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 231,
+          "line": 312,
           "context": "lit ? i18n(\"components.explorer.ohcapsule.cb013b74bfc3\") : i18n(\"components.explorer.ohcapsule.82ae0981093e\")"
         }
       ],
@@ -1310,8 +1310,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 199,
-          "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\") : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
+          "line": 70,
+          "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\")\n        : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
         }
       ],
       "translation": "Ask OH…",
@@ -1326,8 +1326,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 199,
-          "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\") : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
+          "line": 69,
+          "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\")\n        : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
         }
       ],
       "translation": "Ask Xiaoda…",
@@ -1342,7 +1342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 231,
+          "line": 312,
           "context": "lit ? i18n(\"components.explorer.ohcapsule.cb013b74bfc3\") : i18n(\"components.explorer.ohcapsule.82ae0981093e\")"
         }
       ],
@@ -1358,7 +1358,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
-          "line": 178,
+          "line": 252,
           "context": "isOpen ? i18n(\"components.explorer.ohcapsule.3e11141c195b\") : i18n(\"components.explorer.ohcapsule.d134f5438ae2\")"
         }
       ],

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -758,7 +758,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 234,
+          "line": 237,
           "context": "{i18n(\"components.connectgate.070967253061\")}"
         }
       ],
@@ -774,7 +774,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 248,
+          "line": 251,
           "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.31c1468a6ea3\")"
         }
       ],
@@ -790,7 +790,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 28,
+          "line": 29,
           "context": "return i18n(\"components.connectgate.335de0697b53\");"
         }
       ],
@@ -806,12 +806,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 194,
+          "line": 197,
           "context": "afterExtHw(i18n(\"components.connectgate.36fe6819580c\"))"
         },
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 201,
+          "line": 204,
           "context": "afterExtHw(i18n(\"components.connectgate.36fe6819580c\"))"
         }
       ],
@@ -827,7 +827,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 180,
+          "line": 183,
           "context": "[\"qr\", i18n(\"components.connectgate.378eaca774bb\")]"
         }
       ],
@@ -843,7 +843,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 26,
+          "line": 27,
           "context": "return i18n(\"components.connectgate.38b9eabcae1b\");"
         }
       ],
@@ -859,7 +859,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 228,
+          "line": 231,
           "context": "manualOpen ? i18n(\"components.connectgate.771ad7dd5833\") : i18n(\"components.connectgate.39255d1ccfd2\")"
         }
       ],
@@ -875,7 +875,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 212,
+          "line": 215,
           "context": "busy ? i18n(\"components.connectgate.3f06ed8f8c38\") : i18n(\"components.connectgate.d41597cf10a3\")"
         }
       ],
@@ -891,7 +891,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 259,
+          "line": 262,
           "context": "{i18n(\"components.connectgate.3fd47edce45b\")}"
         }
       ],
@@ -912,7 +912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 117,
+          "line": 119,
           "context": "showToast(i18nMsg(\"components.connectgate.48804f9d471e\", { value: String(r.account?.name ? `：${r.account.name}` : \"\") }))"
         }
       ],
@@ -928,7 +928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 227,
+          "line": 230,
           "context": "busy ? i18n(\"components.connectgate.509eb4d3da11\") : i18n(\"components.connectgate.94a50a395a74\")"
         }
       ],
@@ -944,7 +944,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 246,
+          "line": 249,
           "context": "{i18n(\"components.connectgate.593bb32ef7ef\")}"
         }
       ],
@@ -960,7 +960,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 180,
+          "line": 183,
           "context": "[\"web\", i18n(\"components.connectgate.658333c8c774\")]"
         }
       ],
@@ -976,7 +976,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 219,
+          "line": 222,
           "context": "{i18n(\"components.connectgate.7001abdd98e2\")}"
         }
       ],
@@ -992,7 +992,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 29,
+          "line": 30,
           "context": "return i18n(\"components.connectgate.75f7ac5a5cca\");"
         }
       ],
@@ -1008,7 +1008,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 228,
+          "line": 231,
           "context": "manualOpen ? i18n(\"components.connectgate.771ad7dd5833\") : i18n(\"components.connectgate.39255d1ccfd2\")"
         }
       ],
@@ -1024,12 +1024,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 126,
+          "line": 129,
           "context": "showToast(i18nMsg(\"components.connectgate.90f0cb9c68db\"))"
         },
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 142,
+          "line": 145,
           "context": "showToast(i18nMsg(\"components.connectgate.90f0cb9c68db\"))"
         }
       ],
@@ -1045,7 +1045,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 211,
+          "line": 214,
           "context": "{i18n(\"components.connectgate.9273ef80acd9\")}"
         }
       ],
@@ -1061,7 +1061,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 220,
+          "line": 223,
           "context": "{i18n(\"components.connectgate.93f11d9b01e9\")}"
         }
       ],
@@ -1077,7 +1077,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 227,
+          "line": 230,
           "context": "busy ? i18n(\"components.connectgate.509eb4d3da11\") : i18n(\"components.connectgate.94a50a395a74\")"
         }
       ],
@@ -1098,7 +1098,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 257,
+          "line": 260,
           "context": "{i18nRich(\"components.connectgate.98a2d2ee13c6\", { value: LABEL[need] })}"
         }
       ],
@@ -1114,7 +1114,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 84,
+          "line": 85,
           "context": "afterExtHw(i18n(\"components.connectgate.9b0d1eca802a\"))"
         }
       ],
@@ -1130,7 +1130,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 235,
+          "line": 238,
           "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.a5574109f020\")"
         }
       ],
@@ -1146,7 +1146,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 122,
+          "line": 124,
           "context": "r.error ?? i18n(\"components.connectgate.aba4647cd558\")"
         }
       ],
@@ -1162,7 +1162,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 245,
+          "line": 248,
           "context": "{i18n(\"components.connectgate.b0f1a1898199\")}"
         }
       ],
@@ -1178,7 +1178,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 99,
+          "line": 100,
           "context": "st.mail ? i18n(\"components.connectgate.c4d49dbe177d\") : i18n(\"components.connectgate.ee2378041c9a\")"
         }
       ],
@@ -1194,7 +1194,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 212,
+          "line": 215,
           "context": "busy ? i18n(\"components.connectgate.3f06ed8f8c38\") : i18n(\"components.connectgate.d41597cf10a3\")"
         }
       ],
@@ -1210,7 +1210,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 232,
+          "line": 235,
           "context": "{i18n(\"components.connectgate.d6eedaec5a1e\")}"
         }
       ],
@@ -1226,7 +1226,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 85,
+          "line": 86,
           "context": "setErr(i18n(\"components.connectgate.e5103f9b2ae7\"))"
         }
       ],
@@ -1242,7 +1242,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 112,
+          "line": 114,
           "context": "setAutoMsg(i18n(\"components.connectgate.e66f1bb3f795\"))"
         }
       ],
@@ -1258,7 +1258,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 99,
+          "line": 100,
           "context": "st.mail ? i18n(\"components.connectgate.c4d49dbe177d\") : i18n(\"components.connectgate.ee2378041c9a\")"
         }
       ],
@@ -1274,12 +1274,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 235,
+          "line": 238,
           "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.a5574109f020\")"
         },
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 248,
+          "line": 251,
           "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.31c1468a6ea3\")"
         }
       ],
@@ -1295,7 +1295,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ConnectGate.tsx",
-          "line": 247,
+          "line": 250,
           "context": "{i18n(\"components.connectgate.f7da6974f7c9\")}"
         }
       ],

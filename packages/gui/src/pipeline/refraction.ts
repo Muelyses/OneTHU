@@ -15,7 +15,8 @@
  *     resize, DOM insertion and style-axis changes — never per scroll frame.
  *
  * Capability gate: Chromium ≥ 96 only (unprefixed backdrop-filter + SVG filter
- * references). Older WebViews, WebKit/Gecko, reduced-transparency, reduced-motion,
+ * references), using Client Hints/runtime capabilities when the UA is overridden.
+ * Older WebViews, WebKit/Gecko, reduced-transparency, reduced-motion,
  * forced-colors, hidden documents and low-core devices keep the existing frosted
  * material (blur + rim) with no artifact, because nothing is installed at all.
  */
@@ -56,6 +57,10 @@ export function glassEdge(
 }
 
 function chromiumMajor(): number {
+  const hints = (navigator as Navigator & { userAgentData?: { brands?: { brand: string; version: string }[] } }).userAgentData;
+  const versions = (hints?.brands ?? []).filter(item => /^(?:Chromium|Google Chrome|Microsoft Edge|Android WebView)$/i.test(item.brand))
+    .map(item => Number.parseInt(item.version, 10)).filter(Number.isFinite);
+  if (versions.length) return Math.max(...versions);
   const match = navigator.userAgent.match(/(?:Chromium|Chrome|Edg)\/(\d+)/);
   return match ? Number(match[1]) : 0;
 }
@@ -66,6 +71,11 @@ export function refractionSupported(): boolean {
   if (typeof CSS === "undefined") return false;
   if (typeof SVGFEDisplacementMapElement === "undefined") return false;
   if (!CSS.supports("backdrop-filter", 'url("#og-refraction-probe")')) return false;
+  // The campus gateway requires the App's fixed Chrome/79 UA. Blink's vendor
+  // and structuredClone (Chromium 98+) still describe the actual runtime when
+  // Client Hints are unavailable or suppressed by a custom WebView UA.
+  if (/Apple/i.test(navigator.vendor ?? "") || /Firefox\//.test(navigator.userAgent)) return false;
+  if (/Google Inc\./.test(navigator.vendor ?? "") && typeof structuredClone === "function") return true;
   return chromiumMajor() >= REFRACTION_LIMITS.minChromium;
 }
 
@@ -201,6 +211,15 @@ export function installGlassRefraction(selector: string, root: HTMLElement = doc
     lenses.delete(lens.el);
   }
 
+  function pruneDisconnected(): boolean {
+    let removed = false;
+    for (const lens of lenses.values()) if (!lens.el.isConnected) {
+      forget(lens);
+      removed = true;
+    }
+    return removed;
+  }
+
   /** Coalesce every trigger into one bounded pass. */
   function schedule(): void {
     if (frame || stopped) return;
@@ -291,6 +310,7 @@ export function installGlassRefraction(selector: string, root: HTMLElement = doc
   function update(): void {
     frame = 0;
     if (stopped) return;
+    pruneDisconnected();
     const on = active();
     const limit = coarse.matches ? REFRACTION_LIMITS.touchSurfaces : REFRACTION_LIMITS.surfaces;
     const candidates = [...lenses.values()].filter(lens => lens.el.isConnected).sort((a, b) => a.order - b.order);
@@ -354,13 +374,19 @@ export function installGlassRefraction(selector: string, root: HTMLElement = doc
 
   discover(document.body);
   const mutations = new MutationObserver(records => {
+    const removed = pruneDisconnected();
+    let changed = removed;
     for (const record of records) {
+      if (record.target === svg || svg.contains(record.target)) continue;
       for (const added of record.addedNodes) {
         if (!(added instanceof Element) || added === svg || svg.contains(added)) continue;
         discover(added);
+        changed = true;
       }
     }
-    schedule();
+    // Existing nodes that were beyond the candidate budget can now be observed.
+    if (removed) discover(document.body);
+    if (changed) schedule();
   });
   mutations.observe(document.body, { childList: true, subtree: true });
 

@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.widgetsettingssection.174b9ff2e902",
-      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 135,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "No usable sizes were read yet; please report this line's content to the developers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.17a0e39c6089",
-      "source": "日程与 DDL",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 195,
-          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
-        }
-      ],
-      "translation": "Schedule & DDL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.widgetsettingssection.23a5d87729b6",
       "source": "刷新失败，详情见运行日志",
@@ -1280,17 +1248,17 @@
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 437,
+          "line": 441,
           "context": "source: i18n(\"enum.label.aa39cac2b409\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 505,
+          "line": 510,
           "context": "source: i18n(\"enum.label.aa39cac2b409\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 545,
+          "line": 550,
           "context": "source: i18n(\"enum.label.aa39cac2b409\")"
         }
       ],
@@ -1327,6 +1295,38 @@
         }
       ],
       "translation": "International affairs",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.bd2d74b297d1",
+      "source": "课程名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 35,
+          "context": "return t(\"enum.label.bd2d74b297d1\");"
+        }
+      ],
+      "translation": "Course name",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.be67cc45b9f0",
+      "source": "考核安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 40,
+          "context": "return t(\"enum.label.be67cc45b9f0\");"
+        }
+      ],
+      "translation": "Assessment plan",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

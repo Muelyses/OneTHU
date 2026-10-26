@@ -1,23 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.schedule.0eaedd12dc70",
-      "source": "起始时间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1117,
-          "context": "{i18n(\"pages.schedule.0eaedd12dc70\")}"
-        }
-      ],
-      "translation": "Start time",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.schedule.0f02af2d5985",
       "source": "{value} 年 {value2} 月",
@@ -1513,6 +1497,22 @@
         }
       ],
       "translation": "List",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1177,
+          "context": "{i18n(\"pages.schedule.aee887434131\")}"
+        }
+      ],
+      "translation": "Refresh",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

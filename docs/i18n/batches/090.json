@@ -1,7 +1,171 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.orgsync.e6793d4dc90e",
+      "source": "此协作项目已经属于另一个组织，不能用本机资料覆盖",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 155,
+          "context": "new Error(i18n(\"state.orgsync.e6793d4dc90e\"))"
+        }
+      ],
+      "translation": "This collaboration project already belongs to another organization and cannot be overwritten with local content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f1478672fcff",
+      "source": "请填写准确的 GitLab 用户名和清华云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 187,
+          "context": "new Error(i18n(\"state.orgsync.f1478672fcff\"))"
+        }
+      ],
+      "translation": "Enter the exact GitLab username and Tsinghua Cloud Drive email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f9a3b8011053",
+      "source": "找不到组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"state.orgsync.f9a3b8011053\"))"
+        }
+      ],
+      "translation": "Organization not found",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fa0fdd1e567b",
+      "source": "找不到可用的 GitLab 用户名，请让对方在 GitLab 个人资料中确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 190,
+          "context": "new Error(i18n(\"state.orgsync.fa0fdd1e567b\"))"
+        }
+      ],
+      "translation": "No usable GitLab username was found. Ask the other person to confirm it in their GitLab profile.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fb99a121e507",
+      "source": "同步关联资源权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 248,
+          "context": "label:i18n(\"state.orgsync.fb99a121e507\")"
+        }
+      ],
+      "translation": "Sync linked resource permissions",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.fc4f3897fb63",
+      "source": "组织资料必须位于对应 GitLab 私有群组的私有项目内",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 36,
+          "context": "new Error(i18n(\"state.orgsync.fc4f3897fb63\"))"
+        }
+      ],
+      "translation": "Organization content must be in a private project inside the corresponding private GitLab group",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ownerOnly",
+      "source": "只有服务器上的组织负责人可以执行此操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 83,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "Only organization Owners on the server can perform this action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.permissionsUnverified",
+      "source": "关联资源权限尚未核对，请负责人完成权限核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 55,
+          "context": "config.permissionsVerified !== 1 ? i18n(\"state.orgsync.permissionsUnverified\") : undefined"
+        }
+      ],
+      "translation": "Linked resource permissions have not been verified yet. Ask an Owner to complete permission verification.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.removeMemberLabel",
+      "source": "移除成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 218,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Remove member",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.updateMemberLabel",
+      "source": "更新 {username}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 218,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Update {username}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "state.orgsynccore.13447b8f6ab6",
       "source": "降权回读不符",
@@ -765,7 +929,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 326,
+          "line": 328,
           "context": "new Error(i18n(\"state.seafile.0507dadfda6a\"))"
         }
       ],
@@ -781,7 +945,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 246,
+          "line": 248,
           "context": "new Error(i18n(\"state.seafile.15e1ef41e215\"))"
         }
       ],
@@ -797,7 +961,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 426,
+          "line": 428,
           "context": "new Error(i18n(\"state.seafile.2a15ea48f5c7\"))"
         }
       ],
@@ -813,32 +977,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 184,
+          "line": 186,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 279,
+          "line": 281,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 287,
+          "line": 289,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 295,
+          "line": 297,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 303,
+          "line": 305,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 351,
+          "line": 353,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         }
       ],
@@ -854,17 +1018,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 316,
+          "line": 318,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 337,
+          "line": 339,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 344,
+          "line": 346,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         }
       ],
@@ -878,6 +1042,11 @@
       "kind": "text",
       "parameters": [],
       "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 125,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
         {
           "file": "apps/desktop/src/lib/cloudFolder.ts",
           "line": 17,
@@ -941,7 +1110,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 189,
+          "line": 191,
           "context": "new Error(i18n(\"state.seafile.deleteOwnerOnly\"))"
         }
       ],
@@ -978,7 +1147,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 281,
+          "line": 283,
           "context": "showToast(i18nMsg(\"state.seafile.f206fb3a20d8\", { local: String(local) }))"
         }
       ],
@@ -994,7 +1163,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 290,
+          "line": 292,
           "context": "showToast(i18nMsg(\"state.seafile.f423b2f16ab1\"))"
         }
       ],
@@ -1010,7 +1179,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 402,
+          "line": 404,
           "context": "new Error(i18n(\"state.seafile.f6d2148271ab\"))"
         }
       ],
@@ -1077,12 +1246,12 @@
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 188,
+          "line": 190,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 195,
+          "line": 197,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         }
       ],
@@ -1098,7 +1267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 241,
+          "line": 247,
           "context": "error: i18n(\"state.seafileauto.0b66b052d51d\")"
         }
       ],
@@ -1114,7 +1283,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 200,
+          "line": 206,
           "context": "error: i18n(\"state.seafileauto.6064f0dbf06e\")"
         }
       ],
@@ -1130,7 +1299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 102,
+          "line": 107,
           "context": "error: i18n(\"state.seafileauto.64be8fcebc0a\")"
         }
       ],
@@ -1146,7 +1315,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 217,
+          "line": 223,
           "context": "error: i18n(\"state.seafileauto.789c9d831ceb\")"
         }
       ],
@@ -1162,7 +1331,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 197,
+          "line": 203,
           "context": "error: i18n(\"state.seafileauto.ab0d7338c8dd\")"
         }
       ],
@@ -1178,7 +1347,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 203,
+          "line": 209,
           "context": "error: i18n(\"state.seafileauto.b096dd8cc73e\")"
         }
       ],
@@ -1194,7 +1363,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 231,
+          "line": 237,
           "context": "error: i18n(\"state.seafileauto.c82a95d8733d\")"
         }
       ],
@@ -1210,7 +1379,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 96,
+          "line": 100,
           "context": "error: i18n(\"state.seafileauto.d236f74b57c1\")"
         }
       ],
@@ -1226,7 +1395,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 34,
+          "line": 35,
           "context": "() =>\n  i18n(\"state.seafileauto.twoFactorRequired\")"
         }
       ],
@@ -1348,171 +1517,6 @@
         }
       ],
       "translation": "The system calendar settings file is invalid. Restore from a backup and retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.30fb8d6869b0",
-      "source": "校历学期范围无效，已中止同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 243,
-          "context": "new Error(i18n(\"state.systemcal.30fb8d6869b0\"))"
-        }
-      ],
-      "translation": "The academic calendar semester range is invalid; sync was aborted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.3d8856ab74b0",
-      "source": "当前学期作业尚未就绪，请在网络学堂选择当前学期后重试；已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 246,
-          "context": "new Error(i18n(\"state.systemcal.3d8856ab74b0\"))"
-        }
-      ],
-      "translation": "Assignments for the current semester are not ready yet. Select the current semester in Web Learning and retry; the existing system calendar is unchanged",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.5a93b270a6f9",
-      "source": "当前平台不支持系统日历原生同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 490,
-          "context": "new Error(i18n(\"state.systemcal.5a93b270a6f9\"))"
-        }
-      ],
-      "translation": "Native system calendar sync is not supported on this platform",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.746a9d1e0b2c",
-      "source": "日程包含无效起止时间，已中止同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 319,
-          "context": "new Error(i18n(\"state.systemcal.746a9d1e0b2c\"))"
-        }
-      ],
-      "translation": "The schedule contains invalid start or end times; sync was aborted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.854aca2c0e1f",
-      "source": "当前平台不支持系统日历原生同步，可导出日历文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 418,
-          "context": "new Error(i18n(\"state.systemcal.854aca2c0e1f\"))"
-        }
-      ],
-      "translation": "Native system calendar sync is not supported on this platform; you can export a calendar file instead",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.89e7b1c563d7",
-      "source": "整学期拉取失败，保留完整缓存 {length} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(hit.data.entries.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 227,
-          "context": "new Error(i18n(\"state.systemcal.89e7b1c563d7\", { length: String(hit.data.entries.length) }))"
-        }
-      ],
-      "translation": "Full-semester fetch failed; keeping the complete cache of {length} entries",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.8b3f14077824",
-      "source": "整学期数据不完整，保留系统日历已有内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 230,
-          "context": "new Error(i18n(\"state.systemcal.8b3f14077824\"))"
-        }
-      ],
-      "translation": "Full-semester data is incomplete; the existing system calendar content is kept",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ab1abc96899c",
-      "source": "外部作业源尚未完整加载，请刷新网络学堂后重试；已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 249,
-          "context": "new Error(i18n(\"state.systemcal.ab1abc96899c\"))"
-        }
-      ],
-      "translation": "External assignment sources are not fully loaded. Refresh Web Learning and retry; the existing system calendar is unchanged",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ae887c4815af",
-      "source": "校历尚未就绪，请打开日程加载学期后重试；已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 241,
-          "context": "new Error(i18n(\"state.systemcal.ae887c4815af\"))"
-        }
-      ],
-      "translation": "The academic calendar is not ready yet. Open the Schedule to load the semester and retry; the existing system calendar is unchanged",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.b170ef2db7ca",
-      "source": "系统日历正在同步或移除中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 411,
-          "context": "new Error(i18n(\"state.systemcal.b170ef2db7ca\"))"
-        }
-      ],
-      "translation": "The system calendar is being synced or removed",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

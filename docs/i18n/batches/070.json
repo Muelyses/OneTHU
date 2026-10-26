@@ -1,23 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.schedule.aee887434131",
-      "source": "刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1177,
-          "context": "{i18n(\"pages.schedule.aee887434131\")}"
-        }
-      ],
-      "translation": "Refresh",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.schedule.af3a93e86aa6",
       "source": " · 考试",
@@ -1400,11 +1384,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 90,
+          "line": 105,
           "context": "return i18n(\"pages.settings.0240f8fe7f39\");"
         }
       ],
       "translation": "Open the plugin market filtered to themes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.02bd4c1bfaf2",
+      "source": "云盘同步与恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 120,
+          "context": "return i18n(\"pages.settings.02bd4c1bfaf2\");"
+        }
+      ],
+      "translation": "Cloud drive sync & restore",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

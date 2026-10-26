@@ -1,44 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.gitlabpage.51ff92f247e0",
-      "source": "读取流水线…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1486,
-          "context": "{i18n(\"pages.gitlabpage.51ff92f247e0\")}"
-        }
-      ],
-      "translation": "Loading pipelines…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.52a935b7c8d8",
-      "source": "已创建合并请求 !{iid}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "iid",
-          "expression": "String(mr.iid)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1290,
-          "context": "showToast(i18nMsg(\"pages.gitlabpage.52a935b7c8d8\", { iid: String(mr.iid) }))"
-        }
-      ],
-      "translation": "Merge request !{iid} created",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.gitlabpage.52daa71ebc31",
       "source": "目录",
@@ -1468,6 +1431,38 @@
         }
       ],
       "translation": "(no description)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.cf945e21ddef",
+      "source": "回复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 953,
+          "context": "replying ? i18n(\"pages.gitlabpage.d346633d3a4e\") : i18n(\"pages.gitlabpage.cf945e21ddef\")"
+        }
+      ],
+      "translation": "Reply",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.cfcbf4636b9f",
+      "source": "重新打开讨论",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 955,
+          "context": "resolved ? i18n(\"pages.gitlabpage.cfcbf4636b9f\") : i18n(\"pages.gitlabpage.319f50e7c074\")"
+        }
+      ],
+      "translation": "Reopen discussion",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

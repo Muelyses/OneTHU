@@ -14,8 +14,8 @@
  */
 
 const GENERIC_LABELS = new Set([
-  "下载", "点击下载", "下载附件", "附件", "文件", "查看", "预览", "打开",
-  "download", "download file", "click to download", "attachment", "file", "view", "preview", "open",
+  "下载", "点击下载", "下载附件", "下载文件", "点击下载附件", "附件", "文件", "查看", "预览", "打开",
+  "download", "download file", "download attachment", "click to download", "attachment", "file", "view", "preview", "open",
 ]);
 
 /** 常见文件扩展名（用来从装饰文本里抠出真名，也用来优先选择带后缀候选） */
@@ -44,11 +44,11 @@ function clean(raw: string | undefined): string {
 }
 
 function fileNameFromPath(value: string): string {
-  const decoded = decodeEntities(value);
   try {
+    const decoded = decodeURIComponent(decodeEntities(value)).replace(/\\/g, "/");
     const path = decoded.split(/[?#]/)[0] ?? "";
     const seg = path.split("/").filter(Boolean).pop() ?? "";
-    const name = clean(decodeURIComponent(seg));
+    const name = clean(seg);
     return HAS_EXT_RE.test(name) ? name : "";
   } catch {
     return "";
@@ -82,7 +82,9 @@ export function attachmentNameFromUrl(url: string): string {
       // filePath/path 可能是一整串路径，取 basename
       const fromPath = fileNameFromPath(value);
       if (fromPath) out.push(fromPath);
-      out.push(value);
+      // A URL/path without a filename is not a name. Keep it empty so callers
+      // can use the notification list's original fjmc rather than an endpoint.
+      if (!/[\\/]/.test(value)) out.push(value);
       const fromValuePath = fileNameFromPath(value.replace(/\\/g, "/"));
       if (fromValuePath) out.push(fromValuePath);
     }
@@ -112,19 +114,14 @@ export function learnAttachmentName(input: AttachmentNameInput): string {
   for (const key of ["download", "title", "data-name", "data-filename", "data-title", "aria-label"]) {
     if (attrs[key]) candidates.push(attrs[key]!);
   }
+  if (input.text) candidates.push(input.text);
   if (input.downloadUrl) {
     candidates.push(attachmentNameFromUrl(input.downloadUrl));
-    try {
-      candidates.push(decodeURIComponent(input.downloadUrl));
-    } catch {
-      candidates.push(input.downloadUrl);
-    }
   }
   if (input.href) {
     candidates.push(attachmentNameFromUrl(input.href));
     const fromPath = fileNameFromPath(input.href);
     if (fromPath) candidates.push(fromPath);
   }
-  if (input.text) candidates.push(input.text);
   return pick(candidates);
 }

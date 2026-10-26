@@ -52,4 +52,8 @@ eq(attachmentNameFromUrl("?filename=lecture-01.pptx"), "lecture-01.pptx", "filen
 eq(learnAttachmentName({ text: "附件", attributes: { download: "notes.md" } }), "notes.md", "download 属性");
 eq(learnAttachmentName({ text: "下载", href: "?wjid=1" }), "", "确实没有真名时返回空串（不伪造）");
 
+eq(learnAttachmentName({text:'下载',href:'/b/download?wjid=1&downloadUrl=%2Fb%2Ffile%3Fwjid%3D1',downloadUrl:'/b/file?wjid=1'}),'','unnamed endpoints stay empty for the fjmc fallback');
+eq(learnAttachmentName({text:'Download attachment',href:'?wjid=1'}),'','English action labels are not filenames');
+eq(learnAttachmentName({text:'真正名称.docx',downloadUrl:'/storage/opaque.zip'}),'真正名称.docx','visible original filename wins over a storage path');
+eq(learnAttachmentName({text:'下载',downloadUrl:'%2Fstorage%2F%E8%AF%BE%E4%BB%B6.pdf'}),'课件.pdf','decode the path before taking its basename');
 console.log(`\n${pass} 个附件名断言通过`);

@@ -577,11 +577,11 @@ export function startMadModelPump(): void {
     );
   };
   void tick();
-  setInterval(tick, 10 * 60_000).unref?.();
+  (setInterval(tick, 10 * 60_000) as ReturnType<typeof setInterval> & { unref?: () => void }).unref?.();
   // 免费档没签出来时 60s 快速重试（校园网刚连上/刚回校的场景，不必等满 10 分钟）
-  setInterval(() => {
+  (setInterval(() => {
     if (!madmodelActive()) return;
     if (String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "")) return;
     void preflightMadModel().catch(() => undefined);
-  }, 60_000).unref?.();
+  }, 60_000) as ReturnType<typeof setInterval> & { unref?: () => void }).unref?.();
 }

@@ -1,7 +1,177 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.data.f830684c231e",
+      "source": "线性代数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 2123,
+          "context": "name: i18n(\"state.data.f830684c231e\")"
+        }
+      ],
+      "translation": "Linear Algebra",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.data.f9b45f6b66e0",
+      "source": "示例同学",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 2183,
+          "context": "name: i18n(\"state.data.f9b45f6b66e0\")"
+        },
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 2223,
+          "context": "name: i18n(\"state.data.f9b45f6b66e0\")"
+        }
+      ],
+      "translation": "Sample student",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.data.fc8f70858d9c",
+      "source": "课余量排队人数获取失败，可稍后重试（登录状态已自动重建）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1978,
+          "context": "setToast(i18n(\"state.data.fc8f70858d9c\"))"
+        }
+      ],
+      "translation": "Failed to fetch remaining seats and queue counts; you can retry later (your session was rebuilt automatically)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.14384c9d60cc",
+      "source": "教学评估",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 256,
+          "context": "return i18n(\"state.explorer.14384c9d60cc\");"
+        }
+      ],
+      "translation": "Teaching evaluation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 254,
+          "context": "return i18n(\"state.explorer.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 175,
+          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
+        },
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 263,
+          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.22519a88484f",
+      "source": "课程详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 232,
+          "context": "return i18n(\"state.explorer.22519a88484f\");"
+        }
+      ],
+      "translation": "Course details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.231ff6cd9b63",
+      "source": "学期切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 237,
+          "context": "return i18n(\"state.explorer.231ff6cd9b63\");"
+        }
+      ],
+      "translation": "Switch semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.24be2018df29",
+      "source": "银行代发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 257,
+          "context": "return i18n(\"state.explorer.24be2018df29\");"
+        }
+      ],
+      "translation": "Payroll",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.27b6154b3fd3",
+      "source": "文件详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 241,
+          "context": "return i18n(\"state.explorer.27b6154b3fd3\");"
+        }
+      ],
+      "translation": "File details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.explorer.2d3197fccc89",
       "source": "网络学堂 · 搜索",
@@ -1204,176 +1374,6 @@
         }
       ],
       "translation": "The recipient cannot be empty",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.mail.e9a7b9e11064",
-      "source": "邮箱账号已改变，请重新打开邮件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/mail.ts",
-          "line": 73,
-          "context": "new Error(i18n(\"state.mail.e9a7b9e11064\"))"
-        }
-      ],
-      "translation": "The mail account has changed. Please reopen your mail.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.namecard.6344e8e2c076",
-      "source": "名片 · {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(doc.personal.name || \"我\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/nameCard.ts",
-          "line": 274,
-          "context": "title: i18n(\"state.namecard.6344e8e2c076\", { value: String(doc.personal.name || \"我\") })"
-        }
-      ],
-      "translation": "Card · {value}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.namecard.e769cfbccd53",
-      "source": "组织名片 · {name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(org.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/nameCard.ts",
-          "line": 278,
-          "context": "title: i18n(\"state.namecard.e769cfbccd53\", { name: String(org.name) })"
-        }
-      ],
-      "translation": "Organization card · {name}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.navigation.06657c279571",
-      "source": "通讯录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 80,
-          "context": "return i18n(\"state.navigation.06657c279571\");"
-        }
-      ],
-      "translation": "Contacts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.07a0fa11958e",
-      "source": "体育预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 122,
-          "context": "return i18n(\"state.navigation.07a0fa11958e\");"
-        }
-      ],
-      "translation": "Sports reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.082bbf74eb0f",
-      "source": "查看余额与收支记录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 108,
-          "context": "return i18n(\"state.navigation.082bbf74eb0f\");"
-        }
-      ],
-      "translation": "View balance and transaction records",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.10532ed2578b",
-      "source": "查看考试时间与考场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 93,
-          "context": "return i18n(\"state.navigation.10532ed2578b\");"
-        }
-      ],
-      "translation": "View exam times and exam rooms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.14384c9d60cc",
-      "source": "教学评估",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 94,
-          "context": "return i18n(\"state.navigation.14384c9d60cc\");"
-        }
-      ],
-      "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 102,
-          "context": "return i18n(\"state.navigation.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.1760b98532ec",
-      "source": "在线服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 133,
-          "context": "return i18n(\"state.navigation.1760b98532ec\");"
-        }
-      ],
-      "translation": "Online services",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

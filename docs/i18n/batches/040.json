@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.trace.53874092e000",
-      "source": "腾讯",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/trace.ts",
-          "line": 286,
-          "context": "return i18n(\"lib.trace.53874092e000\");"
-        }
-      ],
-      "translation": "Tencent",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.trace.7c25d6aa499e",
-      "source": "高德",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/trace.ts",
-          "line": 285,
-          "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
-        }
-      ],
-      "translation": "Amap",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.trace.7f21257362cb",
       "source": "驾车",
@@ -145,7 +113,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 450,
+          "line": 456,
           "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
         }
       ],
@@ -182,7 +150,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 521,
+          "line": 527,
           "context": "return i18n(\"lib.transport.browserCors\");"
         }
       ],
@@ -246,7 +214,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 505,
+          "line": 511,
           "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
         }
       ],
@@ -262,7 +230,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 499,
+          "line": 505,
           "context": "return i18n(\"lib.transport.noReason\");"
         }
       ],
@@ -278,7 +246,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 511,
+          "line": 517,
           "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
         }
       ],
@@ -298,7 +266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 518,
+          "line": 524,
           "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
         }
       ],
@@ -314,7 +282,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 524,
+          "line": 530,
           "context": "return i18n(\"lib.transport.timeoutAdvice\");"
         }
       ],
@@ -1493,6 +1461,38 @@
         }
       ],
       "translation": "Verification code is wrong or expired",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.venue.7f658db5a72c",
+      "source": "本机无记住的统一身份凭证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 165,
+          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.7f658db5a72c\"))"
+        }
+      ],
+      "translation": "No remembered unified identity credentials on this device",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.venue.85e08a6d9846",
+      "source": "CAS 链尾不是登录表单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 247,
+          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.85e08a6d9846\"))"
+        }
+      ],
+      "translation": "The CAS chain doesn't end at a login form",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

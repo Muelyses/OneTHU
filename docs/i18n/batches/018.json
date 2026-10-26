@@ -1,5 +1,5 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -863,7 +863,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 218,
+          "line": 179,
           "context": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
         }
       ],
@@ -879,7 +879,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 226,
+          "line": 187,
           "context": "{i18n(\"components.ohsettingspage.0407dbdaf0dd\")}"
         }
       ],
@@ -895,7 +895,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 269,
+          "line": 249,
           "context": "{i18n(\"components.ohsettingspage.066c7402ec5f\")}"
         }
       ],
@@ -911,7 +911,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 201,
+          "line": 162,
           "context": "{i18n(\"components.ohsettingspage.0e5b7545605e\")}"
         }
       ],
@@ -975,7 +975,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 292,
+          "line": 272,
           "context": "{i18n(\"components.ohsettingspage.359213279505\")}"
         }
       ],
@@ -991,8 +991,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 131,
-          "context": "item(\"advanced\", i18n(\"components.ohsettingspage.36a045ebcc6d\"))"
+          "line": 212,
+          "context": "id === \"basic\" ? i18n(\"components.ohsettingspage.692873ddd8f4\") : i18n(\"components.ohsettingspage.36a045ebcc6d\")"
         }
       ],
       "translation": "Advanced configuration",
@@ -1007,7 +1007,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 287,
+          "line": 267,
           "context": "{i18n(\"components.ohsettingspage.3c02623c9a2b\")}"
         }
       ],
@@ -1023,7 +1023,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 299,
+          "line": 279,
           "context": "{i18n(\"components.ohsettingspage.3f0404bdc67a\")}"
         }
       ],
@@ -1039,7 +1039,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 265,
+          "line": 245,
           "context": "{i18n(\"components.ohsettingspage.444fd1f85256\")}"
         }
       ],
@@ -1071,7 +1071,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 262,
+          "line": 242,
           "context": "{i18n(\"components.ohsettingspage.4f0d5e092ff1\")}"
         }
       ],
@@ -1119,7 +1119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 202,
+          "line": 163,
           "context": "{i18n(\"components.ohsettingspage.605427ab6130\")}"
         }
       ],
@@ -1135,7 +1135,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 128,
+          "line": 217,
+          "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 218,
           "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
         }
       ],
@@ -1151,8 +1156,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 130,
-          "context": "item(\"basic\", i18n(\"components.ohsettingspage.692873ddd8f4\"))"
+          "line": 212,
+          "context": "id === \"basic\" ? i18n(\"components.ohsettingspage.692873ddd8f4\") : i18n(\"components.ohsettingspage.36a045ebcc6d\")"
         }
       ],
       "translation": "Basic settings",
@@ -1167,7 +1172,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 283,
+          "line": 263,
           "context": "{i18n(\"components.ohsettingspage.6d47abc2d3c7\")}"
         }
       ],
@@ -1199,7 +1204,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 259,
+          "line": 239,
           "context": "{i18n(\"components.ohsettingspage.72704d8e1e47\")}"
         }
       ],
@@ -1236,7 +1241,7 @@
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 268,
+          "line": 248,
           "context": "{i18n(\"components.ohsettingspage.898487493b0d\")}"
         }
       ],
@@ -1252,7 +1257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 256,
+          "line": 236,
           "context": "{i18n(\"components.ohsettingspage.89fcbbfdca16\")}"
         }
       ],
@@ -1284,7 +1289,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 182,
+          "line": 143,
           "context": "{i18n(\"components.ohsettingspage.a2b21883b5f3\")}"
         }
       ],
@@ -1316,7 +1321,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
+          "line": 133,
           "context": "!madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
@@ -1332,12 +1337,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 204,
+          "line": 165,
           "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 271,
+          "line": 251,
           "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
         }
       ],
@@ -1358,7 +1363,7 @@
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 217,
+          "line": 178,
           "context": "{i18n(\"components.ohsettingspage.d096e4516aa5\")}"
         }
       ],

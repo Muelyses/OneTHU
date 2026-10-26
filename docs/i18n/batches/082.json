@@ -1,112 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "profile.sync.visualHelp",
-      "source": "两台设备对同一处做了不同修改。选你想保留的卡片或内容，其他不冲突的修改都会保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 86,
-          "context": "{t(\"profile.sync.visualHelp\")}"
-        }
-      ],
-      "translation": "Both devices changed the same thing differently. Choose the card or content you want to keep. Other compatible changes will be kept.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "prompt.input",
-      "source": "输入内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/confirm.tsx",
-          "line": 139,
-          "context": "request ? resolveMessage(request.title) : t(\"prompt.input\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/confirm.tsx",
-          "line": 163,
-          "context": "shown ? resolveMessage(shown.title) : t(\"prompt.input\")"
-        }
-      ],
-      "translation": "Enter text",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "schedule.secondary.invalidSemester",
-      "source": "请先刷新校历，再加载二级课表。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 653,
-          "context": "new Error(i18n(\"schedule.secondary.invalidSemester\"))"
-        }
-      ],
-      "translation": "Refresh the academic calendar before loading secondary courses.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "schedule.secondary.refreshFailed",
-      "source": "二级课表暂未刷新，已显示其他课程。可在日程设置中重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 454,
-          "context": "setWinError(i18n(\"schedule.secondary.refreshFailed\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 114,
-          "context": "setMonthError(i18n(\"schedule.secondary.refreshFailed\"))"
-        }
-      ],
-      "translation": "Secondary courses could not be refreshed. Other courses are shown. Retry in Schedule settings.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "schedule.secondary.unavailable",
-      "source": "二级课表页面暂不可用，请刷新重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 664,
-          "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
-        },
-        {
-          "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 667,
-          "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
-        },
-        {
-          "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 684,
-          "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
-        },
-        {
-          "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 711,
-          "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
-        }
-      ],
-      "translation": "The secondary timetable page is unavailable. Please refresh and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "settings.label.about",
       "source": "关于",
@@ -258,6 +153,21 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
+      "key": "settings.label.features",
+      "source": "功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
       "key": "settings.label.geek",
       "source": "极客模式",
       "kind": "text",
@@ -333,6 +243,22 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
+      "key": "settings.label.language",
+      "source": "语言",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 370,
+          "context": "{i18n(\"settings.label.language\")}"
+        }
+      ],
+      "translation": "Language",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
       "key": "settings.label.market",
       "source": "插件市场",
       "kind": "text",
@@ -346,6 +272,22 @@
       "translation": "Plugin marketplace",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.mode",
+      "source": "使用模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 366,
+          "context": "{i18n(\"settings.label.mode\")}"
+        }
+      ],
+      "translation": "Experience",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "settings.label.myPlugins",
@@ -715,7 +657,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/LanguageControl.tsx",
-          "line": 20,
+          "line": 22,
           "context": "{t(\"settings.language.description\")}"
         }
       ],
@@ -733,16 +675,196 @@
           "file": "apps/desktop/src/components/LanguageControl.tsx",
           "line": 12,
           "context": "compact\n    ? `${localeTable(\"zh-CN\")[\"settings.language.title\"]} / ${localeTable(\"en-US\")[\"settings.language.title\"]}`\n    : t(\"settings.language.title\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LanguageControl.tsx",
-          "line": 20,
-          "context": "{t(\"settings.language.title\")}"
         }
       ],
       "translation": "Language",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "settings.tab.desc.about",
+      "source": "版本更新、诊断信息与开源项目。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Version updates, diagnostics and the open-source project.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.account",
+      "source": "登录、云同步与外部作业源都在这里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Account, sync and external homework sources.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.appearance",
+      "source": "主题、壁纸、玻璃程度与首页布局。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Theme, wallpaper, glass level and home layout.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.downloads",
+      "source": "下载目录与缓存管理。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Download folder and cache management.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.features",
+      "source": "使用模式、快捷入口、收藏夹与小组件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Experience mode, quick actions, favorites and widgets.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.help",
+      "source": "操作指南与重新运行新手导览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Guides and replaying the onboarding tour.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.tab.desc.notifications",
+      "source": "课程、日程与作业提醒的推送方式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "How course, schedule and homework reminders reach you.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.wallpaper.day",
+      "source": "白天背景",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 799,
+          "context": "{i18n(\"settings.wallpaper.day\")}"
+        }
+      ],
+      "translation": "Day background",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.wallpaper.dayDesc",
+      "source": "系统处于白天时使用；不指定则沿用常驻壁纸。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 800,
+          "context": "{i18n(\"settings.wallpaper.dayDesc\")}"
+        }
+      ],
+      "translation": "Shown while the system is in light mode; falls back to the regular wallpaper.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.wallpaper.inherit",
+      "source": "沿用常驻壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 680,
+          "context": "label: i18n(\"settings.wallpaper.inherit\")"
+        }
+      ],
+      "translation": "Use the regular wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "settings.wallpaper.night",
+      "source": "黑夜背景",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 804,
+          "context": "{i18n(\"settings.wallpaper.night\")}"
+        }
+      ],
+      "translation": "Night background",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.wallpaper.nightDesc",
+      "source": "系统处于黑夜时使用；不指定则沿用常驻壁纸。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 805,
+          "context": "{i18n(\"settings.wallpaper.nightDesc\")}"
+        }
+      ],
+      "translation": "Shown while the system is in dark mode; falls back to the regular wallpaper.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
     },
     {
       "key": "skills.check",
@@ -1164,185 +1286,6 @@
         }
       ],
       "translation": "The downloaded content is not a valid skill ZIP package.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.path",
-      "source": "技能包含不安全或重复路径，已拒绝导入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 74,
-          "context": "SKILL_UNSAFE_PATH: t(\"skills.error.path\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 74,
-          "context": "SKILL_DUPLICATE_PATH: t(\"skills.error.path\")"
-        }
-      ],
-      "translation": "The package contains unsafe or duplicate paths and was rejected.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.runtime",
-      "source": "运行环境检查失败，请更新并重启应用。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 78,
-          "context": "SKILL_RUNTIME_FAILED: t(\"skills.error.runtime\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 49,
-          "context": "new Error(t(\"skills.error.runtime\"))"
-        }
-      ],
-      "translation": "The runtime check failed. Update and restart the app.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.script",
-      "source": "脚本未能完成：可能需要此环境没有的功能，或超出内存、堆栈与输出限制。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 76,
-          "context": "SKILL_SCRIPT_FAILED: t(\"skills.error.script\")"
-        }
-      ],
-      "translation": "The script could not finish. It may need unavailable capabilities or exceed memory, stack or output limits.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.text",
-      "source": "此文件不是可读取的 UTF-8 文本。请导出后用本地程序打开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 80,
-          "context": "SKILL_TEXT_ONLY: t(\"skills.error.text\")"
-        }
-      ],
-      "translation": "This is not readable UTF-8 text. Export it and open it with a local application.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.textSize",
-      "source": "文本超过单次读取的 256 KB 限制，请导出后阅读。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 80,
-          "context": "SKILL_TEXT_TOO_LARGE: t(\"skills.error.textSize\")"
-        }
-      ],
-      "translation": "The text exceeds the 256 KB reading limit. Export it to read locally.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.error.time",
-      "source": "计算超过 2 秒，已停止。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/skills.ts",
-          "line": 76,
-          "context": "SKILL_TIME_LIMIT: t(\"skills.error.time\")"
-        }
-      ],
-      "translation": "Computation stopped after exceeding 2 seconds.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.export",
-      "source": "保存给电脑 Agent",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 84,
-          "context": "{t(\"skills.export\")}"
-        }
-      ],
-      "translation": "Save for a desktop agent",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.exported",
-      "source": "已保存：{path}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "path"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 83,
-          "context": "setNotice(t(\"skills.exported\", { path }))"
-        }
-      ],
-      "translation": "Saved to: {path}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.exportHelp",
-      "source": "电脑：选择文件夹并保存完整技能目录。手机：保存 ZIP 到下载位置，传到电脑后解压。自行让 Agent 接入，不会自动安装依赖。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 89,
-          "context": "{t(\"skills.exportHelp\")}"
-        }
-      ],
-      "translation": "Desktop: choose a folder for the complete skill directory. Mobile: save a ZIP to Downloads, then transfer and unpack it on your computer. Connect it to your agent yourself; dependencies are not installed automatically.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.external",
-      "source": "需电脑 Agent",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 58,
-          "context": "item.compatibility === \"external-agent\" ? t(\"skills.external\") : item.enabled ? t(\"skills.enabled\") : t(\"skills.disabled\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 69,
-          "context": "installed.compatibility === \"text\" ? t(\"skills.compatible\") : t(\"skills.external\")"
-        }
-      ],
-      "translation": "Requires a desktop agent",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

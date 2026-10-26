@@ -1,7 +1,172 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.cloudcal.6d9090d5290b",
+      "source": "邮箱连接配置损坏，请重新配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 122,
+          "context": "new Error(i18n(\"state.cloudcal.6d9090d5290b\"))"
+        }
+      ],
+      "translation": "The mail connection configuration is corrupted. Please set it up again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.72574f41faea",
+      "source": "服务器返回了无效日历，已保留本地镜像",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 281,
+          "context": "new Error(i18n(\"state.cloudcal.72574f41faea\"))"
+        }
+      ],
+      "translation": "The server returned an invalid calendar; the local mirror was kept",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.8120a4a0177c",
+      "source": "课表含无法识别的场次，未修改云日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 516,
+          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 583,
+          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
+        }
+      ],
+      "translation": "The timetable contains unrecognized sessions; the cloud calendar was not modified",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.812d9e62ba2d",
+      "source": "日程版本信息缺失，请先同步再编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 320,
+          "context": "new Error(i18n(\"state.cloudcal.812d9e62ba2d\"))"
+        }
+      ],
+      "translation": "Schedule version info is missing. Sync first before editing.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.892291a664b5",
+      "source": "新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 382,
+          "context": "new Error(i18n(\"state.cloudcal.892291a664b5\"))"
+        }
+      ],
+      "translation": "The new location was saved, but cleaning up the original location failed and both schedules are kept. Sync first, then clean up the duplicates.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.bd5ff99826df",
+      "source": "未找到日程，请先同步后再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 336,
+          "context": "new Error(i18n(\"state.cloudcal.bd5ff99826df\"))"
+        }
+      ],
+      "translation": "Schedule not found. Sync first, then delete.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.e2f9152c9203",
+      "source": "学期信息无效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 458,
+          "context": "new Error(i18n(\"state.cloudcal.e2f9152c9203\"))"
+        }
+      ],
+      "translation": "Invalid semester info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.f3f8e2d173eb",
+      "source": "云同步配置已变更，本次验证结果未应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 247,
+          "context": "new Error(i18n(\"state.cloudcal.f3f8e2d173eb\"))"
+        }
+      ],
+      "translation": "The cloud sync configuration has changed; the verification result was not applied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fc42ba627dce",
+      "source": "日程版本信息缺失，请先同步再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 337,
+          "context": "new Error(i18n(\"state.cloudcal.fc42ba627dce\"))"
+        }
+      ],
+      "translation": "Schedule version info is missing. Sync first before deleting.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fe20ed20d492",
+      "source": "云日历缓存损坏，未覆盖已有日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 146,
+          "context": "new Error(i18n(\"state.cloudcal.fe20ed20d492\"))"
+        }
+      ],
+      "translation": "The cloud calendar cache is corrupted; existing schedules were not overwritten",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.cloudexchange.388fc6c63ebe",
       "source": "分享内容超过支持的大小",
@@ -1379,176 +1544,6 @@
         }
       ],
       "translation": "Adjusted library hours during holidays",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.data.f830684c231e",
-      "source": "线性代数",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/data.ts",
-          "line": 2123,
-          "context": "name: i18n(\"state.data.f830684c231e\")"
-        }
-      ],
-      "translation": "Linear Algebra",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.data.f9b45f6b66e0",
-      "source": "示例同学",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/data.ts",
-          "line": 2183,
-          "context": "name: i18n(\"state.data.f9b45f6b66e0\")"
-        },
-        {
-          "file": "apps/desktop/src/state/data.ts",
-          "line": 2223,
-          "context": "name: i18n(\"state.data.f9b45f6b66e0\")"
-        }
-      ],
-      "translation": "Sample student",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.data.fc8f70858d9c",
-      "source": "课余量排队人数获取失败，可稍后重试（登录状态已自动重建）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/data.ts",
-          "line": 1978,
-          "context": "setToast(i18n(\"state.data.fc8f70858d9c\"))"
-        }
-      ],
-      "translation": "Failed to fetch remaining seats and queue counts; you can retry later (your session was rebuilt automatically)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.14384c9d60cc",
-      "source": "教学评估",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 256,
-          "context": "return i18n(\"state.explorer.14384c9d60cc\");"
-        }
-      ],
-      "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 254,
-          "context": "return i18n(\"state.explorer.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.203c08e0d44a",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 175,
-          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
-        },
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 263,
-          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.22519a88484f",
-      "source": "课程详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 232,
-          "context": "return i18n(\"state.explorer.22519a88484f\");"
-        }
-      ],
-      "translation": "Course details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 237,
-          "context": "return i18n(\"state.explorer.231ff6cd9b63\");"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.24be2018df29",
-      "source": "银行代发",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 257,
-          "context": "return i18n(\"state.explorer.24be2018df29\");"
-        }
-      ],
-      "translation": "Payroll",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.27b6154b3fd3",
-      "source": "文件详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 241,
-          "context": "return i18n(\"state.explorer.27b6154b3fd3\");"
-        }
-      ],
-      "translation": "File details",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

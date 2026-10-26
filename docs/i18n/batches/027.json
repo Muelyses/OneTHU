@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.vault.vaultitempresentation.d4f7864690bb",
-      "source": "Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 26,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
-        }
-      ],
-      "translation": "Info app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.dd42589239f7",
-      "source": "合并请求",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 21,
-          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
-        }
-      ],
-      "translation": "Merge request",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.vault.vaultitempresentation.df7a65bb1371",
       "source": "教室",
@@ -1367,6 +1335,38 @@
         }
       ],
       "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3b6c48ce496b",
+      "source": "全部恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
+        }
+      ],
+      "translation": "Restore all defaults",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

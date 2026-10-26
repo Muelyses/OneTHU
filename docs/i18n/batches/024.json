@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.tourillustration.7d20856e7f07",
-      "source": "内容可以自由组织，完整设置随时保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
-          "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
-        }
-      ],
-      "translation": "Content can be organized freely, and your full settings are kept at all times.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tourillustration.8173df51f2a7",
-      "source": "首页会把今日待办和下一节课整理清楚。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
-          "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
-        }
-      ],
-      "translation": "Home lays out today’s tasks and the next class clearly.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.tourillustration.81a9402f9808",
       "source": "仅为操作示意，不会修改你的内容",
@@ -522,7 +490,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
+          "line": 258,
           "context": "subtitle: i18n(\"components.tourstudiomodels.06f8b75c9666\")"
         }
       ],
@@ -538,12 +506,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 229,
+          "line": 271,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 273,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ],
@@ -559,7 +527,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -575,7 +543,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
+          "line": 258,
           "context": "title: i18n(\"components.tourstudiomodels.1c23243a9085\")"
         }
       ],
@@ -591,7 +559,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 273,
           "context": "badge: i18n(\"components.tourstudiomodels.21c80015e886\")"
         }
       ],
@@ -607,12 +575,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 229,
+          "line": 271,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 273,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ],
@@ -628,7 +596,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 218,
+          "line": 260,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -644,7 +612,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 229,
+          "line": 271,
           "context": "badge: i18n(\"components.tourstudiomodels.49ef840efe6f\")"
         }
       ],
@@ -660,7 +628,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 218,
+          "line": 260,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -676,7 +644,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -692,7 +660,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
+          "line": 258,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.6fef00bb252c\")"
         }
       ],
@@ -708,7 +676,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -724,7 +692,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -740,7 +708,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 229,
+          "line": 271,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.90c7cebe15c6\")"
         }
       ],
@@ -756,7 +724,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 273,
           "context": "title: i18n(\"components.tourstudiomodels.92f20b9fa474\")"
         }
       ],
@@ -772,7 +740,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 218,
+          "line": 260,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -788,7 +756,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 272,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.b0c8602734bb\")"
         }
       ],
@@ -804,7 +772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 149,
+          "line": 163,
           "context": "new Error(i18n(\"components.tourstudiomodels.cf4324a5411f\"))"
         }
       ],
@@ -820,7 +788,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 229,
+          "line": 271,
           "context": "title: i18n(\"components.tourstudiomodels.d38b22e68fc1\")"
         }
       ],
@@ -836,7 +804,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 273,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.d513aac3caac\")"
         }
       ],
@@ -852,7 +820,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -868,7 +836,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 261,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -889,12 +857,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 32,
+          "line": 33,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(source.key) }))"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 117,
+          "line": 120,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(key) }))"
         }
       ],
@@ -1311,6 +1279,43 @@
       "translation": "All share codes",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.533f11fea9a2",
+      "source": "持有口令即可接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 110,
+          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
+        }
+      ],
+      "translation": "Anyone holding the share code can receive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
+      "source": "已发出口令{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "currentCount ? ` · ${currentCount}` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 95,
+          "context": "{i18nRich(\"components.vault.issuedsharescard.5c07ccfd4b6e\", { value: currentCount ? ` · ${currentCount}` : \"\" })}"
+        }
+      ],
+      "translation": "Share codes issued{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

@@ -454,6 +454,12 @@ try {
   const legacyUa = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/90.0.4430.210 Mobile Safari/537.36";
   const legacy = await newPage(legacyUa);
   active = legacy;
+  // Emulate the missing runtime capability too. A UA-only override must not
+  // misclassify a modern WebView that uses OneTHU's campus-compatible UA.
+  await legacy.page.addInitScript(() => {
+    Object.defineProperty(globalThis, "structuredClone", { value: undefined, configurable: true });
+    Object.defineProperty(navigator, "userAgentData", { value: { brands: [{ brand: "Chromium", version: "90" }] }, configurable: true });
+  });
   await legacy.page.goto(base + "/?explorer-preview=home");
   await legacy.page.locator(".free-item:visible").first().waitFor();
   await legacy.page.waitForTimeout(500);

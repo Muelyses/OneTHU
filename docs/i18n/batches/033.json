@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.cloudtokenwebview.172f588670fa",
-      "source": "已取消读取云盘访问口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 80,
-          "context": "new Error(i18n(\"lib.cloudtokenwebview.172f588670fa\"))"
-        }
-      ],
-      "translation": "Reading the cloud drive access token was canceled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.27ac14d14b12",
-      "source": "云盘页面没有返回有效内容，请重试或手动粘贴访问口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 83,
-          "context": "new Error(i18n(\"lib.cloudtokenwebview.27ac14d14b12\"))"
-        }
-      ],
-      "translation": "The cloud drive page returned no valid content; try again or paste the access token manually.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.cloudtokenwebview.63c8ea2f536a",
       "source": "应用内云盘登录仅能在 OneTHU 中使用。",
@@ -58,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 141,
+          "line": 143,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ],
@@ -74,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 141,
+          "line": 143,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ],
@@ -695,7 +663,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/glassLevel.ts",
-          "line": 20,
+          "line": 22,
           "context": "label: i18n(\"lib.glasslevel.02180509cf78\")"
         }
       ],
@@ -727,7 +695,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/glassLevel.ts",
-          "line": 18,
+          "line": 23,
           "context": "label: i18n(\"lib.glasslevel.3ea0f0b117e3\")"
         }
       ],
@@ -743,7 +711,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/glassLevel.ts",
-          "line": 19,
+          "line": 20,
           "context": "label: i18n(\"lib.glasslevel.484d55613910\")"
         }
       ],
@@ -1340,6 +1308,38 @@
         }
       ],
       "translation": "Web Learning search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.640803d89773",
+      "source": "个人信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 136,
+          "context": "return i18n(\"lib.homecards.640803d89773\");"
+        }
+      ],
+      "translation": "Personal info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 138,
+          "context": "return i18n(\"lib.homecards.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

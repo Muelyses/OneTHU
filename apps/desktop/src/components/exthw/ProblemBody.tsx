@@ -134,7 +134,6 @@ export function resolveEffectiveBg(el: Element | null): { bg: string; flush: boo
     if (alpha < 0.01) { cur = cur.parentElement; continue; }          // 全透明：继续向上
     if (alpha < 0.995) return { bg: "transparent", flush: true };      // 玻璃：不复制
     return { bg: normalizeColor(bg), flush: false };                    // 纸面：沿用
-    cur = cur.parentElement;
   }
   return { bg: "transparent", flush: false };
 }

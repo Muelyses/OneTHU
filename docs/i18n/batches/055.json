@@ -1,44 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.info.thospage.484d55613910",
-      "source": "无",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 258,
-          "context": "names.join(\" / \") || i18n(\"pages.info.thospage.484d55613910\")"
-        }
-      ],
-      "translation": "None",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.495cf63fdc4b",
-      "source": "{value}列表加载失败",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(KIND_LABEL[kind])"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 184,
-          "context": "warnings.push(i18n(\"pages.info.thospage.495cf63fdc4b\", { value: String(KIND_LABEL[kind]) }))"
-        }
-      ],
-      "translation": "Failed to load the {value} list",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
     {
       "key": "pages.info.thospage.497c85690c4c",
       "source": "暂无数据",
@@ -1446,6 +1409,38 @@
       "translation": "All sessions ({length})",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.83bfd5de6aeb",
+      "source": "未能自动登录（统一身份登录可能已过期），请用登录窗口完成一次认证。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 225,
+          "context": "setAuthMsg(i18n(\"pages.info.venuesportstab.83bfd5de6aeb\"))"
+        }
+      ],
+      "translation": "Automatic sign-in failed (the unified identity session may have expired). Please complete one verification in the sign-in window.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.8df76a301a77",
+      "source": "散客",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 433,
+          "context": "label: i18n(\"pages.info.venuesportstab.8df76a301a77\")"
+        }
+      ],
+      "translation": "Walk-in",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

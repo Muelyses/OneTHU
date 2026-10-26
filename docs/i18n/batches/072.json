@@ -1,23 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.settings.6b91ee3ad1f4",
-      "source": "管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 739,
-          "context": "{i18n(\"pages.settings.6b91ee3ad1f4\")}"
-        }
-      ],
-      "translation": "Manage theme plugin enable / disable (per the new spec, enablement is managed only here)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.settings.6f3d8aba2f3c",
       "source": "高级选项，默认关闭；把不在 OneTHU 里的站点功能用登录态爬回来自己做插件。用独立登录态，和自己浏览器互不干扰。",
@@ -26,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 858,
+          "line": 902,
           "context": "{i18n(\"pages.settings.6f3d8aba2f3c\")}"
         }
       ],
@@ -42,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 358,
+          "line": 385,
           "context": "{i18n(\"pages.settings.6fed7e860168\")}"
         }
       ],
@@ -58,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 117,
+          "line": 132,
           "context": "return i18n(\"pages.settings.752d61201dda\");"
         }
       ],
@@ -74,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 352,
+          "line": 360,
           "context": "homeResetAt ? i18n(\"pages.settings.b047bf296ada\") : i18n(\"pages.settings.77ef57e1d1d3\")"
         }
       ],
@@ -90,12 +74,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 89,
+          "line": 104,
           "context": "return i18n(\"pages.settings.788db1cfec2a\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 729,
+          "line": 763,
           "context": "{i18n(\"pages.settings.788db1cfec2a\")}"
         }
       ],
@@ -111,12 +95,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 691,
+          "line": 725,
           "context": "name: i18n(\"pages.settings.78c3900fe08f\")"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 750,
+          "line": 784,
           "context": "{i18n(\"pages.settings.78c3900fe08f\")}"
         }
       ],
@@ -132,12 +116,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 104,
+          "line": 119,
           "context": "return i18n(\"pages.settings.796d20e91588\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 363,
+          "line": 390,
           "context": "{i18n(\"pages.settings.796d20e91588\")}"
         }
       ],
@@ -153,7 +137,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 306,
+          "line": 314,
           "context": "{i18n(\"pages.settings.79a6fb7736ce\")}"
         }
       ],
@@ -169,7 +153,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 318,
+          "line": 326,
           "context": "setEidMsg(i18n(\"pages.settings.7b994af5120a\"))"
         }
       ],
@@ -185,7 +169,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 366,
+          "line": 393,
           "context": "{i18n(\"pages.settings.7ea56ac4a13f\")}"
         }
       ],
@@ -201,7 +185,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 389,
+          "line": 416,
           "context": "setFavMsg(i18n(\"pages.settings.7ec009b7a942\"))"
         }
       ],
@@ -217,7 +201,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 599,
+          "line": 626,
           "context": "showToast(i18nMsg(\"pages.settings.7f10cbe7fe17\"))"
         }
       ],
@@ -233,7 +217,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 119,
+          "line": 134,
           "context": "return i18n(\"pages.settings.807f19bf853b\");"
         }
       ],
@@ -249,7 +233,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 277,
+          "line": 280,
           "context": "{i18n(\"pages.settings.8502353c15ac\")}"
         }
       ],
@@ -265,7 +249,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 103,
+          "line": 118,
           "context": "return i18n(\"pages.settings.853b03f039d3\");"
         }
       ],
@@ -281,7 +265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 858,
+          "line": 902,
           "context": "{i18n(\"pages.settings.862754facf23\")}"
         }
       ],
@@ -297,12 +281,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 97,
+          "line": 112,
           "context": "return i18n(\"pages.settings.865d7ae4c9e6\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 715,
+          "line": 749,
           "context": "{i18n(\"pages.settings.865d7ae4c9e6\")}"
         }
       ],
@@ -318,12 +302,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 93,
+          "line": 108,
           "context": "return i18n(\"pages.settings.86a63f23a076\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 420,
+          "line": 447,
           "context": "{i18n(\"pages.settings.86a63f23a076\")}"
         }
       ],
@@ -339,7 +323,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 545,
+          "line": 572,
           "context": "loading ? i18n(\"pages.settings.86b6d0d63062\") : directory?.path || i18n(\"pages.settings.646c8247d71f\")"
         }
       ],
@@ -355,12 +339,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 105,
+          "line": 120,
           "context": "return i18n(\"pages.settings.888977c201d1\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 334,
+          "line": 342,
           "context": "{i18n(\"pages.settings.888977c201d1\")}"
         }
       ],
@@ -376,7 +360,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 376,
+          "line": 403,
           "context": "setFavMsg(i18n(\"pages.settings.8c01e1c26f88\"))"
         }
       ],
@@ -392,7 +376,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 113,
+          "line": 128,
           "context": "return i18n(\"pages.settings.8f655a35cb99\");"
         }
       ],
@@ -408,7 +392,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 459,
+          "line": 486,
           "context": "hasSaved ? i18n(\"pages.settings.f5f631c6c63e\") : i18n(\"pages.settings.92094cd0c4c7\")"
         }
       ],
@@ -424,17 +408,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 226,
+          "line": 228,
           "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 234,
+          "line": 236,
           "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 235,
+          "line": 237,
           "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
         }
       ],
@@ -450,7 +434,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 101,
+          "line": 116,
           "context": "return i18n(\"pages.settings.931d5e245827\");"
         }
       ],
@@ -466,7 +450,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 890,
+          "line": 934,
           "context": "label: i18n(\"pages.settings.96f1584f9196\")"
         }
       ],
@@ -482,7 +466,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 292,
+          "line": 300,
           "context": "{i18n(\"pages.settings.99e398c6de5c\")}"
         }
       ],
@@ -498,7 +482,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 527,
+          "line": 554,
           "context": "reset ? i18n(\"pages.settings.9c5584655501\") : i18n(\"pages.settings.52de8e2d0c2c\")"
         }
       ],
@@ -514,7 +498,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 118,
+          "line": 133,
           "context": "return i18n(\"pages.settings.a52019e2a526\");"
         }
       ],
@@ -530,12 +514,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 120,
+          "line": 135,
           "context": "return i18n(\"pages.settings.a57cfcb8428d\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 264,
+          "line": 267,
           "context": "{i18n(\"pages.settings.a57cfcb8428d\")}"
         }
       ],
@@ -551,7 +535,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 699,
+          "line": 733,
           "context": "{i18n(\"pages.settings.a614894c6a8c\")}"
         }
       ],
@@ -567,7 +551,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 96,
+          "line": 111,
           "context": "return i18n(\"pages.settings.a6514da1828c\");"
         }
       ],
@@ -583,7 +567,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 756,
+          "line": 790,
           "context": "snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\")"
         }
       ],
@@ -599,7 +583,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 890,
+          "line": 934,
           "context": "label: i18n(\"pages.settings.a770b8f58676\")"
         }
       ],
@@ -615,7 +599,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 636,
+          "line": 663,
           "context": "{i18n(\"pages.settings.a94d4e09776c\")}"
         }
       ],
@@ -631,7 +615,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 756,
+          "line": 790,
           "context": "snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\")"
         }
       ],
@@ -647,7 +631,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 430,
+          "line": 457,
           "context": "{i18n(\"pages.settings.ac32447aadc3\")}"
         }
       ],
@@ -663,12 +647,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 110,
+          "line": 125,
           "context": "return i18n(\"pages.settings.afb63a620bdc\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 455,
+          "line": 482,
           "context": "{i18n(\"pages.settings.afb63a620bdc\")}"
         }
       ],
@@ -684,7 +668,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 352,
+          "line": 360,
           "context": "homeResetAt ? i18n(\"pages.settings.b047bf296ada\") : i18n(\"pages.settings.77ef57e1d1d3\")"
         }
       ],
@@ -700,17 +684,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 92,
+          "line": 107,
           "context": "return i18n(\"pages.settings.b073567bc2e0\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 754,
+          "line": 788,
           "context": "{i18n(\"pages.settings.b073567bc2e0\")}"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 758,
+          "line": 792,
           "context": "{i18n(\"pages.settings.b073567bc2e0\")}"
         }
       ],
@@ -726,7 +710,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 116,
+          "line": 131,
           "context": "return i18n(\"pages.settings.b07a37146f79\");"
         }
       ],
@@ -742,17 +726,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 95,
+          "line": 110,
           "context": "return i18n(\"pages.settings.b34bc798190c\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 635,
+          "line": 662,
           "context": "{i18n(\"pages.settings.b34bc798190c\")}"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 638,
+          "line": 665,
           "context": "{i18n(\"pages.settings.b34bc798190c\")}"
         }
       ],
@@ -768,7 +752,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 116,
+          "line": 131,
           "context": "return i18n(\"pages.settings.b34d6b6c1193\");"
         }
       ],
@@ -789,7 +773,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 691,
+          "line": 725,
           "context": "t.dark ? i18n(\"pages.settings.b3aa4945927f\", { name: String(t.name) }) : t.name"
         }
       ],
@@ -810,7 +794,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 508,
+          "line": 535,
           "context": "setMessage(i18n(\"pages.settings.b5e1a19b3c87\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
@@ -826,12 +810,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 113,
+          "line": 128,
           "context": "return i18n(\"pages.settings.b7d8cb31eeb8\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 458,
+          "line": 485,
           "context": "{i18n(\"pages.settings.b7d8cb31eeb8\")}"
         }
       ],
@@ -847,7 +831,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 584,
+          "line": 611,
           "context": "busy ? i18n(\"pages.settings.dce6e572314e\") : i18n(\"pages.settings.b8f32d284848\")"
         }
       ],
@@ -863,7 +847,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 100,
+          "line": 115,
           "context": "return i18n(\"pages.settings.b953890db0b9\");"
         }
       ],
@@ -879,12 +863,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 391,
+          "line": 418,
           "context": "{i18n(\"pages.settings.ba2e93e73037\")}"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 553,
+          "line": 580,
           "context": "{i18n(\"pages.settings.ba2e93e73037\")}"
         }
       ],
@@ -900,7 +884,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 114,
+          "line": 129,
           "context": "return i18n(\"pages.settings.ba9385e7fd13\");"
         }
       ],
@@ -916,12 +900,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 94,
+          "line": 109,
           "context": "return i18n(\"pages.settings.bbaa9f06378b\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 630,
+          "line": 657,
           "context": "{i18n(\"pages.settings.bbaa9f06378b\")}"
         }
       ],
@@ -937,7 +921,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 716,
+          "line": 750,
           "context": "{i18n(\"pages.settings.bc5c3d6b77d8\")}"
         }
       ],
@@ -953,7 +937,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 875,
+          "line": 919,
           "context": "busy === \"dl\" ? i18n(\"pages.settings.bcc2333dc631\") : i18n(\"pages.settings.c1fc27cebdd4\")"
         }
       ],
@@ -969,7 +953,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 462,
+          "line": 489,
           "context": "clearing ? i18n(\"pages.settings.cd23a528a4cd\") : i18n(\"pages.settings.bce2377283c2\")"
         }
       ],
@@ -985,7 +969,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 609,
+          "line": 636,
           "context": "{i18n(\"pages.settings.c1be461c4aa2\")}"
         }
       ],
@@ -1001,7 +985,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 831,
+          "line": 875,
           "context": "r || i18n(\"pages.settings.c1c79b63f418\")"
         }
       ],
@@ -1017,7 +1001,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 293,
+          "line": 301,
           "context": "user?.displayName || displayStudentId(user?.username) || i18n(\"pages.settings.c1f658373079\")"
         }
       ],
@@ -1033,7 +1017,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 875,
+          "line": 919,
           "context": "busy === \"dl\" ? i18n(\"pages.settings.bcc2333dc631\") : i18n(\"pages.settings.c1fc27cebdd4\")"
         }
       ],
@@ -1054,7 +1038,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 368,
+          "line": 395,
           "context": "{i18nRich(\"pages.settings.c2c3d838b52c\", { value: favMsg ? <>　{favMsg}</> : null })}"
         }
       ],
@@ -1070,7 +1054,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 304,
+          "line": 312,
           "context": "{i18n(\"pages.settings.c38372ef73d3\")}"
         }
       ],
@@ -1086,12 +1070,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 90,
+          "line": 105,
           "context": "return i18n(\"pages.settings.c3abbc2eb455\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 738,
+          "line": 772,
           "context": "{i18n(\"pages.settings.c3abbc2eb455\")}"
         }
       ],
@@ -1112,7 +1096,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 306,
+          "line": 314,
           "context": "{i18nRich(\"pages.settings.c820e3820a04\", { value: eidMsg ? <ErrorLine text={eidMsg} tone=\"quiet\" /> : null })}"
         }
       ],
@@ -1128,7 +1112,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 97,
+          "line": 112,
           "context": "return i18n(\"pages.settings.c85fea7bf89f\");"
         }
       ],
@@ -1144,12 +1128,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 115,
+          "line": 130,
           "context": "return i18n(\"pages.settings.c8877a829fab\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 214,
+          "line": 289,
+          "context": "{i18n(\"pages.settings.c8877a829fab\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 291,
           "context": "{i18n(\"pages.settings.c8877a829fab\")}"
         }
       ],
@@ -1165,7 +1154,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 111,
+          "line": 126,
           "context": "return i18n(\"pages.settings.ccdb042ac3e2\");"
         }
       ],
@@ -1181,7 +1170,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 736,
+          "line": 770,
           "context": "{i18n(\"pages.settings.ccea37f61ff9\")}"
         }
       ],
@@ -1197,7 +1186,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 462,
+          "line": 489,
           "context": "clearing ? i18n(\"pages.settings.cd23a528a4cd\") : i18n(\"pages.settings.bce2377283c2\")"
         }
       ],
@@ -1213,7 +1202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 583,
+          "line": 610,
           "context": "where ? i18n(\"pages.settings.212735f5be92\", { where: String(where) }) : i18n(\"pages.settings.ce93302dab64\")"
         }
       ],
@@ -1229,7 +1218,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 775,
+          "line": 819,
           "context": "{i18n(\"pages.settings.d0a6f0c08b1a\")}"
         }
       ],
@@ -1245,7 +1234,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 398,
+          "line": 425,
           "context": "{i18n(\"pages.settings.d26529fe64b3\")}"
         }
       ],
@@ -1261,12 +1250,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 106,
+          "line": 121,
           "context": "return i18n(\"pages.settings.d4d78d3b38d0\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 338,
+          "line": 346,
           "context": "{i18n(\"pages.settings.d4d78d3b38d0\")}"
         }
       ],
@@ -1282,7 +1271,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 410,
+          "line": 437,
           "context": "{i18n(\"pages.settings.d8ff71d6c093\")}"
         }
       ],
@@ -1298,7 +1287,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 104,
+          "line": 119,
           "context": "return i18n(\"pages.settings.da4f90828ea3\");"
         }
       ],
@@ -1314,7 +1303,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 869,
+          "line": 913,
           "context": "probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")"
         }
       ],
@@ -1330,27 +1319,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 584,
+          "line": 611,
           "context": "busy ? i18n(\"pages.settings.dce6e572314e\") : i18n(\"pages.settings.b8f32d284848\")"
         }
       ],
       "translation": "Exporting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.df3d58c7d84b",
-      "source": "设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 208,
-          "context": "{i18n(\"pages.settings.df3d58c7d84b\")}"
-        }
-      ],
-      "translation": "Settings",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1362,7 +1335,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 770,
+          "line": 814,
           "context": "dyn ? i18n(\"pages.settings.dfb8c7f65098\") : i18n(\"pages.settings.25bd968a4ec3\")"
         }
       ],
@@ -1378,7 +1351,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 610,
+          "line": 637,
           "context": "busy ? i18n(\"pages.settings.43312083da55\") : i18n(\"pages.settings.dfcf6a05ab29\")"
         }
       ],
@@ -1394,11 +1367,43 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 750,
+          "line": 784,
           "context": "{i18n(\"pages.settings.e0ad632058d7\")}"
         }
       ],
       "translation": "Neutral surface levels, black-and-white primary actions, and a clear text hierarchy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.e11c7e0889b4",
+      "source": "日志已导出到系统下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 600,
+          "context": "showToast(i18nMsg(\"pages.settings.e11c7e0889b4\"))"
+        }
+      ],
+      "translation": "Logs exported to system Downloads",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.e2f12da7faa6",
+      "source": "已下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 913,
+          "context": "probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")"
+        }
+      ],
+      "translation": "Downloaded",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

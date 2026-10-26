@@ -1,5 +1,5 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1140,7 +1140,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 341,
+          "line": 347,
           "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
         }
       ],
@@ -1188,7 +1188,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 177,
+          "line": 183,
           "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
         }
       ],
@@ -1225,7 +1225,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 132,
+          "line": 138,
           "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
         }
       ],
@@ -1257,7 +1257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 349,
+          "line": 355,
           "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
         }
       ],
@@ -1273,7 +1273,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 42,
+          "line": 45,
           "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
         }
       ],
@@ -1321,7 +1321,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 179,
+          "line": 185,
           "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
         }
       ],
@@ -1337,7 +1337,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 43,
+          "line": 49,
           "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
         }
       ],
@@ -1353,7 +1353,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 336,
+          "line": 342,
           "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
         }
       ],

@@ -1,84 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.trace.8139cfa5561e",
-      "source": "未获取到定位（已回退清华园中心），ETA 以此计算。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Trace.tsx",
-          "line": 487,
-          "context": "{i18n(\"pages.trace.8139cfa5561e\")}"
-        }
-      ],
-      "translation": "No location fix (fell back to the Tsinghua campus center); ETA computed from there.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.trace.86f12a62f286",
-      "source": "地点解析失败，请稍后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Trace.tsx",
-          "line": 314,
-          "context": "setErr(i18n(\"pages.trace.86f12a62f286\"))"
-        }
-      ],
-      "translation": "Failed to resolve the location; try again later.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.trace.88363068b601",
-      "source": "重新定位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Trace.tsx",
-          "line": 491,
-          "context": "{i18n(\"pages.trace.88363068b601\")}"
-        }
-      ],
-      "translation": "Relocate",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.trace.8b7769259b36",
-      "source": "今日 {length} 个日程 · {value} 处地点{value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(todayEvents.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(markers?.length ?? \"…\")"
-        },
-        {
-          "name": "value2",
-          "expression": "String(unresolved.length > 0 ? i18n(\"pages.trace.1fa4df1cef8e\", { length: String(unresolved.length) }) : \"\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Trace.tsx",
-          "line": 457,
-          "context": "{i18n(\"pages.trace.8b7769259b36\", { length: String(todayEvents.length), value: String(markers?.length ?? \"…\"), value2: String(unresolved.length > 0 ? i18n(\"pages.trace.1fa4df1cef8e\", { length: String(unresolved.length) }) : \"\") })}"
-        }
-      ],
-      "translation": "{length} events today · {value} locations{value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.trace.8e4e3e495ec9",
       "source": "留意",
@@ -1466,6 +1389,84 @@
         }
       ],
       "translation": "Course introduction",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.1a01e52411e2",
+      "source": "排队第{myPos}/{queueTotal}人",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "myPos",
+          "expression": "String(cand.myPos)"
+        },
+        {
+          "name": "queueTotal",
+          "expression": "String(cand.queueTotal)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1220,
+          "context": "cand.myPos ? i18n(\"pages.zhjwxk.courses.1a01e52411e2\", { myPos: String(cand.myPos), queueTotal: String(cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
+        }
+      ],
+      "translation": "Queued #{myPos}/{queueTotal}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.1ad3aeaef070",
+      "source": "缺少 courses",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1490,
+          "context": "new Error(i18n(\"pages.zhjwxk.courses.1ad3aeaef070\"))"
+        }
+      ],
+      "translation": "Missing courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.1bf3158a977b",
+      "source": "课表预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1343,
+          "context": "{i18n(\"pages.zhjwxk.courses.1bf3158a977b\")}"
+        }
+      ],
+      "translation": "Timetable preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.1d58af91498f",
+      "source": "（{length} 门）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(listRows.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 818,
+          "context": "searchMode && !wb.searchIncomplete ? i18n(\"pages.zhjwxk.courses.1d58af91498f\", { length: String(listRows.length) }) : \"\""
+        }
+      ],
+      "translation": "({length} courses)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

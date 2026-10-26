@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.infoapps.5e9fe279984f",
-      "source": "专利放弃申请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 157,
-          "context": "return i18n(\"lib.infoapps.5e9fe279984f\");"
-        }
-      ],
-      "translation": "Patent Waiver Application",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.5eddef8643b3",
-      "source": "在华举办国际会议总结提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 228,
-          "context": "return i18n(\"lib.infoapps.5eddef8643b3\");"
-        }
-      ],
-      "translation": "International Conference Held in China Summary Submission",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.infoapps.5f62e09a2329",
       "source": "开户许可证/财务报表/纳税证明/社保缴纳证明扫描件申请",
@@ -1279,6 +1247,38 @@
         }
       ],
       "translation": "Research Handover for Departing Staff",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.b0ee13d1002c",
+      "source": "我们的家园",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 282,
+          "context": "return i18n(\"lib.infoapps.b0ee13d1002c\");"
+        }
+      ],
+      "translation": "Our Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.b0fce32d3351",
+      "source": "电话查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 247,
+          "context": "return i18n(\"lib.infoapps.b0fce32d3351\");"
+        }
+      ],
+      "translation": "Phone Directory",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

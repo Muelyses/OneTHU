@@ -486,7 +486,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const map = new Map<string, Rect>();
     let y = stackTop;
     for (const it of ordered) {
-      const h = Math.max(72, Math.round(it.spec.kind === "custom" && it.spec.id === "services" ? Math.max(340, it.h) : it.h));
+      // Reading mode projects desktop geometry without persisting a resize.
+      // Bound the phone projection; free-canvas mode retains authored heights.
+      const kind = it.spec.kind === "custom" ? it.spec.id : it.spec.kind;
+      const limit = kind === "classes" ? 280 : kind === "homework" ? 360 : 440;
+      const height = Math.min(it.h, limit);
+      const h = Math.max(72, Math.round(kind === "services" ? Math.max(340, height) : height));
       map.set(it.id, { x: 0, y, w, h });
       y += h + 12;
     }

@@ -57,6 +57,9 @@ export interface CloudAsset {
 
 export interface CloudUpdateManifest {
   version: string;
+  /** Legacy 0.11.4 compares three numeric parts only. Official hotfix manifests
+   * may advertise a numeric compatibility version plus the actual release. */
+  displayVersion?: string;
   minVersion?: string;
   url?: string;
   size?: number;
@@ -167,7 +170,9 @@ export function parseManifest(raw: string): { ok: true; manifest: CloudUpdateMan
     return { ok: false, error: i18n("lib.updater.3d383f5a5c29") };
   }
   const o = (j ?? {}) as Record<string, unknown>;
-  const version = typeof o.version === "string" ? o.version.trim() : "";
+  const advertised = typeof o.version === "string" ? o.version.trim() : "";
+  const display = typeof o.displayVersion === "string" ? o.displayVersion.trim() : "";
+  const version = /^\d+\.\d+\.\d+-fix-\d+$/.test(display) ? display : advertised;
   if (!version) return { ok: false, error: i18n("lib.updater.fab43f07fa2d") };
   const str = (k: string): string | undefined =>
     typeof o[k] === "string" && String(o[k]).trim() ? String(o[k]).trim() : undefined;
@@ -189,6 +194,7 @@ export function parseManifest(raw: string): { ok: true; manifest: CloudUpdateMan
     ok: true,
     manifest: {
       version,
+      ...(display ? {displayVersion:display} : {}),
       minVersion: str("minVersion"),
       url: str("url"),
       size: num("size"),
@@ -307,7 +313,7 @@ const ARCH_PREF: Record<PlatformKey, RegExp[]> = {
 
 /** 从文件名解析版本：`OneTHU_0.10.0_arm64.apk` / `OneTHU-0.10.1.dmg` → "0.10.0" */
 export function versionFromName(name: string): string | null {
-  const m = /^OneTHU[_-]?v?(\d+\.\d+(?:\.\d+)?)/i.exec(name.trim());
+  const m = /^OneTHU[_-]?v?(\d+\.\d+(?:\.\d+)?(?:-fix-\d+)?)/i.exec(name.trim());
   return m?.[1] ?? null;
 }
 

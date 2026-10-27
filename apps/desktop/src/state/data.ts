@@ -93,29 +93,7 @@ async function loadReal(): Promise<CampusData> {
     Promise.all(ids.slice(0, 8).map((id) => learn.getFileList(id).catch(() => [])))
       .then((rs) => rs.flat())
       .catch(() => [] as CourseFile[]),
-    // lib getSchedule：整学期 Schedule[]（activeTime.base 时间片）→ 展平映射
-    // 为本应用 ScheduleEntry（date/startTime/endTime 供首页时间轴与网格）。
-    (async () => {
-      const lib = await infoHelper.getSchedule(undefined);
-      const out: ScheduleEntry[] = [];
-      for (const c of lib.schedule) {
-        for (const sl of c.activeTime.base) {
-          const date = sl.beginTime.format("YYYY-MM-DD");
-          if (date < from || date > to) continue;
-          out.push({
-            courseName: c.name,
-            location: c.location || undefined,
-            category: c.category,
-            date,
-            dayOfWeek: sl.dayOfWeek,
-            startTime: sl.beginTime.format("HH:mm"),
-            endTime: sl.endTime.format("HH:mm"),
-            raw: { name: c.name, hash: c.hash },
-          });
-        }
-      }
-      return out;
-    })().catch(() => [] as ScheduleEntry[]),
+    info.getSchedule(from, to).catch(() => [] as ScheduleEntry[]),
     infoHelper.getUserInfo()
       .then((u: { fullName: string; emailName: string }) => ({
         name: u.fullName,
@@ -130,6 +108,31 @@ async function loadReal(): Promise<CampusData> {
 }
 
 export type DataState = "loading" | "error" | "ready";
+
+/** Home courses share the timetable's primary + secondary source. Learn's
+ * availability and its bulk campus cache do not determine whether today has class. */
+export function useTodayCourseData() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
+  const { status } = useApp();
+  const day = fmtDate(new Date()), key = `todaycourses:${day}`;
+  const seed = preview ? cacheGet<CampusData>("campus")?.data.schedule ?? null : cacheGet<ScheduleEntry[]>(key)?.data ?? null;
+  const [data, setData] = useState<ScheduleEntry[] | null>(seed);
+  const [state, setState] = useState<DataState>(seed ? "ready" : "loading");
+  const [error, setError] = useState<string | null>(null);
+  const load = useCallback(async () => {
+    if (preview) return;
+    setState("loading");setError(null);
+    try {
+      const rows = await cacheFetch(key, () => info.getSchedule(day, day));
+      setData(rows);setState("ready");
+    } catch (err) {
+      logPageError("TODAY-COURSES", err);
+      setError(explainNetworkError(err));setState("error");
+    }
+  }, [preview, key, day, status]);
+  useEffect(() => { if (status === "ready" && !preview) void load(); }, [status, preview, load]);
+  return { data, state, error, reload: load };
+}
 
 const CAMPUS_KEY = "campus";
 const CAMPUS_TTL = 3 * 60 * 1000;

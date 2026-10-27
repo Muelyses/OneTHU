@@ -26,6 +26,7 @@ import { loginFailureDiagnostic } from "./loginErrors.js";
 import { probeLearnSession } from "./learnRecovery.js";
 import { withPrivacy } from "./privacy.js";
 import { adoptSharedSession, exportSharedSession, exportNativeSessionCookies, importNativeSessionCookies, mergeSameAccountServiceCookies, getSharedRuntimeStatus, logoutSharedSession, updateSharedPolicy, usesSharedRuntime, type SharedRuntimeStatus, type SharedSessionSnapshot } from "./sharedRuntime.js";
+import { canBindDeferredLogin, isSharedRuntimeUnavailable } from "./sharedAuthPolicy.js";
 
 export type { TwoFactorMethod };
 
@@ -389,11 +390,17 @@ async function performLogin(
   // Capture before credential submission. A CLI logout/account switch during
   // the school login must win over the result of this older attempt.
   if (usesSharedRuntime()) {
-    await finishPendingSharedLogout();
-    const shared = await getSharedRuntimeStatus();
-    if (shared.session.twoFactor?.pending || shared.session.state === "need-2fa") throw Object.assign(new Error("A CLI login is still in progress."), { code: "AUTH_IN_PROGRESS" });
-    loginSharedEpoch = shared.epoch;
-    loginSharedAccount = shared.username;
+    try {
+      await finishPendingSharedLogout();
+      const shared = await getSharedRuntimeStatus();
+      if (shared.session.twoFactor?.pending || shared.session.state === "need-2fa") throw Object.assign(new Error("A CLI login is still in progress."), { code: "AUTH_IN_PROGRESS" });
+      loginSharedEpoch = shared.epoch;
+      loginSharedAccount = shared.username;
+    } catch (error) {
+      if (!isSharedRuntimeUnavailable(error)) throw error;
+      loginSharedEpoch = null;loginSharedAccount = null;
+      void logLine("CLI unavailable; explicit school login continues with native session").catch(() => undefined);
+    }
   }
   void logLine("AUTH-PHASE import-login");
   const { libLogin, setLibFinger3, helper, assertLoginAccount } = await import("./infoLib.js");
@@ -532,7 +539,7 @@ interface PendingSharedHandoff {
   version: 1;
   snapshot: SessionData;
   expectedAccount: string | null;
-  expectedEpoch: number;
+  expectedEpoch: number | null;
   reason: "bootstrap" | "login";
   nativeComplete: boolean;
 }
@@ -544,7 +551,7 @@ async function readPendingSharedHandoff(): Promise<PendingSharedHandoff | null> 
   const raw = await fileRead(SHARED_HANDOFF_FILE, { strict: true });
   if (!raw) return null;
   const value = JSON.parse(raw) as PendingSharedHandoff;
-  if (value?.version !== 1 || !Number.isSafeInteger(value.expectedEpoch)
+  if (value?.version !== 1 || !(Number.isSafeInteger(value.expectedEpoch) || (value.expectedEpoch === null && value.reason === "login"))
     || !(value.expectedAccount === null || typeof value.expectedAccount === "string")
     || !["bootstrap", "login"].includes(value.reason) || typeof value.nativeComplete !== "boolean"
     || !value.snapshot?.username || !value.snapshot.fingerprint || typeof value.snapshot.cookiesJson !== "string") {
@@ -556,7 +563,7 @@ async function saveSessionSnapshot(snapshot: SessionData): Promise<void> {
   await fileWrite(SESSION_FILE, JSON.stringify(snapshot), { strict: true });
   await store.saveSession(snapshot);
 }
-async function stageSharedHandoff(snapshot: SessionData, expected: Pick<SharedRuntimeStatus, "username" | "epoch">, reason: PendingSharedHandoff["reason"]): Promise<void> {
+async function stageSharedHandoff(snapshot: SessionData, expected: { username: string | null; epoch: number | null }, reason: PendingSharedHandoff["reason"]): Promise<void> {
   const generation = resumeGeneration;
   const intent: PendingSharedHandoff = { version: 1, snapshot, expectedAccount: expected.username, expectedEpoch: expected.epoch, reason, nativeComplete: false };
   // Persist the successful school login before any bridge call can fail. A
@@ -579,6 +586,13 @@ async function performSharedSessionHandoff(): Promise<SharedSessionSnapshot | nu
   await markSharedHandoffPending(true);
   const shared = await getSharedRuntimeStatus();
   if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  if (intent.expectedEpoch === null) {
+    if (!canBindDeferredLogin(shared, intent.snapshot.username)) throw new Error("CLI_SHARED_SESSION_CHANGED");
+    intent = { ...intent, expectedAccount: shared.username, expectedEpoch: shared.epoch };
+    pendingSharedHandoffMemory = intent;
+    await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
+    if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  }
   if (shared.epoch !== intent.expectedEpoch || shared.username !== intent.expectedAccount) {
     // A new CLI login or logout owns the newer epoch. Its verified export will
     // restore the GUI; never replay this old cookie candidate against it.
@@ -598,6 +612,7 @@ async function performSharedSessionHandoff(): Promise<SharedSessionSnapshot | nu
     await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
     await saveSessionSnapshot(intent.snapshot);
   }
+  if (intent.expectedEpoch === null) throw new Error("CLI_PENDING_HANDOFF_INVALID");
   const adopted = await adoptSharedSession(intent.snapshot, intent.expectedEpoch, intent.reason);
   if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
   rememberSharedSession(adopted);
@@ -619,9 +634,12 @@ export function retrySharedSessionHandoff(): Promise<SharedSessionSnapshot | nul
 }
 async function adoptSuccessfulDesktopLogin(): Promise<void> {
   if (!usesSharedRuntime()) return;
-  if (loginSharedEpoch === null) throw new Error("CLI_SHARED_SESSION_CHANGED");
   try {
     await stageSharedHandoff(currentSessionSnapshot(), { username: loginSharedAccount, epoch: loginSharedEpoch }, "login");
+    if (loginSharedEpoch === null) {
+      await logLine("CLI unavailable; verified school session saved for deferred handoff").catch(() => undefined);
+      return;
+    }
     const adopted = await retrySharedSessionHandoff();
     if (!adopted) {
       session.state = "idle";
@@ -672,14 +690,14 @@ export function currentFingerprint(): Promise<string> {
   if (fingerprintRequest) return fingerprintRequest;
   fingerprintRequest = (async () => {
     if (usesSharedRuntime()) {
-      const shared = await exportSharedSession();
-      if (shared.snapshot?.fingerprint) {
-        session.fingerprint = shared.snapshot.fingerprint;
-        // Account trust only follows the same account; login's account boundary
-        // clears it when the user deliberately chooses another account.
-        if (shared.snapshot.username === session.username) session.finger3 = shared.snapshot.finger3 ?? "";
-        return shared.snapshot.fingerprint;
-      }
+      try {
+        const shared = await exportSharedSession();
+        if (shared.snapshot?.fingerprint) {
+          session.fingerprint = shared.snapshot.fingerprint;
+          if (shared.snapshot.username === session.username) session.finger3 = shared.snapshot.finger3 ?? "";
+          return shared.snapshot.fingerprint;
+        }
+      } catch (error) { if (!isSharedRuntimeUnavailable(error)) throw error; }
     }
     let saved = await store.loadSession().catch(() => null);
     const raw = await fileRead(SESSION_FILE).catch(() => null);
@@ -872,16 +890,16 @@ async function performResumeSession(): Promise<boolean> {
     if (usesSharedRuntime()) {
       // Bridge/proof failure is separate from school authentication. Preserve
       // the existing ready session and its native jar until adoption succeeds.
+      if (!isSharedRuntimeUnavailable(error)) throw error;
+      saved = await loadConsistentSessionSnapshot();
+      void logLine("CLI unavailable; probing owned native school session").catch(() => undefined);
+    } else {
+      const { libDiscardLocalSession } = await import("./infoLib.js");
+      if (generation !== resumeGeneration) return false;
+      await libDiscardLocalSession();
+      session.reset();session.username = "";session.finger3 = "";pendingSecret = null;
       throw error;
     }
-    const { libDiscardLocalSession } = await import("./infoLib.js");
-    if (generation !== resumeGeneration) return false;
-    await libDiscardLocalSession();
-    session.reset();
-    session.username = "";
-    session.finger3 = "";
-    pendingSecret = null;
-    throw error;
   }
   void logLine("PROBE store-loaded").catch(() => undefined);
   if (generation !== resumeGeneration) return false;

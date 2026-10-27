@@ -113,6 +113,7 @@ jobs:
           node tools/personal-cloud-target-state-test.mjs
       - name: Check update reminders and news language
         run: |
+          node tools/hotfix-update-test.mjs
           node tools/update-reminder-test.mjs
           node --import ./tools/ts-resolve-register.mjs tools/update-language-test.mjs
           node tools/update-check-lifecycle-test.mjs
@@ -135,6 +136,9 @@ jobs:
           SCCACHE_GHA_ENABLED: "true"
           TAURI_SIGNING_PRIVATE_KEY: ""
           TRACE_AMAP_KEY: ${{ secrets.TRACE_AMAP_KEY }}
+      - name: Verify bundled resident runtime
+        timeout-minutes: 2
+        run: node tools/bundled-cli-startup-test.mjs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

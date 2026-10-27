@@ -65,7 +65,7 @@ test("help and version work offline", async () => {
   const help = await cli(["--help"]);
   assert.equal(help.code, 0); assert.equal(help.stderr, ""); assert.match(help.stdout, /shared account\/tasks/);
   const version = await cli(["--version"]);
-  assert.equal(version.code, 0); assert.match(version.stdout, /^\d+\.\d+\.\d+\n$/);
+  assert.equal(version.code, 0); assert.equal(version.stdout, JSON.parse(await readFile(join(pkg, "package.json"), "utf8")).version + "\n");
 });
 
 test("status reports app session, without upgrading needs-login to healthy", async (t) => {
@@ -309,7 +309,7 @@ test("macOS installer creates a usable launcher in a quoted, custom path", { ski
   assert.equal((await once(install, "close"))[0], 0);
   const launcher = spawn(join(bin, "onethu"), ["--version"], { stdio: "pipe" });
   let output = ""; launcher.stdout.on("data", (chunk) => { output += chunk; });
-  assert.equal((await once(launcher, "close"))[0], 0); assert.match(output, /^\d+\.\d+\.\d+\n$/);
+  assert.equal((await once(launcher, "close"))[0], 0); assert.equal(output, JSON.parse(await readFile(join(pkg, "package.json"), "utf8")).version + "\n");
   assert.equal(JSON.parse(await readFile(join(home, "package.json"), "utf8")).name, "@onethu/cli");
 });
 

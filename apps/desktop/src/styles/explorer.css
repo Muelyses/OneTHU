@@ -153,6 +153,8 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   overscroll-behavior: contain;
 }
 .explorer-settings-body { padding: 14px 16px 24px; }
+.explorer-settings-body.workbench-simple-settings { overflow-y: auto; min-height: 0; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+.workbench-simple-settings > .simple-settings { padding: var(--og-space-4); padding-bottom: calc(var(--og-space-6) + var(--og-safe-bottom, 0px)); }
 /* 用户截屏「挤挤挤」防御：浮层里的插件卡动作行/状态行不许逐字竖排 */
 .explorer-settings-body .plg-state { white-space: nowrap; }
 .explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }

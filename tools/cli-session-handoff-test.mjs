@@ -20,6 +20,7 @@ function functionsAt(path, names, env, imports = {}, setup = '', result = `{${na
   return new Function('require', ...Object.keys(env), `${setup}\n${code}\nreturn ${result};`)(name => { assert.ok(name in imports, name); return imports[name]; }, ...Object.values(env));
 }
 let passed = 0;
+const policy=functionsAt('apps/desktop/src/lib/sharedAuthPolicy.ts',['isSharedRuntimeUnavailable','canBindDeferredLogin'],{});
 async function test(name, fn) { await fn(); passed++; console.log(`PASS ${name}`); }
 const cookie = { name: 'native-only', value: 'fixture-cookie', domain: 'webvpn.tsinghua.edu.cn', path: '/', secure: true, hostOnly: true };
 const snapshot = { username: 'account-a', fingerprint: 'device-a', finger3: 'fixture-trust', cookiesJson: '[]', savedAt: 1 };
@@ -27,6 +28,7 @@ function handoffFixture() {
   const files = new Map(), adoptions = [], pending = [];
   let local = { ...snapshot }, proof = false, status = { username: null, epoch: 2, session: { state: 'idle' } };
   const environment = {
+    ...policy,
     SHARED_HANDOFF_FILE: 'handoff', SHARED_LOGOUT_FILE: 'logout', SESSION_FILE: 'session',
     fileRead: async key => files.get(key) ?? null,
     fileWrite: async (key, text) => files.set(key, text), fileDelete: async key => files.delete(key),
@@ -73,15 +75,16 @@ await test('school login remains ready when background handoff is temporarily un
   await adoptSuccessfulDesktopLogin();
   assert.equal(state.state, 'ready'); assert.equal(state.username, 'account-a'); assert.deepEqual(notices, [true]);
 });
-function resumeFixture(importFails, { sharedState = "ready", local = null, blockedServices = false, remembered = null } = {}) {
+function resumeFixture(importFails, { sharedState = "ready", local = null, blockedServices = false, remembered = null, startupFailure = false } = {}) {
   const events = [], native = { cookies: [cookie], revision: 4 }, saved = { ...snapshot, cookiesJson: JSON.stringify([{ ...cookie, name: 'daemon-cookie' }]) };
   const session = { username: 'account-a', state: 'ready', fingerprint: 'device-a', reset() { events.push('reset-js'); this.state = 'idle'; }, injectCredentials() {} };
   const jar = label => ({ hydrate() { events.push(`hydrate-${label}`); } });
   const helper={userId:'account-a',password:''};
   const env = {
+    ...policy,
     usesSharedRuntime: () => true, finishPendingSharedLogout: async () => {}, readPendingSharedHandoff: async () => null,
     loadConsistentSessionSnapshot: async()=>local, mergeSameAccountServiceCookies,
-    exportSharedSession: async () => ({ username: 'account-a', epoch: 2, session: { state: sharedState }, snapshot: saved }),
+    exportSharedSession: async () => {if(startupFailure)throw Error('CLI_DAEMON_START_FAILED');return { username: 'account-a', epoch: 2, session: { state: sharedState }, snapshot: saved };},
     exportNativeSessionCookies: async () => ({ ...native }),
     importNativeSessionCookies: async (cookies, revision) => {
       assert.equal(revision, native.revision); events.push('import-native');
@@ -121,6 +124,39 @@ await test('a restored CLI owner receives only its matching remembered credentia
   const other=resumeFixture(false,{remembered:{username:'account-b',password:'must-not-inject'}});
   assert.equal(await other.performResumeSession(),true);assert.equal(other.helper.password,'');assert.equal(other.helper.userId,'account-a');
 });
+await test('a failed background startup still restores the GUI owned native school session without importing background cookies',async()=>{
+  const f=resumeFixture(false,{startupFailure:true,local:snapshot});
+  assert.equal(await f.performResumeSession(),true);assert.equal(f.session.state,'ready');
+  assert.equal(f.events.includes('import-native'),false);assert.equal(f.native.cookies[0].value,cookie.value);
+});
+await test('deferred login binds only to the same account or a fresh non-logged-out daemon',async()=>{
+  for(const shared of [
+    {username:null,epoch:8,bootstrapAllowed:true,session:{state:'idle'}},
+    {username:'account-a',epoch:8,session:{state:'ready'}},
+  ]){
+    const f=handoffFixture();await f.api.stageSharedHandoff(snapshot,{username:null,epoch:null},'login');f.remote(shared);f.accept();
+    assert.equal((await f.api.performSharedSessionHandoff()).username,'account-a');assert.equal(f.adoptions[0].epoch,8);
+  }
+  for(const shared of [
+    {username:null,epoch:8,tombstone:true,bootstrapAllowed:true,session:{state:'idle'}},
+    {username:'account-b',epoch:8,session:{state:'ready'}},
+    {username:'account-a',epoch:8,session:{state:'need-2fa',twoFactor:{pending:true}}},
+  ]){
+    const f=handoffFixture();await f.api.stageSharedHandoff(snapshot,{username:null,epoch:null},'login');f.remote(shared);
+    await assert.rejects(f.api.performSharedSessionHandoff(),/CLI_SHARED_SESSION_CHANGED/);assert.equal(f.adoptions.length,0);
+  }
+});
+await test('explicit native login reaches its school 2FA flow when CLI startup failed, while existing CLI 2FA stays protected',async()=>{
+  let attempts=0,cli2fa=false;
+  const session={state:'idle',username:'',fingerprint:'',finger3:''};
+  const {performLogin}=functionsAt('apps/desktop/src/lib/clients.ts',['performLogin'],{
+    ...policy,usesSharedRuntime:()=>true,finishPendingSharedLogout:async()=>{},
+    getSharedRuntimeStatus:async()=>{if(!cli2fa)throw Error('CLI_DAEMON_START_FAILED');return {username:'account-a',epoch:5,session:{state:'need-2fa',twoFactor:{pending:true}}};},
+    logLine:async()=>{},currentFingerprint:async()=>'fixed-device',session,
+  },{'./infoLib.js':{setLibFinger3(){},helper:{},assertLoginAccount(){},libLogin:async()=>{attempts++;return{state:'need-2fa',methods:[]};}}},'let loginSharedEpoch=null,loginSharedAccount=null,pendingSecret=null;');
+  assert.equal((await performLogin('account-a','synthetic-only',{})).state,'need-2fa');assert.equal(attempts,1);
+  cli2fa=true;await assert.rejects(performLogin('account-a','synthetic-only',{}),/CLI login is still in progress/);assert.equal(attempts,1);
+});
 await test('failed atomic native import preserves old cookies and never overwrites the saved account', async () => {
   const f = resumeFixture(true);
   await assert.rejects(f.performResumeSession(), /DISK_WRITE_FAILED/);
@@ -130,6 +166,7 @@ await test('failed atomic native import preserves old cookies and never overwrit
 await test('pending handoff blocks empty-daemon cleanup and preserves the school snapshot', async () => {
   const events = [];
   const { performResumeSession } = functionsAt('apps/desktop/src/lib/clients.ts', ['performResumeSession'], {
+    ...policy,
     usesSharedRuntime: () => true, finishPendingSharedLogout: async () => {},
     readPendingSharedHandoff: async () => ({ snapshot }), retrySharedSessionHandoff: async () => { throw Error('AUTH_HANDOFF_UNVERIFIED'); },
     exportSharedSession: async () => { events.push('empty-daemon'); return { snapshot: null, tombstone: true }; },

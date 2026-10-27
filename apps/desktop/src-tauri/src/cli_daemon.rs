@@ -8,7 +8,8 @@ use std::fs::{self, File, OpenOptions};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::Arc;
 use std::time::Duration;
 use tauri::Manager;
 
@@ -380,12 +381,20 @@ fn process_alive(pid: u32) -> bool {
 fn public_status(status: &Value) -> Value {
     json!({"running":true,"protocolVersion":PROTOCOL,"version":status.get("version"),"pid":status.get("pid"),"runtimeId":status.get("runtimeId")})
 }
-fn version_parts(value: &str) -> Option<[u64; 3]> {
-    let parts: Vec<_> = value
+fn version_parts(value: &str) -> Option<[u64; 4]> {
+    let (base, fix) = match value.split_once("-fix-") {
+        Some((base, fix)) => (base, fix.parse::<u64>().ok()?),
+        None => (value, 0),
+    };
+    let mut parts: Vec<_> = base
         .split('.')
         .map(str::parse::<u64>)
         .collect::<Result<_, _>>()
         .ok()?;
+    if parts.len() != 3 {
+        return None;
+    }
+    parts.push(fix);
     parts.try_into().ok()
 }
 fn later_version(status: &Value, bundled: &Manifest) -> bool {
@@ -486,7 +495,38 @@ fn install_runtime(source: &Path, target: &Path, m: &Manifest) -> Result<(), Str
     }
     result
 }
-fn spawn_daemon(dir: &Path, profile: &Path, runtime: &Manifest) -> Result<(), String> {
+fn startup_error(profile: &Path) -> String {
+    let mut data = String::new();
+    if let Ok(file) = regular_file(&profile.join("daemon-startup.log"), 65536, true) {
+        let _ = file.take(65536).read_to_string(&mut data);
+    }
+    let code = data.lines().find_map(|line| {
+        let value: Value = serde_json::from_str(line).ok()?;
+        let code = value.get("error")?.get("code")?.as_str()?;
+        if (3..=80).contains(&code.len())
+            && code
+                .bytes()
+                .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_')
+        {
+            Some(code.to_owned())
+        } else {
+            None
+        }
+    });
+    code.map_or_else(
+        || "CLI_DAEMON_START_FAILED".into(),
+        |code| format!("CLI_DAEMON_START_FAILED: {code}"),
+    )
+}
+fn spawn_daemon(dir: &Path, profile: &Path, runtime: &Manifest) -> Result<Arc<AtomicBool>, String> {
+    // The child owns this private file handle after the App exits. A parent pipe
+    // would break a resident process's stderr when its GUI host is closed.
+    let log_path = profile.join("daemon-startup.log");
+    crate::native_security::private_atomic_write(&log_path, b"")?;
+    let log = OpenOptions::new()
+        .append(true)
+        .open(&log_path)
+        .map_err(|_| "CLI_DAEMON_INSTALL_UNAVAILABLE")?;
     let mut command = Command::new(dir.join(if cfg!(windows) { "node.exe" } else { "node" }));
     command
         .arg(dir.join("bin/onethu.mjs"))
@@ -499,7 +539,7 @@ fn spawn_daemon(dir: &Path, profile: &Path, runtime: &Manifest) -> Result<(), St
         .current_dir(dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null());
+        .stderr(Stdio::from(log));
     #[cfg(unix)]
     {
         use std::os::unix::process::CommandExt;
@@ -520,11 +560,20 @@ fn spawn_daemon(dir: &Path, profile: &Path, runtime: &Manifest) -> Result<(), St
     }
     // std::process::Child has no kill-on-drop. A dedicated waiter reaps a child
     // exiting while the GUI remains open; closing the GUI leaves it resident.
-    let mut child = command.spawn().map_err(|_| "CLI_DAEMON_START_FAILED")?;
+    let mut child = command.spawn().map_err(|error| {
+        crate::debug_log_line(&format!(
+            "CLI daemon spawn failed; os_code={:?}",
+            error.raw_os_error()
+        ));
+        "CLI_DAEMON_START_FAILED"
+    })?;
+    let exited = Arc::new(AtomicBool::new(false));
+    let finished = exited.clone();
     std::thread::spawn(move || {
         let _ = child.wait();
+        finished.store(true, Ordering::Release);
     });
-    Ok(())
+    Ok(exited)
 }
 
 #[tauri::command]
@@ -597,9 +646,14 @@ pub async fn cli_daemon_ensure(
                 .await
                 .map_err(|_| "CLI_DAEMON_INSTALL_UNAVAILABLE")??;
         }
-        spawn_daemon(&target, &profile, &bundled)?;
+        let exited = spawn_daemon(&target, &profile, &bundled)?;
         for _ in 0..150 {
             tokio::time::sleep(Duration::from_millis(100)).await;
+            if exited.load(Ordering::Acquire) {
+                let reason = startup_error(&profile);
+                crate::debug_log_line(&reason);
+                return Err(reason);
+            }
             if let Some(access) = read_access(&profile)? {
                 if let Ok(status) = rpc(
                     &access,
@@ -616,7 +670,9 @@ pub async fn cli_daemon_ensure(
                 }
             }
         }
-        Err("CLI_DAEMON_START_FAILED".into())
+        let reason = startup_error(&profile);
+        crate::debug_log_line(&reason);
+        Err(reason)
     }
 }
 
@@ -735,6 +791,38 @@ fn windows_private_acl(file: &File) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn stable_hotfixes_sort_between_base_and_next_patch() {
+        assert!(version_parts("0.11.4-fix-1") > version_parts("0.11.4"));
+        assert!(version_parts("0.11.4-fix-2") > version_parts("0.11.4-fix-1"));
+        assert!(version_parts("0.11.5") > version_parts("0.11.4-fix-2"));
+        assert!(version_parts("0.11.4-fix-x").is_none());
+    }
+    #[test]
+    fn startup_diagnostics_only_surface_structured_safe_codes() {
+        let dir = std::env::temp_dir().join(format!(
+            "onethu-startup-{}-{}",
+            std::process::id(),
+            NEXT_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        private_directory(&dir).unwrap();
+        let file = dir.join("daemon-startup.log");
+        for (body, expected) in [
+            (
+                r#"{"error":{"code":"CLI_STORAGE_ACL_FAILED","message":"private details"}}"#,
+                "CLI_DAEMON_START_FAILED: CLI_STORAGE_ACL_FAILED",
+            ),
+            ("unstructured private details", "CLI_DAEMON_START_FAILED"),
+            (
+                r#"{"error":{"code":"private value"}}"#,
+                "CLI_DAEMON_START_FAILED",
+            ),
+        ] {
+            crate::native_security::private_atomic_write(&file, body.as_bytes()).unwrap();
+            assert_eq!(startup_error(&dir), expected);
+        }
+        fs::remove_dir_all(dir).unwrap();
+    }
     #[test]
     fn command_surface_is_main_window_and_fixed_methods_only() {
         assert!(main_only("main").is_ok());

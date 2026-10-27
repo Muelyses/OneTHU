@@ -4,10 +4,14 @@ import importlib.util, json, hashlib
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('mirror',Path(__file__).with_name('check-release-mirrors.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-assert m.version('OneTHU_0.11.0_arm64.apk','arm64.apk')==(0,11,0)
+assert m.version('OneTHU_0.11.0_arm64.apk','arm64.apk')==(0,11,0,0)
 assert m.version('OneTHU_0.11.0_arm64.apk.tmp','arm64.apk') is None
 assert m.version('OneTHU_0.11.0_x86.apk','arm64.apk') is None
-assert m.newest([{'file_name':'OneTHU_0.9.0_arm64.apk'},{'file_name':'OneTHU_0.11.0_arm64.apk'},{'file_name':'OneTHU_0.10.0_arm64.apk'}],'arm64.apk')[0]==(0,11,0)
+assert m.newest([{'file_name':'OneTHU_0.9.0_arm64.apk'},{'file_name':'OneTHU_0.11.0_arm64.apk'},{'file_name':'OneTHU_0.10.0_arm64.apk'}],'arm64.apk')[0]==(0,11,0,0)
+assert m.version('OneTHU_0.11.4-fix-1_arm64.apk','arm64.apk')==(0,11,4,1)
+assert m.version('OneTHU_0.11.4-fix-2_arm64.apk','arm64.apk')>m.version('OneTHU_0.11.4-fix-1_arm64.apk','arm64.apk')
+assert m.manifest_version('0.11.4-fix-1')=={'version':'0.11.5','displayVersion':'0.11.4-fix-1'}
+assert m.manifest_version('0.11.5')=={'version':'0.11.5'}
 body=b'verifiable installer';digest=hashlib.sha256(body).hexdigest();release={'tag_name':'v0.11.0','draft':False,'prerelease':False,'html_url':'https://github.com/smartThise/OneTHU/releases/tag/v0.11.0','published_at':'2026-10-21','assets':[]};entries={};payloads={};sums=[]
 for platform,(directory,suffix,_) in m.PLATFORMS.items():
  name='OneTHU_0.11.0_'+suffix;url='https://example.invalid/'+name

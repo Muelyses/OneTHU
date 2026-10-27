@@ -130,7 +130,7 @@ export function SettingsOverlay(): ReactNode {
           </div>}
           <IconBtn label={i18n("components.explorer.settingsoverlay.77b17fc4a52a")} size="sm" variant="outline" titleAttr={i18n("components.explorer.settingsoverlay.51f560817509")} icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
-        <div className={"explorer-settings-body" + (entry === "profile" || entry === "plugins" ? " workbench-plugin-settings" : "")}>
+        <div className={"explorer-settings-body" + (simple || entry === "profile" || entry === "plugins" ? " workbench-plugin-settings" : "") + (simple ? " workbench-simple-settings" : "")}>
           {simple ? <SimpleSettings/> : entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}
         </div>
       </div>

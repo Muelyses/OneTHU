@@ -27,8 +27,17 @@ def download_url(path):
     return SHARE + 'files/?' + urlencode({'p': path, 'dl': '1'})
 
 def version(name, suffix):
-    match = re.fullmatch(r'OneTHU_(\d+)\.(\d+)\.(\d+)_' + re.escape(suffix), name)
-    return tuple(map(int, match.groups())) if match else None
+    match = re.fullmatch(r'OneTHU_(\d+)\.(\d+)\.(\d+)(?:-fix-(\d+))?_' + re.escape(suffix), name)
+    return tuple(int(x or 0) for x in match.groups()) if match else None
+
+def manifest_version(actual):
+    # Installed 0.11.4 compares only three components. Advertise the next patch
+    # while newer clients use displayVersion to compare the actual hotfix.
+    match = re.fullmatch(r'(\d+)\.(\d+)\.(\d+)-fix-\d+', actual)
+    if not match:
+        return {'version': actual}
+    major, minor, patch = map(int, match.groups())
+    return {'version': f'{major}.{minor}.{patch + 1}', 'displayVersion': actual}
 
 def newest(entries, suffix):
     candidates = [(version(e.get('file_name', ''), suffix), e) for e in entries if not e.get('is_dir')]
@@ -41,8 +50,8 @@ def verify(output=None, manifests=None):
     release = json.loads(read('https://api.github.com/repos/smartThise/OneTHU/releases/latest'))
     tag = release['tag_name']
     assert not release['draft'] and not release['prerelease']
-    expected = tuple(map(int, tag.removeprefix('v').split('.')))
-    assert len(expected) == 3
+    expected = version('OneTHU_'+tag.removeprefix('v')+'_asset', 'asset')
+    assert expected is not None
     github = {a['name']: a for a in release['assets']}
     assert 'SHA256SUMS.txt' in github, 'GitHub release lacks checksums'
     checksums = {}
@@ -75,7 +84,7 @@ def verify(output=None, manifests=None):
     if not manifests:
         for source, url in [('cloud', download_url('/latest.json')), ('github', REPO + '/releases/latest/download/latest.json')]:
             manifest = json.loads(read(url))
-            assert manifest['version'] == tag.removeprefix('v'), source + ': stale update manifest'
+            assert manifest.get('displayVersion',manifest['version']) == tag.removeprefix('v'), source + ': stale update manifest'
             for platform, asset in assets.items():
                 published = manifest['assets'][platform]
                 expected_url = asset['directory'] + asset['name'] if source == 'cloud' else asset['githubUrl']
@@ -90,7 +99,7 @@ def verify(output=None, manifests=None):
     if manifests:
         dest = Path(manifests); dest.mkdir(parents=True, exist_ok=True)
         for source in ['cloud', 'github']:
-            manifest = {'version': report['version'], 'releasedAt': release['published_at'],
+            manifest = {**manifest_version(report['version']), 'releasedAt': release['published_at'],
                         'notes': release.get('name', tag) + ' — ' + release['html_url'], 'assets': {}}
             for platform, asset in assets.items():
                 directory = asset['directory']

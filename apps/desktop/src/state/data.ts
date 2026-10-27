@@ -39,6 +39,7 @@ import { http, info, learn, logLine, session } from "../lib/clients.js";
 import { helper as infoHelper } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
+import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
@@ -93,7 +94,10 @@ async function loadReal(): Promise<CampusData> {
     Promise.all(ids.slice(0, 8).map((id) => learn.getFileList(id).catch(() => [])))
       .then((rs) => rs.flat())
       .catch(() => [] as CourseFile[]),
-    info.getSchedule(from, to).catch(() => [] as ScheduleEntry[]),
+    (async () => {
+      const calendar = cacheGet<CalendarData>("calendar")?.data ?? await cacheFetch("calendar", () => learn.getCalendarData());
+      return appendSecondarySchedule(await info.getSchedule(from, to), calendar.firstDay, from, to);
+    })().catch(() => [] as ScheduleEntry[]),
     infoHelper.getUserInfo()
       .then((u: { fullName: string; emailName: string }) => ({
         name: u.fullName,
@@ -114,24 +118,35 @@ export type DataState = "loading" | "error" | "ready";
 export function useTodayCourseData() {
   const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
-  const day = fmtDate(new Date()), key = `todaycourses:${day}`;
+  const calendar = useCalendar();
+  const firstDay = calendar.data?.firstDay;
+  const day = fmtDate(new Date()), key = `todaycourses:${day}:${firstDay ?? "pending"}`;
   const seed = preview ? cacheGet<CampusData>("campus")?.data.schedule ?? null : cacheGet<ScheduleEntry[]>(key)?.data ?? null;
   const [data, setData] = useState<ScheduleEntry[] | null>(seed);
   const [state, setState] = useState<DataState>(seed ? "ready" : "loading");
   const [error, setError] = useState<string | null>(null);
   const load = useCallback(async () => {
-    if (preview) return;
+    if (preview || !firstDay) return;
     setState("loading");setError(null);
     try {
-      const rows = await cacheFetch(key, () => info.getSchedule(day, day));
+      const rows = await cacheFetch(key, async () => {
+        const primary = await info.getSchedule(day, day);
+        return appendSecondarySchedule(primary, firstDay, day, day);
+      });
       setData(rows);setState("ready");
     } catch (err) {
       logPageError("TODAY-COURSES", err);
       setError(explainNetworkError(err));setState("error");
     }
-  }, [preview, key, day, status]);
-  useEffect(() => { if (status === "ready" && !preview) void load(); }, [status, preview, load]);
-  return { data, state, error, reload: load };
+  }, [preview, key, day, firstDay, status]);
+  useEffect(() => {
+    if (status !== "ready" || preview) return;
+    if (firstDay) void load();
+    else if (calendar.state === "error") {
+      setError(calendar.error ?? i18n("schedule.secondary.invalidSemester"));setState("error");
+    }
+  }, [status, preview, firstDay, calendar.state, calendar.error, load]);
+  return { data, state, error, reload: firstDay ? load : calendar.reload };
 }
 
 const CAMPUS_KEY = "campus";

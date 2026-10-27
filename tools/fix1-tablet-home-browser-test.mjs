@@ -50,15 +50,22 @@ try {
     const dataSource=await (await fetch(dataUrl)).text();
     const {Ctx}=await import(dependency(widgetSource,'/src/state/context.ts'));
     const {PreviewDataContext}=await import(dependency(dataSource,'/src/state/dataScope.ts'));
-    const {info}=await import(dependency(dataSource,'/src/lib/clients.ts'));
+    const {info,http}=await import(dependency(dataSource,'/src/lib/clients.ts'));
     const {TodayClassesWidget}=await import(widgetUrl);
-    window.__courseCalls=[];window.__courseMode='pending';
+    window.__courseCalls=[];window.__secondaryRequests=0;window.__courseMode='pending';
     info.getSchedule=async(from,to)=>{
       window.__courseCalls.push([from,to]);
       if(window.__courseMode==='pending')await new Promise(r=>window.__finishCourse=r);
       if(window.__courseMode==='error')throw Error('Synthetic timetable unavailable');
       if(window.__courseMode==='empty')return [];
-      return [{courseName:'Synthetic secondary course',date:from,dayOfWeek:3,startTime:'13:30',endTime:'15:05',raw:{secondary:true}}];
+      return []; // Secondary-only day: primary JSONP is legitimately empty.
+    };
+    http.text=async url=>{
+      if(!url.includes('m=bks_ejkbSearch'))throw Error('Unexpected synthetic request');
+      window.__secondaryRequests++;
+      if(window.__courseMode==='secondary-error')throw Error('Synthetic secondary failure');
+      if(window.__courseMode==='empty')return '<script>function setInitValue() { }</script>';
+      return `<script>function setInitValue() {\nstrHTML = "<span onmouseover=\\"return overlib('03_33( Test room，第7周)');\\" onmouseout='return nd();'>Synthetic secondary course</span>"; document.getElementById('a3_3').innerHTML += strHTML+"<br>";\n}</script>`;
     };
     const scope={preview:false,cacheGet:()=>null,cacheSet:()=>{},cacheFetch:(_,load)=>load()};
     const node=document.createElement('div');node.id='course-regression';node.style.cssText='position:fixed;inset:100px 50px 150px;background:white;z-index:999999;overflow:auto';document.body.append(node);
@@ -72,6 +79,7 @@ try {
   check(!(await test.innerText()).includes('今天没有课'),'in-flight timetable never claims an empty day');
   await page.evaluate(()=>{window.__courseMode='rows';window.__finishCourse();});
   await test.getByText('Synthetic secondary course',{exact:true}).waitFor();
+  check(await page.evaluate(()=>window.__secondaryRequests>0),'empty primary source is completed by the actual secondary HTML parser and merge');
   check(await page.evaluate(()=>window.__courseCalls.every(([a,b])=>/^\d{4}-\d{2}-\d{2}$/.test(a)&&a===b)),'home requests the timetable source for the actual current day');
   await page.evaluate(()=>{window.__courseMode='error';window.__renderCourse();});
   await test.getByText('Synthetic timetable unavailable',{exact:false}).waitFor();
@@ -80,6 +88,9 @@ try {
   await test.getByRole('button',{name:/重试/}).click();
   await test.getByText('Synthetic secondary course',{exact:true}).waitFor();
   check(true,'retry loads the real course renderer after an upstream failure');
+  await page.evaluate(()=>{window.__courseMode='secondary-error';window.__renderCourse();});
+  await test.getByText('Synthetic secondary failure',{exact:false}).waitFor();
+  check(!(await test.innerText()).includes('今天没有课'),'secondary-source failure cannot masquerade as an empty day');
   await page.evaluate(()=>{window.__courseMode='empty';window.__renderCourse();});
   await test.getByText('今天没有课。',{exact:true}).waitFor();
   check(true,'successful empty timetable alone displays the empty-day message');

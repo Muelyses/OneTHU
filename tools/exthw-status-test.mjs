@@ -127,7 +127,8 @@ console.log("\n[雨课堂]");
         errcode: 0,
         data: {
           activities: [
-            { type: 19, id: 10, title: "部分作答作业", classroom_id: 1, content: { leaf_type_id: 100, leaf_id: 5, score_d: FUTURE } },
+            // 2026-10-25 新增：type 4「试卷」（课后复习/课前预习小测），content 为空，身份 = courseware_id
+            { type: 4, id: 9106904, courseware_id: "620261", title: "2026练习题03", classroom_id: 1 },            { type: 19, id: 10, title: "部分作答作业", classroom_id: 1, content: { leaf_type_id: 100, leaf_id: 5, score_d: FUTURE } },
             // R23：部分作答 ≠ 已提交 —— 无明细（problems 空）时 answer_count>0 保守算已交
             { type: 19, id: 27, title: "无明细已交作业", classroom_id: 1, content: { leaf_type_id: 110, leaf_id: 27, score_d: FUTURE } },
             { type: 19, id: 11, title: "未交作业", classroom_id: 1, content: { leaf_type_id: 101, leaf_id: 6, score_d: FUTURE } },
@@ -172,6 +173,18 @@ console.log("\n[雨课堂]");
           ],
         },
       },
+    },
+    {
+      match: (u) => u.includes("/v2/api/web/quiz/quiz_info") && u.includes("quiz_id=620261"),
+      body: { errcode: 0, data: { title: "2026练习题03", deadline: FUTURE, total_score: 10, problem_count: 8 } },
+    },
+    {
+      match: (u) => u.includes("/v2/api/web/quiz/user_quiz_status") && u.includes("quiz_id=620261"),
+      body: { errcode: 0, data: { status: 2, answer_time: null, before_answer_time: false } },
+    },
+    {
+      match: (u) => u.includes("/v2/api/web/quiz/quiz_result") && u.includes("quiz_id=620261"),
+      body: { errcode: 0, data: { problem_count: 8, unfinished_list: [], score: 6, total_score: 10 } },
     },
     {
       match: (u) => u.includes("/get_exercise_list/100/"),
@@ -314,8 +327,16 @@ console.log("\n[雨课堂]");
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 24, "拉到 24 条作业");
+  eq(items.length, 25, "拉到 25 条作业（含 type 4 试卷）");
   const byTitle = new Map(items.map((i) => [i.title, i]));
+  // 2026-10-25 新增 type 4「试卷」：quiz_info 给标题/DDL，user_quiz_status 2 = 已交，quiz_result 给分
+  eq(byTitle.get("2026练习题03")?.kind, "quiz", "试卷（type 4）归入作业聚合且 kind=quiz");
+  eq(byTitle.get("2026练习题03")?.submitted, true, "试卷 user_quiz_status=2 → 已提交");
+  eq(byTitle.get("2026练习题03")?.score, 6, "试卷 quiz_result.score=6");
+  eq(byTitle.get("2026练习题03")?.totalScore, 10, "试卷 quiz_result.total_score=10");
+  eq(byTitle.get("2026练习题03")?.graded, true, "试卷已交且有分 → graded=true");
+  eq(byTitle.get("2026练习题03")?.totalCount, 8, "试卷题目数 8");
+  ok(String(byTitle.get("2026练习题03")?.url).includes("/v2/web/quizSummary/1/620261"), "已交试卷链接指向成绩页");
   // R24 fix（bug1）：已批改有评语但服务端不回传 my_answer.content → 多信号判已作答，整卷已提交
   eq(byTitle.get("已批无正文作业")?.submitted, true, "R24：5/5 已批改（status 4 + submit_time + my_count）无正文 → 已提交");
   eq(byTitle.get("已批无正文作业")?.submittedCount, 5, "已批无正文作业 submittedCount=5");
@@ -439,21 +460,42 @@ console.log("\n[雨课堂]");
   );
 }
 
+/* 2026-10-25 用户反馈：某账号逐题 user 明细整片缺失，只有整卷 answer_count。
+   逐题证据为 0、answer_count === 题目数 → 说明每题都答过（整卷口径），判已提交。 */
+{
+  const FUTURE = Date.now() + 3 * 86400000;
+  const fetchLike = makeFetch([
+    { match: (u) => u.includes("/v2/api/web/courses/list"), body: { errcode: 0, data: { list: [{ classroom_id: 9, name: "只有整卷计数", role: 5 }] } } },
+    { match: (u) => u.includes("/v2/api/web/logs/learn/9"), body: { errcode: 0, data: { activities: [{ type: 19, id: 90, title: "整卷计数作业", classroom_id: 9, content: { leaf_type_id: 900, leaf_id: 90, score_d: FUTURE } }] } } },
+    { match: (u) => u.includes("/get_exercise_list/900/"), body: { data: { answer_count: 3, problems: [{ user: {} }, { user: {} }, { user: {} }] } } },
+  ]);
+  const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
+  const items = await src.fetch();
+  eq(items[0]?.submitted, true, "逐题证据全缺但 answer_count==3/3 → 已提交（不再误报逾期）");
+  eq(items[0]?.submittedCount, 3, "整卷计数兜底 → submittedCount=3");
+  eq(items[0]?.totalCount, 3, "整卷计数兜底 → totalCount=3");
+}
+
 /* ───────────────────────── TUOJ ───────────────────────── */
 console.log("\n[TUOJ]");
-async function tuojCase(name, { me, players, expectSubmitted, expectDetailsLen }) {
+async function tuojCase(name, { me, players, problems, expectSubmitted, expectDetailsLen, expectTotalCount, expectScore, expectTotalScore, expectGraded, ranklistExtra, contestExtra }) {
   const fetchLike = makeFetch([
     { match: (u, m) => u.endsWith("/api/user/lookup") && m === "POST", body: me ?? {} },
     { match: (u) => u.endsWith("/api/course/list"), body: { courses: [{ _id: 8, title: "离散数学" }] } },
-    { match: (u) => u.endsWith("/api/course/8/rank"), body: { courseRank: { contests: [{ _id: 83, title: "homework 1" }] } } },
+    { match: (u) => u.endsWith("/api/course/8/rank"), body: { courseRank: { contests: [{ _id: 83, title: "homework 1", ...(contestExtra ?? {}) }] } } },
     { match: (u) => u.endsWith("/api/course/8/contest/83/context"), body: { context: { metadata: { title: "homework 1" }, schedule: { endAt: FUTURE } } } },
-    { match: (u) => u.endsWith("/api/course/8/contest/83/ranklist"), body: { ranklist: { players } } },
+    { match: (u) => u.endsWith("/api/course/8/contest/83/ranklist"), body: { ranklist: { players, ...(ranklistExtra ?? {}) } } },
+    ...(problems ? [{ match: (u) => u.endsWith("/api/course/8/contest/83/problem/list"), body: { problems } }] : []),
   ]);
   const src = createTuojSource({ cookie: "session=x" }, fetchLike, 30);
   const items = await src.fetch();
   eq(items.length, 1, `${name}：拉到 1 条`);
   eq(items[0]?.submitted, expectSubmitted, `${name}：submitted`);
   if (expectDetailsLen !== undefined) eq(items[0]?.submittedCount, expectDetailsLen, `${name}：submittedCount`);
+  if (expectTotalCount !== undefined) eq(items[0]?.totalCount, expectTotalCount, `${name}：totalCount`);
+  if (expectScore !== undefined) eq(items[0]?.score, expectScore, `${name}：score`);
+  if (expectTotalScore !== undefined) eq(items[0]?.totalScore, expectTotalScore, `${name}：totalScore`);
+  if (expectGraded !== undefined) eq(items[0]?.graded, expectGraded, `${name}：graded`);
   ok(
     fetchLike.calls.some((c) => c.url.endsWith("/api/user/lookup") && c.method === "POST"),
     `${name}：lookup 用 POST`,
@@ -477,6 +519,72 @@ await tuojCase("ranklist 里没有自己", {
   me: { user: { _id: 1001, username: "2026000000" } },
   players: [{ _id: 999, username: "other", details: { "0": { judgeId: 1 } } }],
   expectSubmitted: false,
+});
+const TUOJ_PROBLEMS = [
+  { _id: 71, kind: "answer", title: "命题的基本概念", totalScore: 24 },
+  { _id: 72, kind: "answer", title: "命题形式化", totalScore: 15 },
+  { _id: 73, kind: "answer", title: "命题公式分析与验证", totalScore: 8 },
+  { _id: 74, kind: "answer", title: "自然语句形式化", totalScore: 12 },
+  { _id: 76, kind: "answer", title: "反馈：期待听到你的声音", totalScore: 0 },
+];
+const TUOJ_PROBLEM_META = TUOJ_PROBLEMS.map(({ _id, kind, title }) => ({ _id, kind, title }));
+
+await tuojCase("已批改：逐题 score 求和，满分取 problem/list 合计（排除 0/0 反馈题）", {
+  me: { user: { _id: 1001, username: "2026000000" } },
+  players: [{
+    _id: 1001, username: "2026000000", total_score: 56,
+    details: {
+      "0": { score: 24 }, "1": { score: 12 }, "2": { score: 8 }, "3": { score: 12 }, "4": { score: 0 },
+    },
+  }],
+  ranklistExtra: { problems: TUOJ_PROBLEM_META },
+  problems: TUOJ_PROBLEMS,
+  expectSubmitted: true,
+  expectDetailsLen: 4,
+  expectTotalCount: 4,
+  expectScore: 56,
+  expectTotalScore: 59,
+  expectGraded: true,
+});
+await tuojCase("已交未批：score 为 Submitted → 不显示已批改 / 不显示 0 分", {
+  me: { user: { _id: 1001, username: "2026000000" } },
+  players: [{
+    _id: 1001, username: "2026000000", total_score: "Unknown",
+    details: { "0": { score: "Submitted" }, "1": { score: "Submitted" } },
+  }],
+  ranklistExtra: { problems: [{ _id: 100, kind: "answer", title: "A" }, { _id: 101, kind: "answer", title: "B" }, { _id: 76, kind: "answer", title: "反馈：期待听到你的声音" }] },
+  problems: [
+    { _id: 100, totalScore: 40 }, { _id: 101, totalScore: 60 }, { _id: 76, totalScore: 0 },
+  ],
+  expectSubmitted: true,
+  expectDetailsLen: 2,
+  expectTotalCount: 2,
+  expectScore: undefined,
+  expectGraded: undefined,
+});
+await tuojCase("只交一题：进行中 x/y（反馈题不计入分母）", {
+  me: { user: { _id: 1001, username: "2026000000" } },
+  players: [{ _id: 1001, username: "2026000000", details: { "0": { score: "Submitted" } } }],
+  ranklistExtra: { problems: [{ _id: 100, kind: "answer", title: "A" }, { _id: 101, kind: "answer", title: "B" }, { _id: 102, kind: "answer", title: "C" }, { _id: 76, kind: "answer", title: "反馈：期待听到你的声音" }] },
+  problems: [
+    { _id: 100, totalScore: 20 }, { _id: 101, totalScore: 30 }, { _id: 102, totalScore: 50 }, { _id: 76, totalScore: 0 },
+  ],
+  expectSubmitted: false,
+  expectDetailsLen: 1,
+  expectTotalCount: 3,
+  expectScore: undefined,
+  expectGraded: undefined,
+});
+await tuojCase("没有分数字段 → 不谎报分数、不标已批改", {
+  me: { user: { _id: 1001, username: "2026000000" } },
+  players: [{ _id: 1001, username: "2026000000", details: { "0": { judgeId: 1 } } }],
+  ranklistExtra: { problems: [{ _id: 100, title: "A" }] },
+  problems: [{ _id: 100, totalScore: 100 }],
+  expectSubmitted: true,
+  expectDetailsLen: 1,
+  expectTotalCount: 1,
+  expectScore: undefined,
+  expectGraded: undefined,
 });
 await tuojCase("lookup 失败但按 username 命中", {
   me: {},

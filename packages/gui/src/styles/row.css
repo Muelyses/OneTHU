@@ -19,8 +19,10 @@
   border-top: 1px solid var(--og-line-1);
 }
 
+/* 贴边列表也要倒角：方形行块直接放进超椭圆容器会"割角"。
+   行自身保留一个同心内圆角，悬停/选中的填充不再是与容器冲突的直角矩形。 */
 .og-list--flush > .og-row {
-  border-radius: var(--og-space-0);
+  border-radius: var(--og-radius-md);
 }
 
 /* ── 行 ── */

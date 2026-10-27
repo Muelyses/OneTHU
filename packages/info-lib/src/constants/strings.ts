@@ -37,7 +37,7 @@ export const DEADLINE_URL =
 export const CALENDAR_IMAGE_URL = "https://app.cs.tsinghua.edu.cn/xiaoli";
 export const CALENDAR_YEAR_URL = "https://app.cs.tsinghua.edu.cn/Api/SchoolCalendarYear";
 export const LEARN_HOME_URL =
-    "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421fcf2408e297e7c4377068ea48d546d30ca8cc97bcc/f/wlxt/index/course/student/index";
+    "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421fcf2408e297e7c4377068ea48d546d30ca8cc97bcc/f/wlxt/index/course/student/";
 export const SEMESTER_LIST_URL =
     "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421fcf2408e297e7c4377068ea48d546d30ca8cc97bcc/b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester?_csrf=";
 export const EMAIL_BASE_URL =

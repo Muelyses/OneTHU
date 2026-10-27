@@ -245,7 +245,7 @@ export function dedupeYktRemarks(p: YktRemarkLike): YktRemarkView {
 /** 资格判定输入（problems 传 YkProblem 子集即可，测试可传普通对象） */
 export interface YktSubmitEligibilityInput {
   /** 作业类型（列表行 kind；exam = 试卷 → 红线） */
-  kind?: "homework" | "exam";
+  kind?: "homework" | "exam" | "quiz";
   /** 活动源 type（19 作业 / 20 试卷；6 为旧 /subject 链接的试卷别名）——与 kind 双保险 */
   sourceType?: number;
   /** 题目列表（题型 / 剩余重交次数 / 三态） */

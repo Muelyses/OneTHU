@@ -1,6 +1,7 @@
 import { t as i18n } from "../i18n/index.js";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { createPhoneFace, createPhoneSlab, fitPhoneScreen, IPHONE_18_PRO } from "./tourPhoneGeometry.js";
 import { selectStudioScreen, studioVaultVideo, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
 
 /** Resolved OneGUI material colours. Each assembly owns and disposes its resources. */
@@ -42,11 +43,13 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const result = new THREE.MeshPhysicalMaterial({ color, roughness: .4, metalness: .05, envMapIntensity: .9, ...properties });
     materials.add(result); return result;
   };
-  const aluminium = material(palette.edge, { metalness: .82, roughness: .26, clearcoat: .25 });
+  const aluminium = material(palette.edge, { metalness: .68, roughness: .3, clearcoat: .25, envMapIntensity: 1.15 });
   const ceramic = material(palette.body, { metalness: .16, roughness: .28, clearcoat: .8, clearcoatRoughness: .18 });
   const paper = material(palette.paper, { roughness: .62, metalness: 0 });
   const glass = material(palette.glass, { metalness: .18, roughness: .12, clearcoat: 1, clearcoatRoughness: .08 });
   const ink = material(palette.ink, { metalness: .12, roughness: .26 });
+  // Front Ceramic Shield 2 reads as deep black glass, not a grey picture frame.
+  const frontGlass = material(palette.ink, { metalness: .22, roughness: .05, clearcoat: 1, clearcoatRoughness: .03, envMapIntensity: .6 });
   function solid(width: number, height: number, depth: number, radius: number, surface: THREE.Material, name?: string): THREE.Mesh {
     const mesh = new THREE.Mesh(keepGeometry(new RoundedBoxGeometry(width, height, depth, 4, Math.min(radius, width / 2, height / 2, depth / 2))), surface);
     mesh.name = name ?? "studio-solid"; mesh.castShadow = true; mesh.receiveShadow = true; return mesh;
@@ -124,7 +127,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     // its own top margin and must not cover real app controls.
     const aspect = image.naturalWidth / image.naturalHeight;
     const width = Math.min(maxWidth, maxHeight * aspect), height = width / aspect;
-    const face = roundedFace(width, height, radius, surface);
+    const face = radius > 0 ? roundedFace(width, height, radius, surface) : new THREE.Mesh(keepGeometry(new THREE.PlaneGeometry(width, height)), surface);
     face.userData.studioScreen = { key, url: image.currentSrc || image.src, width: image.naturalWidth, height: image.naturalHeight };
     return face;
   }
@@ -139,15 +142,26 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
   function phone(name: string, receiver = false): THREE.Group {
     const result = new THREE.Group(); result.name = name;
     const rearSurface = receiver ? material(palette.glass, { metalness: .35, roughness: .27, clearcoat: .75, clearcoatRoughness: .18 }) : ceramic;
-    // A machined frame, ceramic back and glass display have separate thicknesses.
-    result.add(plate(1.2, 2.6, .16, .1, aluminium, `${name}-frame`));
-    const back = plate(1.15, 2.55, .055, .095, rearSurface, `${name}-back`); back.position.z = -.073; result.add(back);
-    const display = plate(1.18, 2.56, .045, .09, glass, `${name}-glass`); display.position.z = .082; result.add(display);
+    const { width, height, depth, corner, bevel, displayWidth, displayHeight, glassCorner } = IPHONE_18_PRO;
+    // iPhone 18 Pro: forged aluminium unibody, Ceramic Shield 2 front, Ceramic Shield back.
+    // One continuous G2 outline keeps the corners round even though the frame is thin.
+    const frame = new THREE.Mesh(keepGeometry(createPhoneSlab(width, height, depth, corner, bevel)), aluminium);
+    frame.name = `${name}-frame`; frame.castShadow = true; frame.receiveShadow = true; result.add(frame);
+    const back = new THREE.Mesh(keepGeometry(createPhoneFace(width - .038, height - .038, corner - .002)), rearSurface);
+    back.name = `${name}-back`; back.position.z = -depth / 2 - .001; back.rotation.y = Math.PI; back.receiveShadow = true; result.add(back);
+    // Contain the entire capture in the physical panel; never stretch it. Only the
+    // display's rounded outline masks the extreme corners.
+    const displayFit = fitPhoneScreen(displayWidth, displayHeight);
+    const glassWidth = displayFit.width + .023, glassHeight = displayFit.height + .023;
+    // Cover glass hugs the capture, so the visible metal is the slab's chamfer
+    // rather than a wide painted frame. It stays inside the slab's front cap.
+    const display = new THREE.Mesh(keepGeometry(createPhoneFace(glassWidth, glassHeight, glassCorner)), frontGlass);
+    display.name = `${name}-glass`; display.position.z = depth / 2 + .001; display.receiveShadow = true; result.add(display);
     const before = selectStudioScreen(lesson, mode, false), after = selectStudioScreen(lesson, mode, true);
     const beforeKey = (receiver ? before.secondary : before.primary)?.key;
     const afterKey = (receiver ? after.secondary : after.primary)?.key;
     if (!beforeKey || !afterKey) throw new Error(i18n("components.tourstudiomodels.cf4324a5411f"));
-    const screen = screenshotFace(beforeKey); screen.name = `${name}-screen`; screen.position.set(0, 0, .109); result.add(screen);
+    const screen = screenshotFace(beforeKey, displayFit.width, displayFit.height, IPHONE_18_PRO.displayCorner); screen.name = `${name}-screen`; screen.position.set(displayFit.x, displayFit.y, depth / 2 + .0016); result.add(screen);
     if (lesson === "vault" && !receiver) {
       const video = document.createElement("video");
       video.src = studioVaultVideo(); video.loop = true; video.muted = true; video.playsInline = true; video.preload = "auto";
@@ -174,32 +188,60 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
       updateFaces.push(p => { progress = p; if (reduced) { surface.map = p >= .9 ? last.map : first; surface.needsUpdate = true; } });
       releaseMedia = () => { released = true; running = false; video.pause(); if (request) video.cancelVideoFrameCallback(request); if (timer) clearTimeout(timer); video.removeAttribute("src"); video.load(); };
     } else if (afterKey !== beforeKey) {
-      const afterFace = screenshotFace(afterKey); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace);
+      const afterFace = screenshotFace(afterKey, displayFit.width, displayFit.height, IPHONE_18_PRO.displayCorner); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace);
       updateFaces.push(p => { screen.visible = p < .9; afterFace.visible = p >= .9; });
     }
-    const reflection = roundedFace(1.16, 2.51, .075, material(palette.paper, { transparent: true, opacity: .025, depthWrite: false, metalness: 0, roughness: .15, clearcoat: .5, clearcoatRoughness: .14, specularIntensity: .25, envMapIntensity: .35 }));
-    reflection.name = `${name}-screen-reflection`; reflection.position.set(0, 0, .112); reflection.castShadow = false; reflection.receiveShadow = false; reflection.userData.studioGlassOverlay = true; result.add(reflection);
-    const island = solid(.16, .014, .012, .006, ink, `${name}-front-camera`); island.position.set(0, 1.275, .123); result.add(island);
-    const bump = plate(.62, .76, .07, .13, rearSurface, `${name}-camera-island`); bump.position.set(.235, .81, -.13); result.add(bump);
-    for (const [x, y] of [[.11, .98], [.35, .72]] as const) {
-      const ring = new THREE.Mesh(keepGeometry(new THREE.TorusGeometry(.119, .018, 12, 32)), aluminium); ring.position.set(x, y, -.18); ring.castShadow = true; result.add(ring);
-      const barrel = new THREE.Mesh(keepGeometry(new THREE.CylinderGeometry(.105, .105, .042, 32)), ink); barrel.rotation.x = Math.PI / 2; barrel.position.set(x, y, -.185); result.add(barrel);
-      const lens = new THREE.Mesh(keepGeometry(new THREE.SphereGeometry(.084, 24, 12)), glass); lens.scale.z = .18; lens.position.set(x, y, -.214); lens.name = `${name}-lens`; result.add(lens);
+    const reflection = roundedFace(displayWidth, displayHeight, glassCorner - .02, material(palette.paper, { transparent: true, opacity: .03, depthWrite: false, metalness: 0, roughness: .12, clearcoat: .6, clearcoatRoughness: .1, specularIntensity: .3, envMapIntensity: .4 }));
+    reflection.name = `${name}-screen-reflection`; reflection.position.set(0, 0, depth / 2 + .0026); reflection.castShadow = false; reflection.receiveShadow = false; reflection.userData.studioGlassOverlay = true; result.add(reflection);
+    // The front sensor stays on the bezel so the captured application UI is never covered.
+    const island = solid(IPHONE_18_PRO.islandWidth, IPHONE_18_PRO.islandHeight, .006, IPHONE_18_PRO.islandHeight / 2, ink, `${name}-front-camera`);
+    island.position.set(0, IPHONE_18_PRO.islandY, depth / 2 + .0022); result.add(island);
+    const plateau = new THREE.Mesh(keepGeometry(createPhoneSlab(IPHONE_18_PRO.plateauWidth, IPHONE_18_PRO.plateauHeight, .06, .19, .012)), rearSurface);
+    plateau.name = `${name}-camera-plateau`; plateau.position.set(IPHONE_18_PRO.plateauX, IPHONE_18_PRO.plateauY, -depth / 2 - .028); plateau.castShadow = true; plateau.receiveShadow = true; result.add(plateau);
+    const lensGlass = material(palette.glass, { metalness: .4, roughness: .06, clearcoat: 1, clearcoatRoughness: .03, envMapIntensity: 1.3 });
+    const lens = (lx: number, ly: number, radius: number, label: string): THREE.Group => {
+      const assembly = new THREE.Group(); assembly.name = `${name}-lens-${label}`; assembly.position.set(lx, ly, -depth / 2 - .06);
+      const ring = new THREE.Mesh(keepGeometry(new THREE.TorusGeometry(radius, .016, 16, 48)), aluminium); ring.castShadow = true; assembly.add(ring);
+      const housing = new THREE.Mesh(keepGeometry(new THREE.CylinderGeometry(radius - .004, radius - .002, .03, 48)), ink); housing.rotation.x = Math.PI / 2; housing.position.z = .012; assembly.add(housing);
+      const barrel = new THREE.Mesh(keepGeometry(new THREE.CylinderGeometry(radius * .66, radius * .7, .012, 48)), glass); barrel.rotation.x = Math.PI / 2; barrel.position.z = -.004; assembly.add(barrel);
+      const element = new THREE.Mesh(keepGeometry(new THREE.SphereGeometry(radius * .54, 32, 16)), lensGlass); element.scale.z = .32; element.position.z = -.012; element.name = `${name}-lens-element`; assembly.add(element);
+      const rim = new THREE.Mesh(keepGeometry(new THREE.RingGeometry(radius * .62, radius * .74, 48)), ink); rim.rotation.y = Math.PI; rim.position.z = -.016; assembly.add(rim);
+      return assembly;
+    };
+    for (const [lx, ly, label] of [
+      [IPHONE_18_PRO.plateauX - .145, IPHONE_18_PRO.plateauY + .145, "main"],
+      [IPHONE_18_PRO.plateauX - .145, IPHONE_18_PRO.plateauY - .14, "ultra"],
+      [IPHONE_18_PRO.plateauX + .145, IPHONE_18_PRO.plateauY + .005, "tele"],
+    ] as const) result.add(lens(lx, ly, .104, label));
+    const flashRing = new THREE.Mesh(keepGeometry(new THREE.TorusGeometry(.046, .008, 12, 32)), aluminium); flashRing.position.set(.1, 1.02, -depth / 2 - .003); result.add(flashRing);
+    const flash = new THREE.Mesh(keepGeometry(new THREE.CircleGeometry(.042, 32)), paper); flash.rotation.y = Math.PI; flash.position.set(.1, 1.02, -depth / 2 - .005); result.add(flash);
+    const micro = new THREE.Mesh(keepGeometry(new THREE.CircleGeometry(.017, 20)), ink); micro.rotation.y = Math.PI; micro.position.set(.1, .9, -depth / 2 - .004); result.add(micro);
+    // Physical controls: Action button and volume pair on the left, side button and Camera Control on the right.
+    const side = width / 2 - .008;
+    for (const [y, length, label] of [[.79, .10, "action"], [.55, .20, "volume-up"], [.31, .20, "volume-down"]] as const) { const button = solid(.03, length, .062, .013, aluminium, `${name}-${label}`); button.position.set(-side, y, 0); result.add(button); }
+    const power = solid(.03, .26, .062, .013, aluminium, `${name}-side-button`); power.position.set(side, .55, 0); result.add(power);
+    const cameraControl = solid(.022, .12, .05, .009, glass, `${name}-camera-control`); cameraControl.position.set(side + .002, -.02, 0); result.add(cameraControl);
+    const port = solid(.11, .014, .042, .006, ink, `${name}-usb-c`); port.position.set(0, -height / 2 + .004, 0); result.add(port);
+    for (let index = 0; index < 6; index++) for (const direction of [-1, 1]) {
+      const hole = new THREE.Mesh(keepGeometry(new THREE.CylinderGeometry(.0055, .0055, .012, 14)), ink);
+      hole.position.set(direction * (.1 + index * .026), -height / 2 + .004, 0); result.add(hole);
     }
-    const flash = new THREE.Mesh(keepGeometry(new THREE.CircleGeometry(.038, 24)), paper); flash.rotation.y = Math.PI; flash.position.set(.4, 1.02, -.168); result.add(flash);
-    for (const [y, length] of [[.45, .23], [.08, .33]] as const) { const button = solid(.035, length, .07, .016, aluminium); button.position.set(-.61, y, 0); result.add(button); }
-    const power = solid(.035, .36, .07, .016, aluminium); power.position.set(.61, .3, 0); result.add(power);
     return result;
   }
   let applyPose: (progress: number) => void;
+  /* The studio camera looks slightly down at the scene. Lean the screens up
+     toward the viewer (仰角) so a model never starts facing the floor; the
+     settled angle keeps the same reading direction. */
+  const FACE_VIEWER = -.16;
+  const READING_ANGLE = -.08;
   if (lesson === "nfc") {
     const sender = phone("studio-phone-sender"), receiver = phone("studio-phone-receiver", true); group.add(sender, receiver);
     applyPose = progress => {
       const p = clamp(progress);
       sender.position.set(mix(-1.4, -.9, p), mix(.08, .03, p), mix(-.08, .15, p));
       receiver.position.set(mix(1.4, .9, p), mix(-.08, -.03, p), mix(.08, -.05, p));
-      sender.rotation.set(mix(-.12, -.04, p), mix(2.42, .24, p), mix(-.13, .035, p));
-      receiver.rotation.set(mix(.1, -.04, p), mix(-2.42, -.24, p), mix(.13, -.035, p));
+      sender.rotation.set(mix(FACE_VIEWER, READING_ANGLE, p), mix(2.42, .24, p), mix(-.13, .035, p));
+      receiver.rotation.set(mix(FACE_VIEWER, READING_ANGLE, p), mix(-2.42, -.24, p), mix(.13, -.035, p));
     };
   } else if (lesson === "board" || lesson === "mode-full") {
     const tablet = new THREE.Group(); tablet.name = "studio-board-tablet";
@@ -210,7 +252,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     applyPose = progress => {
       const p = clamp(progress);
       tablet.position.z = mix(-.2, .08, p);
-      tablet.rotation.set(mix(.12, -.025, p), mix(-.25, .035, p), mix(-.04, 0, p));
+      tablet.rotation.set(mix(FACE_VIEWER, READING_ANGLE, p), mix(-.25, .035, p), mix(-.04, 0, p));
     };
   } else if (lesson === "organization") {
     const identity = card(3.25, 1.23, { eyebrow: i18n("components.tourstudiomodels.6fef00bb252c"), title: i18n("components.tourstudiomodels.1c23243a9085"), subtitle: i18n("components.tourstudiomodels.06f8b75c9666") }, "studio-org-identity", .11);
@@ -222,20 +264,20 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
       const p = clamp(progress); identity.position.set(0, mix(.36, .66, p), mix(.12, -.04, p)); identity.rotation.set(mix(-.07, .015, p), mix(-.18, -.04, p), mix(-.04, 0, p));
       members.forEach((member, index) => {
         const side = index - 1; member.position.set(mix(side * .10, side * 1.43, p), mix(-.48, index === 1 ? -.57 : -.72, p), mix(.28 + index * .09, index === 1 ? .34 : .15, p));
-        member.rotation.set(mix(.08, -.035, p), mix(Math.PI, side * -.11, p), mix(side * .12, side * -.08, p));
+        member.rotation.set(mix(FACE_VIEWER, READING_ANGLE, p), mix(Math.PI, side * -.11, p), mix(side * .12, side * -.08, p));
       });
     };
   } else if (lesson === "code") {
     const source = card(1.35, 1.85, { eyebrow: i18n("components.tourstudiomodels.90c7cebe15c6"), title: i18n("components.tourstudiomodels.d38b22e68fc1"), rows: [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.07e577ff8c0d")], badge: i18n("components.tourstudiomodels.49ef840efe6f") }, "studio-code-source"); source.position.set(-1.55, 0, -.05); source.rotation.y = .2;
     const key = card(1.28, .67, { eyebrow: i18n("components.tourstudiomodels.b0c8602734bb"), title: "ON · 7K2P", compact: true }, "studio-code-key", .09); key.position.set(0, .02, .12);
     const recipient = card(1.45, 1.95, { eyebrow: i18n("components.tourstudiomodels.d513aac3caac"), title: i18n("components.tourstudiomodels.92f20b9fa474"), rows: [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.07e577ff8c0d")], badge: i18n("components.tourstudiomodels.21c80015e886") }, "studio-code-recipient", .12); group.add(source, key, recipient);
-    applyPose = progress => { const p = clamp(progress); recipient.position.set(mix(1.56, 1.54, p), mix(.12, 0, p), mix(-.13, .18, p)); recipient.rotation.set(mix(.08, -.035, p), mix(-Math.PI * .92, -.16, p), mix(.07, 0, p)); key.rotation.set(0, mix(-.12, .025, p), 0); };
+    applyPose = progress => { const p = clamp(progress); recipient.position.set(mix(1.56, 1.54, p), mix(.12, 0, p), mix(-.13, .18, p)); recipient.rotation.set(mix(FACE_VIEWER, READING_ANGLE, p), mix(-Math.PI * .92, -.16, p), mix(.07, 0, p)); key.rotation.set(0, mix(-.12, .025, p), 0); };
   } else {
     const device = phone("studio-phone-preview"); group.add(device);
     applyPose = progress => {
       const p = clamp(progress);
       device.position.set(0, mix(-.02, .02, p), 0);
-      device.rotation.set(-.035, mix(-.32, .12, p), mix(-.055, -.015, p));
+      device.rotation.set(READING_ANGLE, mix(-.32, .12, p), mix(-.055, -.015, p));
     };
   }
   group.userData.studioLesson = lesson;

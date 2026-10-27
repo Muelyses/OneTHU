@@ -1115,34 +1115,34 @@ export class InfoHelper {
 
     public getGitJobTrace = async (id: number, jobId: number) => getJobTrace(this, id, jobId);
 
-    public createGitProjectIssue = async (id: number, title: string, description: string) =>
-        createProjectIssue(this, id, title, description);
+    public createGitProjectIssue = async (id: number, title: string, description: string, beforeWrite?: () => Promise<void>) =>
+        createProjectIssue(this, id, title, description, beforeWrite);
 
-    public setGitIssueState = async (id: number, iid: number, state: "close" | "reopen") =>
-        setIssueState(this, id, iid, state);
+    public setGitIssueState = async (id: number, iid: number, state: "close" | "reopen", beforeWrite?: () => Promise<void>) =>
+        setIssueState(this, id, iid, state, beforeWrite);
 
-    public addGitIssueNote = async (id: number, iid: number, body: string) => addIssueNote(this, id, iid, body);
+    public addGitIssueNote = async (id: number, iid: number, body: string, beforeWrite?: () => Promise<void>) => addIssueNote(this, id, iid, body, beforeWrite);
 
-    public setGitMergeRequestState = async (id: number, iid: number, state: "close" | "reopen") =>
-        setMergeRequestState(this, id, iid, state);
+    public setGitMergeRequestState = async (id: number, iid: number, state: "close" | "reopen", beforeWrite?: () => Promise<void>) =>
+        setMergeRequestState(this, id, iid, state, beforeWrite);
 
-    public addGitMergeRequestNote = async (id: number, iid: number, body: string) =>
-        addMergeRequestNote(this, id, iid, body);
+    public addGitMergeRequestNote = async (id: number, iid: number, body: string, beforeWrite?: () => Promise<void>) =>
+        addMergeRequestNote(this, id, iid, body, beforeWrite);
 
-    public updateGitIssueNote = async (id: number, iid: number, noteId: number, body: string) =>
-        updateIssueNote(this, id, iid, noteId, body);
+    public updateGitIssueNote = async (id: number, iid: number, noteId: number, body: string, beforeWrite?: () => Promise<void>) =>
+        updateIssueNote(this, id, iid, noteId, body, beforeWrite);
 
-    public updateGitMergeRequestNote = async (id: number, iid: number, noteId: number, body: string) =>
-        updateMergeRequestNote(this, id, iid, noteId, body);
+    public updateGitMergeRequestNote = async (id: number, iid: number, noteId: number, body: string, beforeWrite?: () => Promise<void>) =>
+        updateMergeRequestNote(this, id, iid, noteId, body, beforeWrite);
 
     public getGitAwards = async (kind: "issue" | "mr", id: number, iid: number, noteId?: number) =>
         getAwards(this, kind, id, iid, noteId);
 
-    public addGitAward = async (kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number) =>
-        addAward(this, kind, id, iid, name, noteId);
+    public addGitAward = async (kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number, beforeWrite?: () => Promise<void>) =>
+        addAward(this, kind, id, iid, name, noteId, beforeWrite);
 
-    public removeGitAward = async (kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number) =>
-        removeAward(this, kind, id, iid, awardId, noteId);
+    public removeGitAward = async (kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number, beforeWrite?: () => Promise<void>) =>
+        removeAward(this, kind, id, iid, awardId, noteId, beforeWrite);
 
     public getGitMergeRequestChanges = async (id: number, iid: number) => getMergeRequestChanges(this, id, iid);
 
@@ -1152,9 +1152,10 @@ export class InfoHelper {
         targetBranch: string,
         title: string,
         description: string,
-    ) => createMergeRequest(this, id, sourceBranch, targetBranch, title, description);
+        beforeWrite?: () => Promise<void>,
+    ) => createMergeRequest(this, id, sourceBranch, targetBranch, title, description, beforeWrite);
 
-    public mergeGitMergeRequest = async (id: number, iid: number) => mergeMergeRequest(this, id, iid);
+    public mergeGitMergeRequest = async (id: number, iid: number, beforeWrite?: () => Promise<void>) => mergeMergeRequest(this, id, iid, beforeWrite);
 
     public getGitDiscussions = async (kind: "issue" | "mr", id: number, iid: number, page = 1) =>
         getDiscussions(this, kind, id, iid, page);
@@ -1162,8 +1163,8 @@ export class InfoHelper {
     public createGitDiscussion = async (kind: "issue" | "mr", id: number, iid: number, body: string) =>
         createDiscussion(this, kind, id, iid, body);
 
-    public addGitDiscussionNote = async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string) =>
-        addDiscussionNote(this, kind, id, iid, discussionId, body);
+    public addGitDiscussionNote = async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string, beforeWrite?: () => Promise<void>) =>
+        addDiscussionNote(this, kind, id, iid, discussionId, body, beforeWrite);
 
     public updateGitDiscussionNote = async (
         kind: "issue" | "mr",
@@ -1180,7 +1181,8 @@ export class InfoHelper {
         iid: number,
         discussionId: string,
         noteId: number,
-    ) => deleteDiscussionNote(this, kind, id, iid, discussionId, noteId);
+        beforeWrite?: () => Promise<void>,
+    ) => deleteDiscussionNote(this, kind, id, iid, discussionId, noteId, beforeWrite);
 
     public resolveGitDiscussion = async (
         kind: "issue" | "mr",
@@ -1188,10 +1190,11 @@ export class InfoHelper {
         iid: number,
         discussionId: string,
         resolved: boolean,
-    ) => resolveDiscussion(this, kind, id, iid, discussionId, resolved);
+        beforeWrite?: () => Promise<void>,
+    ) => resolveDiscussion(this, kind, id, iid, discussionId, resolved, beforeWrite);
 
-    public assignGitTo = async (kind: "issue" | "mr", id: number, iid: number, userIds: number[]) =>
-        assignTo(this, kind, id, iid, userIds);
+    public assignGitTo = async (kind: "issue" | "mr", id: number, iid: number, userIds: number[], beforeWrite?: () => Promise<void>) =>
+        assignTo(this, kind, id, iid, userIds, beforeWrite);
 
     public getGitRequestCounts = async (kind: "issue" | "mr", id: number) => getRequestCounts(this, kind, id);
 
@@ -1271,8 +1274,10 @@ export {roam, clearOutstandingLogin};
 /** 静默重登（info app 同源）：取用户信息比对 ryh 判活，死则用 helper 上的凭据重登 */
 export {verifyAndReLogin} from "./lib/core";
 export {hasOutstandingLogin, getOutstandingLoginIdentity} from "./lib/core";
+export {roamingWriteWrapper, roamingWriteWrapperWithMocks} from "./lib/core";
 
 export { organizationGitApi } from "./lib/gitlab";
 export { LoginPreparationError } from "./utils/error";
+export { GitLabWriteOutcomeUnknownError } from "./utils/error";
 export type { LoginPreparationReason } from "./utils/error";
 export type { GitOrgMember, GitOrgGroup, GitOrgProject, GitOrgFile, GitOrgProtection } from "./lib/gitlab";

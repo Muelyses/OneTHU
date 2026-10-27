@@ -55,10 +55,22 @@ import type {
   YuketangSource,
 } from "@onethu/core";
 import { universalFetch } from "../lib/transport.js";
-import { http, info, logLine, persist } from "../lib/clients.js";
+import { http, info, logLine, persist, session } from "../lib/clients.js";
 
 export const EXTHW_KEY = "onethu.exthw.v1";
 export const EXTHW_SALT_KEY = "onethu.exthw.salt.v1";
+const YKT_OWNER_KEY = "onethu.yuketang.owner.v1";
+let yktOwnerMemory: string | null = null;
+export function yuketangCredentialOwner(): string | null {
+  try { return localStorage.getItem(YKT_OWNER_KEY) ?? yktOwnerMemory; } catch { return yktOwnerMemory; }
+}
+/** One-time association for existing installations; later account switches never rebind it. */
+export function bindLegacyYuketangOwner(): void {
+  if (session.state === "ready" && session.username && !yuketangCredentialOwner() && getExtHwCreds().yuketang?.cookie) {
+    yktOwnerMemory = session.username;
+    try { localStorage.setItem(YKT_OWNER_KEY, session.username); } catch { /* memory still isolates this runtime */ }
+  }
+}
 /** 引导横幅「知道了」的忽略标记（沿用 onethu.* 前缀） */
 export const EXTHW_GUIDE_KEY = "onethu.exthw.guide.dismissed";
 /** TUOJ 统一认证自动登录「上次尝试」存档键（失败/无账号后 24h 内不重复自动尝试）。
@@ -209,6 +221,10 @@ export function ensureExtHwCredsLoaded(): Promise<ExtHwCreds> {
 
 /** 加密写入；同时刷新内存缓存并通知订阅者。 */
 export async function saveExtHwCreds(c: ExtHwCreds): Promise<void> {
+  if (c?.yuketang?.cookie && c.yuketang.cookie !== creds.yuketang?.cookie && session.state === "ready" && session.username) {
+    yktOwnerMemory = session.username;
+    try { localStorage.setItem(YKT_OWNER_KEY, session.username); } catch { /* memory still isolates this runtime */ }
+  }
   creds = c ?? {};
   loaded = true;
   try {
@@ -616,9 +632,11 @@ let yktHbKickoff: ReturnType<typeof setTimeout> | null = null;
 let yktHbBusy = false;
 
 /** 服务端轮换 Cookie 的存回（onCookieRefresh 钩子）：并入现有凭据后 AES-GCM 信封整体落盘 */
-async function saveYktCookieRefresh(cookie: string): Promise<void> {
+async function saveYktCookieRefresh(cookie: string, expectedCookie: string, expectedOwner: string | null): Promise<void> {
   const cur = getExtHwCreds();
   const prev = cur.yuketang;
+  if (prev?.cookie !== expectedCookie || yuketangCredentialOwner() !== expectedOwner
+    || (expectedOwner && session.username !== expectedOwner)) return;
   await saveExtHwCreds({ ...cur, yuketang: { cookie, ...(prev?.uvId ? { uvId: prev.uvId } : {}), ...(prev?.phone ? { phone: prev.phone } : {}) } });
   void logLine("R21-B 雨课堂会话：服务端轮换 Cookie，已合并存回凭据（AES-GCM）");
 }
@@ -634,9 +652,10 @@ export async function runYktSessionCheck(): Promise<YktSessionState | null> {
   if (yktHbBusy) return null;
   yktHbBusy = true;
   try {
+    const owner = yuketangCredentialOwner();
     const src = createYuketangSource(cred, universalFetch, getExtHwCreds().days ?? 30, {
       onCookieRefresh: (c) => {
-        void saveYktCookieRefresh(c);
+        void saveYktCookieRefresh(c, cred.cookie, owner);
       },
     });
     const h = await src.checkSession();

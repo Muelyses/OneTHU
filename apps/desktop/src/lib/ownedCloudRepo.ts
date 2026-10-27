@@ -61,7 +61,7 @@ export async function findOwnedCloudRepo(token: string, name: string, preferredI
 /** Single-flight is shared by memory, wallpaper, vault and folder/organization
  * callers. An ambiguous POST outcome is remembered across app reloads; only a
  * later authoritative listing may resolve it, never another blind POST. */
-export function ensureOwnedCloudRepo(token: string, name: string, preferredId?: string): Promise<SeafileRepo> {
+export function ensureOwnedCloudRepo(token: string, name: string, preferredId?: string, beforeCreate?: () => Promise<void>): Promise<SeafileRepo> {
   const key = token + "\0" + name;
   const current = pending.get(key);
   if (current) return current;
@@ -75,6 +75,7 @@ export function ensureOwnedCloudRepo(token: string, name: string, preferredId?: 
     if (!account.email?.includes("@")) throw new Error(i18n("state.seafile.nativeRestartRequired"));
     const marker = markerKey(account.email, name);
     if (hasMarker(marker)) throw new Error(i18n("state.seafile.libraryCreationUnconfirmed"));
+    await beforeCreate?.();
     markCreate(marker);
     let createdId: string | undefined;
     try {

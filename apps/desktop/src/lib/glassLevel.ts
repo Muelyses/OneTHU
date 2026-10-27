@@ -14,11 +14,13 @@ export type GlassLevel = "clear" | "balanced" | "rich" | "deep";
 const LEVELS: GlassLevel[] = ["clear", "balanced", "rich", "deep"];
 
 export function glassLevels(): Array<{ id: GlassLevel; label: string }> {
+  /* 按透明度排序（用户 2026-10-24 点名）：无（不透光）→ 均衡 → 透光 → 透彻。
+     此前顺序是 clear/balanced/rich/deep，肉眼无法从排列看出浓度梯度。 */
   return [
-    { id: "clear", label: i18n("lib.glasslevel.3ea0f0b117e3") },
     { id: "balanced", label: i18n("lib.glasslevel.484d55613910") },
-    { id: "rich", label: i18n("lib.glasslevel.02180509cf78") },
     { id: "deep", label: i18n("lib.glasslevel.2588b5b9bacc") },
+    { id: "rich", label: i18n("lib.glasslevel.02180509cf78") },
+    { id: "clear", label: i18n("lib.glasslevel.3ea0f0b117e3") },
   ];
 }
 

@@ -1,3 +1,4 @@
+import { CliServerSettings } from "../components/CliServerSettings.js";
 import { getLocale as getUiLocale } from "../i18n/index.js";
 import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 /**
@@ -36,7 +37,6 @@ import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage } from "../components/OhSettingsPage.js";
-import { mcpServerEnabled, setMcpServer } from "../state/userext.js";
 import { openImageViewer } from "../components/ImageViewer.js";
 import { isThemeEntry, resolveAssetUrl } from "../lib/market.js";
 import { useExitHold } from "../lib/motion.js";
@@ -320,11 +320,14 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   const ohCmds = cmds.filter((c) => c.pluginId === "onethu.harness");
   const ohPerms = (ohRec?.manifest.permissions ?? []) as string[];
   const ohAdvancedPanels = (
-    <Stack gap={3} fill>
+    /* 不写 fill：这段内容挂在设置页的内容滚动区里（普通块流），fill 的 height:100%
+       会把 Stack 锁成 100% 高，flex 子项被压缩 → 行与行、字段与字段互相压字。 */
+    <Stack gap={3}>
       {/* ② 权限胶囊 + 命令清单：原来长在插件页的 OH 卡片上，现在**就地**放高级配置（卡片区已不许出现 OH） */}
       <SettingsRow title={i18n("pages.plugins.88a430296fa3", { length: String(ohPerms.length) })} sub={ohPerms.length > 0 ? ohPerms.map((p) => PLUGIN_PERMISSIONS.find((x) => x.id === p)?.label ?? p).join(" · ") : i18n("pages.plugins.8db1cbd053a9")} />
       <SettingsRow title={i18n("pages.plugins.4f45939871ad", { length: String(ohCmds.length) })} sub={ohCmds.length > 0 ? ohCmds.map((c) => c.id).join(" · ") : i18n("pages.plugins.ee3360ed4f76")} />
-      {ohRec ? <SettingsBody id="onethu.harness" rec={ohRec} onClose={() => undefined} dirtyRef={ohDirtyRef} /> : null}
+      {/* Harness 的模型表单按设置页的行式排布（sheet：单列字段栈），不用插件弹层的 Grid —— 后者会把 5 个字段挤成一行、标签互相压字。 */}
+      {ohRec ? <SettingsBody id="onethu.harness" rec={ohRec} onClose={() => undefined} dirtyRef={ohDirtyRef} sheet /> : null}
       <McpBody />
       <LogBody id="onethu.harness" />
     </Stack>
@@ -332,17 +335,9 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
 
   if (ohOpen) {
     return (
-      <Stack gap={3}>
-        {/* 标题「OH」+ 一行副标题；返回靠顶部那格里选「插件」（不再有第二个返回入口） */}
-        {/* ① 主标题必须写全名「OneTHU Harness」（用户点名不许用 OH 简称），副标题保留两档说明 */}
-        <PageHead
-          title="OneTHU Harness"
-          meta={<span>{i18n("pages.plugins.cb115d68fb47")}</span>}
-        />
-        <LayoutCard>
-          <OhSettingsPage advancedPanels={ohAdvancedPanels} />
-        </LayoutCard>
-      </Stack>
+      /* Harness 与「个人设置」同构（2026-10-24 用户定案）：不再套页头 + LayoutCard，
+         直接交给设置浮层的三段式布局（左导航固定 + 右内容独立滚动）。 */
+      <OhSettingsPage advancedPanels={ohAdvancedPanels} />
     );
   }
 
@@ -805,27 +800,7 @@ function PluginSheet({
  *  开 = harness 在 127.0.0.1:8787 起本机 MCP server（POST /mcp，Streamable-HTTP），
  *  别的 agent / 脚本 / 编辑器插件能直接调 OneTHU 的接口；关 = 连接一律 403。
  *  跟着 MCP 面板走：高级档就地渲染与 Sheet 形态共用这一份实现，不复制第二处。 */
-function McpSwitchRow(): ReactNode {
-  const uiLocale = useUiLocale();
-
-  const [on, setOn] = useState(() => mcpServerEnabled());
-  return (
-    <SettingsRow id="row-oh-mcp-server"
-      title={i18n("pages.plugins.af7a3fa54da7")}
-      sub={on ? i18n("pages.plugins.09c7b2e4141f") : i18n("pages.plugins.ee0b1c901dad")}
-      control={
-        <Switch
-          checked={on}
-          aria-label={i18n("pages.plugins.307ebc489657")}
-          onChange={(v) => {
-            setMcpServer(v);
-            setOn(v);
-          }}
-        />
-      }
-    />
-  );
-}
+function McpSwitchRow(): ReactNode { return <CliServerSettings/>; }
 
 /** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
 export function McpBody(): ReactNode {

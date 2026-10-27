@@ -19,6 +19,8 @@ export type {
   ThemeRole, OGAxes, OGTheme, OGSkin, OGScheme, OGSchemePref, OGDensity, OGMotion, OGPlatform, OGScopeSpec, ScopeToken, StorageLike,
 } from "./pipeline/director.js";
 export { OneGUIProvider, Scope, useAxes, useOneGUI, useScheme, useScopeSpec } from "./pipeline/react.js";
+/* 光学增强（可选轴）：宿主传入选择器时由管线托管生命周期；否则材质只有模糊+边缘高光。 */
+export { glassEdge, installGlassRefraction, refractionSupported } from "./pipeline/refraction.js";
 export { OneGUILocaleProvider, useOneGUILocale, ONE_GUI_ZH_CN, ONE_GUI_EN_US, ONE_GUI_MESSAGE_KEYS } from "./locale.js";
 export type { OneGUILocaleProviderProps, OneGUIMessageKey, OneGUIMessages } from "./locale.js";
 

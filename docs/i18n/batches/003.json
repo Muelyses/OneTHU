@@ -1,7 +1,1005 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.attachtray.6e3a10ade7c7",
+      "source": "拍照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.attachtray.6e3a10ade7c7\");"
+        }
+      ],
+      "translation": "Take photo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.754ee51e025b",
+      "source": "没取到文件，请重试或换一个入口。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 48,
+          "context": "e instanceof Error && e.message ? e.message : i18n(\"components.attachtray.754ee51e025b\")"
+        }
+      ],
+      "translation": "No file was received. Try again or use a different entry point.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.821ffb8cd6a2",
+      "source": "正在打开…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 75,
+          "context": "setNote(i18n(\"components.attachtray.821ffb8cd6a2\"))"
+        }
+      ],
+      "translation": "Opening…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.89afb0385380",
+      "source": "调起相机拍一张",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.attachtray.89afb0385380\");"
+        }
+      ],
+      "translation": "Open the camera and take a photo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.9290540bb472",
+      "source": "[附件] 取件失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(msgOf(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 106,
+          "context": "logLine(i18n(\"components.attachtray.9290540bb472\", { value: String(msgOf(e)) }))"
+        }
+      ],
+      "translation": "[Attachment] Failed to pick the file: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.9e07e3c0532d",
+      "source": "上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 39,
+          "context": "return i18n(\"components.attachtray.9e07e3c0532d\");"
+        }
+      ],
+      "translation": "Upload",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.a37778f17c5f",
+      "source": "已取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 88,
+          "context": "setNote(i18n(\"components.attachtray.a37778f17c5f\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 128,
+          "context": "setNote(i18n(\"components.attachtray.a37778f17c5f\"))"
+        }
+      ],
+      "translation": "Canceled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.c8a47d001848",
+      "source": "添加附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 141,
+          "context": "{i18n(\"components.attachtray.c8a47d001848\")}"
+        }
+      ],
+      "translation": "Add attachment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.d450f913c03a",
+      "source": "选任意文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 39,
+          "context": "return i18n(\"components.attachtray.d450f913c03a\");"
+        }
+      ],
+      "translation": "Choose any file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.12e0be622c36",
+      "source": "改变大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 359,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 384,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        }
+      ],
+      "translation": "Resize",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 458,
+          "context": "{i18n(\"components.boardadddrawer.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.4563c57b5143",
+      "source": "常用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 464,
+          "context": "{i18n(\"components.boardadddrawer.4563c57b5143\")}"
+        }
+      ],
+      "translation": "Frequently used",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.744bb8debb2c",
+      "source": "全部组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 482,
+          "context": "{i18n(\"components.boardadddrawer.744bb8debb2c\")}"
+        }
+      ],
+      "translation": "All widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.7a8a11ead507",
+      "source": "添加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 451,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
+        }
+      ],
+      "translation": "Add",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.97dcf4348652",
+      "source": "添加组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 359,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 384,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 457,
+          "context": "{i18n(\"components.boardadddrawer.97dcf4348652\")}"
+        }
+      ],
+      "translation": "Add widget",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.ccf130e68402",
+      "source": "OnePage 与组合",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 470,
+          "context": "{i18n(\"components.boardadddrawer.ccf130e68402\")}"
+        }
+      ],
+      "translation": "OnePage and combos",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.cee892960fc7",
+      "source": "没有找到组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 486,
+          "context": "{i18n(\"components.boardadddrawer.cee892960fc7\")}"
+        }
+      ],
+      "translation": "No widgets found",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.d10e6141036b",
+      "source": "修改大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 451,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
+        }
+      ],
+      "translation": "Adjust size",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.f2cd55057df5",
+      "source": "搜索组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 460,
+          "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 460,
+          "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
+        }
+      ],
+      "translation": "Search widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.f558fcad438d",
+      "source": "这个组件保留自由调整大小；添加后选中它，拖动角点调整。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 402,
+          "context": "{i18n(\"components.boardadddrawer.f558fcad438d\")}"
+        }
+      ],
+      "translation": "This widget keeps free resizing; after adding it, select it and drag its corner handles.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.013b6c8962c7",
+      "source": "已修学分合计",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 98,
+          "context": "{i18n(\"components.boardcards.013b6c8962c7\")}"
+        }
+      ],
+      "translation": "Total credits earned",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.01696c596c47",
+      "source": "正在同步待办…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 561,
+          "context": "{i18n(\"components.boardcards.01696c596c47\")}"
+        }
+      ],
+      "translation": "Syncing tasks…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.075d17f68192",
+      "source": "今天没有预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 267,
+          "context": "{i18n(\"components.boardcards.075d17f68192\")}"
+        }
+      ],
+      "translation": "No reservations today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.10d6105303f8",
+      "source": "订阅新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 249,
+          "context": "{i18n(\"components.boardcards.10d6105303f8\")}"
+        }
+      ],
+      "translation": "Subscribe to news",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.2d8dbb13bbab",
+      "source": "点按刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 692,
+          "context": "{i18n(\"components.boardcards.2d8dbb13bbab\")}"
+        }
+      ],
+      "translation": "Tap to refresh",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.32dc1156c53a",
+      "source": "暂无课程通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 439,
+          "context": "{i18n(\"components.boardcards.32dc1156c53a\")}"
+        }
+      ],
+      "translation": "No course notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.38c1262f3fc9",
+      "source": "宿舍电费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 211,
+          "context": "{i18n(\"components.boardcards.38c1262f3fc9\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 225,
+          "context": "{i18n(\"components.boardcards.38c1262f3fc9\")}"
+        }
+      ],
+      "translation": "Dorm electricity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.39e3a897845c",
+      "source": "{y} 年",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "y",
+          "expression": "y"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 656,
+          "context": "{i18nRich(\"components.boardcards.39e3a897845c\", { y: y })}"
+        }
+      ],
+      "translation": "{y} years",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.3bed8edfe5ba",
+      "source": "暂无课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 385,
+          "context": "{i18n(\"components.boardcards.3bed8edfe5ba\")}"
+        }
+      ],
+      "translation": "No course files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.3fdd06e0d301",
+      "source": "课表加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 349,
+          "context": "{i18n(\"components.boardcards.3fdd06e0d301\")}"
+        }
+      ],
+      "translation": "Loading timetable…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.44a03dfd58ea",
+      "source": "今天的课都结束了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 350,
+          "context": "today.length > 0 ? i18n(\"components.boardcards.44a03dfd58ea\") : i18n(\"components.boardcards.cfb9b8b7e028\")"
+        }
+      ],
+      "translation": "Classes are over for today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.457c60b23654",
+      "source": "双击便笺写内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 529,
+          "context": "typeof props?.text === \"string\" && props.text.trim() ? props.text : i18n(\"components.boardcards.457c60b23654\")"
+        }
+      ],
+      "translation": "Double-tap the note to write",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5c553ec3f6db",
+      "source": "周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 639,
+          "context": "i18n(\"components.boardcards.5c553ec3f6db\") + c"
+        }
+      ],
+      "translation": "Week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5d9561097ac4",
+      "source": "实际均绩 / 4.0",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.boardcards.5d9561097ac4\")}"
+        }
+      ],
+      "translation": "Actual GPA / 4.0",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5fe0bab87973",
+      "source": "暂无待办作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 413,
+          "context": "{i18n(\"components.boardcards.5fe0bab87973\")}"
+        }
+      ],
+      "translation": "No pending assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 558,
+          "context": "data?.courses.find((c) => c.id === courseId)?.name ?? i18n(\"components.boardcards.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.6374c187518d",
+      "source": "便笺",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 535,
+          "context": "{i18n(\"components.boardcards.6374c187518d\")}"
+        }
+      ],
+      "translation": "Note",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.64267c0c238c",
+      "source": "生活页 · 流水与充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 80,
+          "context": "{i18n(\"components.boardcards.64267c0c238c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 304,
+          "context": "{i18n(\"components.boardcards.64267c0c238c\")}"
+        }
+      ],
+      "translation": "Life page · transactions and top-ups",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.652c2053fde0",
+      "source": "暂无订阅新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 243,
+          "context": "{i18n(\"components.boardcards.652c2053fde0\")}"
+        }
+      ],
+      "translation": "No subscribed news yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.6bb63f66bb86",
+      "source": "{value} · {value2} 月 {value3} 日",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "weekdayCn(now.getDay())"
+        },
+        {
+          "name": "value2",
+          "expression": "now.getMonth() + 1"
+        },
+        {
+          "name": "value3",
+          "expression": "now.getDate()"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 632,
+          "context": "{i18nRich(\"components.boardcards.6bb63f66bb86\", { value: weekdayCn(now.getDay()), value2: now.getMonth() + 1, value3: now.getDate() })}"
+        }
+      ],
+      "translation": "{value} · {value2}/{value3}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.7cdec8c79c4c",
+      "source": "天气加载中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 678,
+          "context": "snap.reason ? i18n(\"components.boardcards.dfaa7ebc48d1\") : i18n(\"components.boardcards.7cdec8c79c4c\")"
+        }
+      ],
+      "translation": "Loading weather",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.8697c0ec8f02",
+      "source": "暂时没有待完成的作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 565,
+          "context": "{i18n(\"components.boardcards.8697c0ec8f02\")}"
+        }
+      ],
+      "translation": "No assignments to finish right now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.8bb09e7ef375",
+      "source": "学号 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "studentId || i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 140,
+          "context": "{i18nRich(\"components.boardcards.8bb09e7ef375\", { value: studentId || i18n(\"components.boardcards.c9c37a1ebaf2\") })}"
+        }
+      ],
+      "translation": "Student ID {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.95330373d23a",
+      "source": "该文件已不在本学期数据里",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 469,
+          "context": "props?.title ?? i18n(\"components.boardcards.95330373d23a\")"
+        }
+      ],
+      "translation": "This file is no longer in this semester's data",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.boardcards.9e6a260920fb",
+      "source": "今日预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.boardcards.9e6a260920fb\")}"
+        }
+      ],
+      "translation": "Today's reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.a63a9dc60e00",
+      "source": " 分钟后",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 351,
+          "context": "next.left + i18n(\"components.boardcards.a63a9dc60e00\")"
+        }
+      ],
+      "translation": " minutes from now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.ad0a23e63dc0",
+      "source": "查看全部待办 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 567,
+          "context": "{i18n(\"components.boardcards.ad0a23e63dc0\")}"
+        }
+      ],
+      "translation": "View all tasks →",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 679,
+          "context": "{i18n(\"components.boardcards.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "Retry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.baafc6242af5",
+      "source": "{m} 月 {d} 日",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "m"
+        },
+        {
+          "name": "d",
+          "expression": "d"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 653,
+          "context": "{i18nRich(\"components.boardcards.baafc6242af5\", { m: m, d: d })}"
+        }
+      ],
+      "translation": "{m}/{d}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c068eb4bd007",
+      "source": "今天，轻一点。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 565,
+          "context": "{i18n(\"components.boardcards.c068eb4bd007\")}"
+        }
+      ],
+      "translation": "Take it easy today.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 80,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 299,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 302,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        }
+      ],
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c0f31a102088",
+      "source": " 门",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 99,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length + i18n(\"components.boardcards.c0f31a102088\")"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 118,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length + i18n(\"components.boardcards.c0f31a102088\")"
+        }
+      ],
+      "translation": " classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c9c37a1ebaf2",
+      "source": "未获取",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 138,
+          "context": "user?.name ?? i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 140,
+          "context": "studentId || i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        }
+      ],
+      "translation": "Not available",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 206,
+          "context": "{i18n(\"components.boardcards.caf1f095b108\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.boardcards.caf1f095b108\")}"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.cfb9b8b7e028",
+      "source": "今天没有课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 350,
+          "context": "today.length > 0 ? i18n(\"components.boardcards.44a03dfd58ea\") : i18n(\"components.boardcards.cfb9b8b7e028\")"
+        }
+      ],
+      "translation": "No classes today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.db42463235ff",
+      "source": "已修 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 99,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 118,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length"
+        }
+      ],
+      "translation": "Earned ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.boardcards.dc9591e56d50",
       "source": "进行中",
@@ -418,1038 +1416,6 @@
         }
       ],
       "translation": "Sync now",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.375bd11476d2",
-      "source": "开启并同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 147,
-          "context": "sysBusy ? i18n(\"components.calendarsyncsettings.c4d0edd8c65a\") : i18n(\"components.calendarsyncsettings.375bd11476d2\")"
-        }
-      ],
-      "translation": "Enable and sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.40012cfe27b0",
-      "source": "内容无变化，系统日历已是最新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 116,
-          "context": "r.skipped ? i18n(\"components.calendarsyncsettings.40012cfe27b0\") : i18n(\"components.calendarsyncsettings.8282a625a7e6\", { added: String(r.added), removed: String(r.removed) })"
-        }
-      ],
-      "translation": "Nothing changed; the system calendar is already up to date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.4414244c2645",
-      "source": "系统日历同步 · 已开启",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 98,
-          "context": "syscal.enabled ? i18n(\"components.calendarsyncsettings.4414244c2645\") : i18n(\"components.calendarsyncsettings.e7f648da0ef4\")"
-        }
-      ],
-      "translation": "System calendar sync · Enabled",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.4d103a2b0e94",
-      "source": "同步失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 62,
-          "context": "setCalMsg(i18n(\"components.calendarsyncsettings.4d103a2b0e94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        },
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 118,
-          "context": "setSysMsg(i18n(\"components.calendarsyncsettings.4d103a2b0e94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Sync failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.4e2238b74ec7",
-      "source": "同步中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 64,
-          "context": "calBusy || cloud.syncing ? i18n(\"components.calendarsyncsettings.4e2238b74ec7\") : i18n(\"components.calendarsyncsettings.36e7a43a1c67\")"
-        },
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 120,
-          "context": "sysBusy || syscal.syncing ? i18n(\"components.calendarsyncsettings.4e2238b74ec7\") : i18n(\"components.calendarsyncsettings.36e7a43a1c67\")"
-        }
-      ],
-      "translation": "Syncing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.579271d39631",
-      "source": "{email} · 通过清华邮箱日历（CalDAV）多设备同步手动添加的日程；在「日程」页查看与编辑。作业与课表通过下方系统日历同步。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "email",
-          "expression": "cloud.email"
-        },
-        {
-          "name": "value",
-          "expression": "calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 44,
-          "context": "{i18nRich(\"components.calendarsyncsettings.579271d39631\", { email: cloud.email, value: calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null })}"
-        }
-      ],
-      "translation": "{email} · Schedules added manually are synced across devices through your Tsinghua email calendar (CalDAV); view and edit them on the \"Schedule\" page. Assignments and the timetable are synced through the system calendar below. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.593bb32ef7ef",
-      "source": "完整邮箱地址（如 someone@mails.tsinghua.edu.cn）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 81,
-          "context": "{i18n(\"components.calendarsyncsettings.593bb32ef7ef\")}"
-        }
-      ],
-      "translation": "Full email address (e.g. someone@mails.tsinghua.edu.cn)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.5b156f4dffc5",
-      "source": "确定删除系统日历里的「OneTHU 日程」日历？\n\n其中由 OneTHU 写入的全部事件将被移除；应用内的日程与云同步不受影响。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 128,
-          "context": "confirmOk(\n                      i18nMsg(\"components.calendarsyncsettings.5b156f4dffc5\"),\n                    )"
-        }
-      ],
-      "translation": "Delete the \"OneTHU Schedule\" calendar from the system calendar?\n\nAll events written by OneTHU will be removed; schedules in the app and cloud sync are not affected.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.5dec8ac021d7",
-      "source": "日程云同步（清华邮箱日历）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 41,
-          "context": "cloud.configured ? i18n(\"components.calendarsyncsettings.f70b7f1642df\") : i18n(\"components.calendarsyncsettings.5dec8ac021d7\")"
-        }
-      ],
-      "translation": "Schedule cloud sync (Tsinghua email calendar)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.5e9e9ab95a7b",
-      "source": "删除失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 134,
-          "context": "setSysMsg(i18n(\"components.calendarsyncsettings.5e9e9ab95a7b\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to delete: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.65dcde5641da",
-      "source": "连接成功，发现日历：{value}。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(cals.join(\"、\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 87,
-          "context": "setCalMsg(i18n(\"components.calendarsyncsettings.65dcde5641da\", { value: String(cals.join(\"、\")) }))"
-        }
-      ],
-      "translation": "Connected. Calendars found: {value}.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.6db47a772acc",
-      "source": "把课表与日程写入系统日历里的专属日历「OneTHU 日程」（不影响你已有的日历）。开启后自动更新课表、未提交作业与日程；课程与考试提前 15 分钟提醒，作业按提醒设置提前。macOS 日历可能随系统账户同步到其他设备。旧版本的同名日历请核对后自行清理。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 105,
-          "context": "{i18nRich(\"components.calendarsyncsettings.6db47a772acc\", { value: sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null })}"
-        }
-      ],
-      "translation": "Writes your timetable and schedules into a dedicated calendar \"OneTHU Schedule\" in the system calendar (your existing calendars are not touched). Once enabled, the timetable, unsubmitted assignments, and schedules are updated automatically. Classes and exams are reminded 15 minutes ahead; assignments follow the reminder settings. macOS calendars may sync to other devices with the system account. If a same-named calendar from an older version exists, review and clean it up yourself. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.8282a625a7e6",
-      "source": "已同步：写入 {added} 条（清理旧 {removed} 条）。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "added",
-          "expression": "String(r.added)"
-        },
-        {
-          "name": "removed",
-          "expression": "String(r.removed)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 116,
-          "context": "r.skipped ? i18n(\"components.calendarsyncsettings.40012cfe27b0\") : i18n(\"components.calendarsyncsettings.8282a625a7e6\", { added: String(r.added), removed: String(r.removed) })"
-        }
-      ],
-      "translation": "Synced: wrote {added} entries (cleaned up {removed} old ones).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.9776893d3c55",
-      "source": "开启失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 145,
-          "context": "setSysMsg(i18n(\"components.calendarsyncsettings.9776893d3c55\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to enable: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.9e40f65d2856",
-      "source": "日历「OneTHU 日程」· 上次同步 {value} · {lastCount} 条。课表、未提交作业与日程变化后会自动更新。课程提前 15 分钟提醒，作业按提醒设置提前。{value2}{value3}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString() : \"—\""
-        },
-        {
-          "name": "lastCount",
-          "expression": "syscal.lastCount"
-        },
-        {
-          "name": "value2",
-          "expression": "syscal.lastError ? <ErrorLine text={i18n(\"components.calendarsyncsettings.35001df10d62\", { lastError: String(syscal.lastError) })} tone=\"error\" /> : null"
-        },
-        {
-          "name": "value3",
-          "expression": "sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 103,
-          "context": "{i18nRich(\"components.calendarsyncsettings.9e40f65d2856\", { value: syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString(getUiLocale()) : \"—\", lastCount: syscal.lastCount, value2: syscal.lastError ? <ErrorLine text={i18n(\"components.calendarsyncsettings.35001df10d62\", { lastError: String(syscal.lastError) })} tone=\"error\" /> : null, value3: sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null })}"
-        }
-      ],
-      "translation": "Calendar \"OneTHU Schedule\" · Last synced {value} · {lastCount} entries. Updates automatically when the timetable, unsubmitted assignments, or schedules change. Classes are reminded 15 minutes ahead; assignments follow the reminder settings. {value2}{value3}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.a0813c42f2ad",
-      "source": "本平台不支持直写系统日历；可在「日程」页导出 .ics 再导入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 101,
-          "context": "(\n              i18n(\"components.calendarsyncsettings.a0813c42f2ad\")\n            )"
-        }
-      ],
-      "translation": "This platform does not support writing directly to the system calendar; export an .ics from the \"Schedule\" page and import it.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.a1fe9e82901d",
-      "source": "用清华邮箱的日历服务在多台设备间同步手动日程——OneTHU 里添加的日程会出现在系统日历 / 其他设备（添加同一账号）。 授权码获取：网页版邮箱（mails.tsinghua.edu.cn）→ 设置 → 客户端专用密码。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 46,
-          "context": "{i18nRich(\"components.calendarsyncsettings.a1fe9e82901d\", { value: calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null })}"
-        }
-      ],
-      "translation": "Use your Tsinghua email's calendar service to sync manually added schedules across devices — schedules added in OneTHU appear in the system calendar / other devices signed in with the same account. To get an app password: webmail (mails.tsinghua.edu.cn) → Settings → client-specific password. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.a7ec7c813f57",
-      "source": "清除系统日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 137,
-          "context": "{i18n(\"components.calendarsyncsettings.a7ec7c813f57\")}"
-        }
-      ],
-      "translation": "Clear system calendar",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.a8d9c61f394a",
-      "source": "连接失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 88,
-          "context": "setCalMsg(i18n(\"components.calendarsyncsettings.a8d9c61f394a\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to connect: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.c4d0edd8c65a",
-      "source": "开启中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 147,
-          "context": "sysBusy ? i18n(\"components.calendarsyncsettings.c4d0edd8c65a\") : i18n(\"components.calendarsyncsettings.375bd11476d2\")"
-        }
-      ],
-      "translation": "Enabling…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.e50242f6c79b",
-      "source": "在 iPhone / iPad 上查看日程（可选）\n\n手机上没有 OneTHU 也没关系：日程已在你清华邮箱的云端日历里，在 iPhone/iPad 上添加同一邮箱即可看到：\n· 设置 → 日历 → 账户 → 添加账户 → 其他 → CalDAV 账户\n· 服务器地址：https://mails.tsinghua.edu.cn/coremail/dav/users/你的邮箱/\n· 用户名：完整邮箱；密码：客户端专用密码（与本页一致）\n\n本机不需要此设置——用下方「系统日历同步」一键开启即可，应用直接写系统日历。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 54,
-          "context": "confirmOk(\n                      i18nMsg(\"components.calendarsyncsettings.e50242f6c79b\"),\n                    )"
-        }
-      ],
-      "translation": "View schedules on iPhone / iPad (optional)\n\nIt is fine if OneTHU is not on your phone: your schedules are already in the cloud calendar of your Tsinghua email. Add the same email account on iPhone/iPad to see them:\n· Settings → Calendar → Accounts → Add Account → Other → CalDAV Account\n· Server: https://mails.tsinghua.edu.cn/coremail/dav/users/your-email/\n· Username: full email; Password: client-specific password (same as on this page)\n\nThis setup is not needed on this device — just turn on \"System calendar sync\" below and the app writes the system calendar directly.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.e7f648da0ef4",
-      "source": "系统日历同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 98,
-          "context": "sysSupported === false ? i18n(\"components.calendarsyncsettings.e7f648da0ef4\") : syscal.enabled ? i18n(\"components.calendarsyncsettings.4414244c2645\") : i18n(\"components.calendarsyncsettings.e7f648da0ef4\")"
-        },
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 98,
-          "context": "syscal.enabled ? i18n(\"components.calendarsyncsettings.4414244c2645\") : i18n(\"components.calendarsyncsettings.e7f648da0ef4\")"
-        }
-      ],
-      "translation": "System calendar sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.ee9ebe523d42",
-      "source": "连接中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 90,
-          "context": "calBusy ? i18n(\"components.calendarsyncsettings.ee9ebe523d42\") : i18n(\"components.calendarsyncsettings.31c1468a6ea3\")"
-        }
-      ],
-      "translation": "Connecting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.f0ba269cd55d",
-      "source": "已同步：云端共 {total} 个日程（新增 {added}、更新 {updated}、移除 {removed}）。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "total",
-          "expression": "String(r.total)"
-        },
-        {
-          "name": "added",
-          "expression": "String(r.added)"
-        },
-        {
-          "name": "updated",
-          "expression": "String(r.updated)"
-        },
-        {
-          "name": "removed",
-          "expression": "String(r.removed)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 61,
-          "context": "setCalMsg(i18n(\"components.calendarsyncsettings.f0ba269cd55d\", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) }))"
-        }
-      ],
-      "translation": "Synced: {total} schedules in the cloud ({added} added, {updated} updated, {removed} removed).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.f33ac04eece6",
-      "source": "断开",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 71,
-          "context": "{i18n(\"components.calendarsyncsettings.f33ac04eece6\")}"
-        }
-      ],
-      "translation": "Disconnect",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.f37e30c0f2b2",
-      "source": "已断开。云端日程保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 69,
-          "context": "setCalMsg(i18n(\"components.calendarsyncsettings.f37e30c0f2b2\"))"
-        }
-      ],
-      "translation": "Disconnected. Cloud schedules are kept.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.f70b7f1642df",
-      "source": "日程云同步 · 已连接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 41,
-          "context": "cloud.configured ? i18n(\"components.calendarsyncsettings.f70b7f1642df\") : i18n(\"components.calendarsyncsettings.5dec8ac021d7\")"
-        }
-      ],
-      "translation": "Schedule cloud sync · Connected",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.calendarsyncsettings.f7da6974f7c9",
-      "source": "客户端专用密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CalendarSyncSettings.tsx",
-          "line": 82,
-          "context": "{i18n(\"components.calendarsyncsettings.f7da6974f7c9\")}"
-        }
-      ],
-      "translation": "Client-specific password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.09422286308c",
-      "source": "保存卡面",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 232,
-          "context": "{i18n(\"components.cardcovereditor.09422286308c\")}"
-        }
-      ],
-      "translation": "Save card cover",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 231,
-          "context": "{i18n(\"components.cardcovereditor.2cd0f3be8738\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 241,
-          "context": "{i18n(\"components.cardcovereditor.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.313b55413b1c",
-      "source": "拖动卡片调整取景位置；字色会按背景亮度自动取黑/白。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 210,
-          "context": "{i18n(\"components.cardcovereditor.313b55413b1c\")}"
-        }
-      ],
-      "translation": "Drag the card to adjust the crop; the text color switches between black and white automatically based on background brightness.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.3594f9ab39f6",
-      "source": "卡面设置失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 163,
-          "context": "showToast(i18nMsg(\"components.cardcovereditor.3594f9ab39f6\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Failed to set the card cover: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.419afe6b5d6f",
-      "source": "当前环境不支持图片处理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 104,
-          "context": "new Error(i18n(\"components.cardcovereditor.419afe6b5d6f\"))"
-        }
-      ],
-      "translation": "Image processing is not supported in this environment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.62ccb8635c09",
-      "source": "黑字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 213,
-          "context": "[\"dark\", i18n(\"components.cardcovereditor.62ccb8635c09\")]"
-        }
-      ],
-      "translation": "Black text",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.7eb336e42cb5",
-      "source": "自动",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 213,
-          "context": "[\"auto\", i18n(\"components.cardcovereditor.7eb336e42cb5\")]"
-        }
-      ],
-      "translation": "Auto",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.975a35806bdc",
-      "source": "换一张照片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 229,
-          "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.975a35806bdc\")"
-        }
-      ],
-      "translation": "Choose another photo",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.9dc9d764371e",
-      "source": "没有选择文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 88,
-          "context": "new Error(i18n(\"components.cardcovereditor.9dc9d764371e\"))"
-        }
-      ],
-      "translation": "No file selected",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.9f99b5ddd3ae",
-      "source": "选一张照片做卡面：可以拖动取景、缩放，字色会按背景亮度自动变黑/变白。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 237,
-          "context": "{i18n(\"components.cardcovereditor.9f99b5ddd3ae\")}"
-        }
-      ],
-      "translation": "Pick a photo as your card cover: you can drag to reframe and zoom, and the text color switches between black and white automatically based on background brightness.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.b237570a2d05",
-      "source": "这张图片解不出尺寸，换一张试试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 96,
-          "context": "new Error(i18n(\"components.cardcovereditor.b237570a2d05\"))"
-        }
-      ],
-      "translation": "Could not read this image's dimensions. Try another one",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.bc6b27e11f11",
-      "source": "自定义卡面",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 179,
-          "context": "{i18n(\"components.cardcovereditor.bc6b27e11f11\")}"
-        }
-      ],
-      "translation": "Custom card cover",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.c3c3600c04ea",
-      "source": "卡面缩放",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 220,
-          "context": "{i18n(\"components.cardcovereditor.c3c3600c04ea\")}"
-        }
-      ],
-      "translation": "Cover zoom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.c747909af9bf",
-      "source": "只支持图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 89,
-          "context": "new Error(i18n(\"components.cardcovereditor.c747909af9bf\"))"
-        }
-      ],
-      "translation": "Images only",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.cae3ab4bfdb2",
-      "source": "选择照片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 239,
-          "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.cae3ab4bfdb2\")"
-        }
-      ],
-      "translation": "Choose photo",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.d2d826483315",
-      "source": "缩放 {value}×",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "shown?.zoom.toFixed(2) ?? \"1.00\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 218,
-          "context": "{i18nRich(\"components.cardcovereditor.d2d826483315\", { value: shown?.zoom.toFixed(2) ?? \"1.00\" })}"
-        }
-      ],
-      "translation": "Zoom {value}×",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.d3d21191f32e",
-      "source": "处理中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 229,
-          "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.975a35806bdc\")"
-        },
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 239,
-          "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.cae3ab4bfdb2\")"
-        }
-      ],
-      "translation": "Processing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.de2e34c35fc6",
-      "source": "移除封面",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 230,
-          "context": "{i18n(\"components.cardcovereditor.de2e34c35fc6\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 240,
-          "context": "{i18n(\"components.cardcovereditor.de2e34c35fc6\")}"
-        }
-      ],
-      "translation": "Remove cover",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.e5309c3b81d8",
-      "source": "字色：",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 212,
-          "context": "{i18n(\"components.cardcovereditor.e5309c3b81d8\")}"
-        }
-      ],
-      "translation": "Text color:",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.cardcovereditor.f5276534dcfe",
-      "source": "白字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/CardCoverEditor.tsx",
-          "line": 213,
-          "context": "[\"light\", i18n(\"components.cardcovereditor.f5276534dcfe\")]"
-        }
-      ],
-      "translation": "White text",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.009a73342eab",
-      "source": "收藏为 OnePage",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 175,
-          "context": "lit ? i18n(\"components.collect.825750d712cc\") : i18n(\"components.collect.009a73342eab\")"
-        }
-      ],
-      "translation": "Save as OnePage",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.0293d5e40498",
-      "source": "收藏到…（首页 / 已有 OnePage / 新建）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 40,
-          "context": "lit ? i18n(\"components.collect.a0adbab10e0a\") : i18n(\"components.collect.0293d5e40498\")"
-        }
-      ],
-      "translation": "Save to… (Home / an existing OnePage / new)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.0a90c17daa69",
-      "source": "清空关键词",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 393,
-          "context": "{i18n(\"components.collect.0a90c17daa69\")}"
-        }
-      ],
-      "translation": "Clear keyword",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.1831b25872ac",
-      "source": "确定删除 OnePage「{name}」（{full}）？\n这块白板和其中的内容都会永久消失！",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(name)"
-        },
-        {
-          "name": "full",
-          "expression": "String(full)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 158,
-          "context": "confirmOk(\n      i18nMsg(\"components.collect.1831b25872ac\", { name: String(name), full: String(full) }),\n    )"
-        }
-      ],
-      "translation": "Delete OnePage \"{name}\" ({full})?\nThe board and everything on it will be gone permanently!",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.1ea086c584c3",
-      "source": "搜索任意收藏项：页面 / 组件 / 课程 / 作业 / 新闻 / 楼栋 / 场馆…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 383,
-          "context": "{i18n(\"components.collect.1ea086c584c3\")}"
-        }
-      ],
-      "translation": "Search any saved item: pages / widgets / courses / assignments / news / buildings / venues…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.203c08e0d44a",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 80,
-          "context": "{i18n(\"components.collect.203c08e0d44a\")}"
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.21558137d9ce",
-      "source": "收藏项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 320,
-          "context": "view?.title ?? i18n(\"components.collect.21558137d9ce\")"
-        }
-      ],
-      "translation": "Saved items",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.collect.2435ae5dae6e",
-      "source": "没能放上去（目标板不存在）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 70,
-          "context": "r.reason === \"duplicate\" ? i18n(\"components.collect.d73a6ca3de8c\") : i18n(\"components.collect.2435ae5dae6e\")"
-        }
-      ],
-      "translation": "Could not place it (the target board does not exist)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

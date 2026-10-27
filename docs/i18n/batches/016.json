@@ -1,7 +1,1014 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.imageviewer.a9769c635970",
+      "source": "查看图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 448,
+          "context": "{i18n(\"components.imageviewer.a9769c635970\")}"
+        }
+      ],
+      "translation": "View image",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.f1326e4568dd",
+      "source": "保存失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 442,
+          "context": "showToast(i18nMsg(\"components.imageviewer.f1326e4568dd\", { msg: String(msg) }), 9000)"
+        }
+      ],
+      "translation": "Save failed: {msg}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.020a11d70b94",
+      "source": "发起飞书扫码失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 163,
+          "context": "flash(i18n(\"components.imsettingssection.020a11d70b94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to start Feishu QR scan: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.021f76bfa953",
+      "source": "在本机？直接打开确认页（免扫码）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 230,
+          "context": "{i18n(\"components.imsettingssection.021f76bfa953\")}"
+        }
+      ],
+      "translation": "On this device? Open the confirmation page directly (no scan needed)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.0f8c1b732b2c",
+      "source": "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 242,
+          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
+        }
+      ],
+      "translation": "Not bound. Generate a bind code, then send \"/bind\" plus the code to the bot in a Feishu direct message.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.107fecedccba",
+      "source": "保存并连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 326,
+          "context": "{i18n(\"components.imsettingssection.107fecedccba\")}"
+        }
+      ],
+      "translation": "Save and connect",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.14087a9867d2",
+      "source": "微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机， OH 回复原路发回。当前状态：{value}{value2}{value3}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase"
+        },
+        {
+          "name": "value2",
+          "expression": "wechatStatus.note ? `：${wechatStatus.note}` : \"\""
+        },
+        {
+          "name": "value3",
+          "expression": "cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 265,
+          "context": "{i18nRich(\"components.imsettingssection.14087a9867d2\", { value: PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase, value2: wechatStatus.note ? `：${wechatStatus.note}` : \"\", value3: cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\" })}"
+        }
+      ],
+      "translation": "After authorizing via WeChat QR scan you can chat (no App ID/Secret needed): messages reach this device by long polling over the official iLink channel, and OH replies are sent back the same way. Current status: {value}{value2}{value3}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.1c925e27fa1d",
+      "source": "扫码创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.imsettingssection.1c925e27fa1d\")}"
+        }
+      ],
+      "translation": "Create via QR scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.2217f7c35158",
+      "source": "已绑定：{value}…（单主人模型：仅此人消息进入 OH）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(bound.slice(0, 12))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 241,
+          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
+        }
+      ],
+      "translation": "Bound: {value}… (single-owner model: only this person's messages reach OH)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.28690afd1ecd",
+      "source": "飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 314,
+          "context": "{i18n(\"components.imsettingssection.28690afd1ecd\")}"
+        }
+      ],
+      "translation": "Feishu Open Platform → Custom app → Credentials & basic info. Stored only on this device (encrypted).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 232,
+          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 286,
+          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.378eaca774bb",
+      "source": "扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 268,
+          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
+        }
+      ],
+      "translation": "Sign in via QR scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.390c8b791bcd",
+      "source": "手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。 不想扫码时用「高级配置」里的手工填入。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 218,
+          "context": "{i18n(\"components.imsettingssection.390c8b791bcd\")}"
+        }
+      ],
+      "translation": "Scan with the Feishu mobile app → confirm creation on the opened page → App ID/Secret are fetched automatically and connected (the app owner is bound as the owner). If you'd rather not scan, enter credentials manually under Advanced configuration.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.394ee5935d8c",
+      "source": "通道连接状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.imsettingssection.394ee5935d8c\");"
+        }
+      ],
+      "translation": "Channel connection status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.3becaa3847a1",
+      "source": "长连接事件订阅",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 60,
+          "context": "return i18n(\"components.imsettingssection.3becaa3847a1\");"
+        }
+      ],
+      "translation": "Long-connection event subscription",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.3cbb7d58f5e4",
+      "source": "发起扫码失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 199,
+          "context": "flash(i18n(\"components.imsettingssection.3cbb7d58f5e4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to start QR scan: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.4a151de9633d",
+      "source": "桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。 收到的消息直达 OH，回复原路发回；附件后续经云盘归档。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 306,
+          "context": "{i18n(\"components.imsettingssection.4a151de9633d\")}"
+        }
+      ],
+      "translation": "The bot stays online while the desktop app runs: a Feishu Open Platform custom app (long-connection event subscription, no public endpoint needed). Incoming messages go straight to OH, replies are sent back the same way; attachments are archived to the cloud drive afterwards.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.516b7af343ed",
+      "source": "等待扫码…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 197,
+          "context": "setWxNote(i18n(\"components.imsettingssection.516b7af343ed\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 229,
+          "context": "fsNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 284,
+          "context": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        }
+      ],
+      "translation": "Waiting for scan…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.54821806e300",
+      "source": "飞书凭据已保存（密文落盘）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 101,
+          "context": "flash(i18n(\"components.imsettingssection.54821806e300\"))"
+        }
+      ],
+      "translation": "Feishu credentials saved (stored encrypted on disk)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.550c7a151569",
+      "source": "已启用，正在连接…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 120,
+          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "Enabled, connecting…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.57afe4560634",
+      "source": "绑定码 10 分钟内有效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 205,
+          "context": "flash(i18n(\"components.imsettingssection.57afe4560634\"))"
+        }
+      ],
+      "translation": "The bind code is valid for 10 minutes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.5f2af850764a",
+      "source": "生成绑定码 / 解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.imsettingssection.5f2af850764a\");"
+        }
+      ],
+      "translation": "Generate bind code / Unbind",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.6ec82af7b630",
+      "source": "在飞书私聊里发送：/bind {code}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "code",
+          "expression": "code"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 256,
+          "context": "{i18nRich(\"components.imsettingssection.6ec82af7b630\", { code: code })}"
+        }
+      ],
+      "translation": "In a Feishu direct message, send: /bind {code}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.7c546888c169",
+      "source": "手工填飞书应用凭据",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 61,
+          "context": "return i18n(\"components.imsettingssection.7c546888c169\");"
+        }
+      ],
+      "translation": "Enter Feishu app credentials manually",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.8615725de235",
+      "source": "应用凭据（手工）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 61,
+          "context": "return i18n(\"components.imsettingssection.8615725de235\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 313,
+          "context": "{i18n(\"components.imsettingssection.8615725de235\")}"
+        }
+      ],
+      "translation": "App credentials (manual)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.86b11345bf97",
+      "source": "微信扫码绑定 / 重新扫码 / 解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 58,
+          "context": "return i18n(\"components.imsettingssection.86b11345bf97\");"
+        }
+      ],
+      "translation": "Bind via WeChat QR scan / Rescan / Unbind",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.89c4766afc85",
+      "source": "连接失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 44,
+          "context": "return i18n(\"components.imsettingssection.89c4766afc85\");"
+        }
+      ],
+      "translation": "Connection failed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.8c9a5097d028",
+      "source": "微信（iLink 官方 Bot · 扫码即用）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 58,
+          "context": "return i18n(\"components.imsettingssection.8c9a5097d028\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 264,
+          "context": "{i18n(\"components.imsettingssection.8c9a5097d028\")}"
+        }
+      ],
+      "translation": "WeChat (official iLink bot · ready after scanning)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a379593b5b75",
+      "source": "重新扫码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 268,
+          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
+        }
+      ],
+      "translation": "Rescan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a445a63759f6",
+      "source": "已解除绑定：之后的消息不再进入 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 111,
+          "context": "flash(i18n(\"components.imsettingssection.a445a63759f6\"))"
+        }
+      ],
+      "translation": "Unbound: future messages will no longer reach OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a84a8e151194",
+      "source": "飞书通道开关",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 308,
+          "context": "{i18n(\"components.imsettingssection.a84a8e151194\")}"
+        }
+      ],
+      "translation": "Feishu channel toggle",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a8c3698b5b8c",
+      "source": "已停用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 120,
+          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "Disabled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.b35839220413",
+      "source": "App ID（cli_ 开头）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 319,
+          "context": "{i18n(\"components.imsettingssection.b35839220413\")}"
+        }
+      ],
+      "translation": "App ID (starts with cli_)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.b8f945ea49ff",
+      "source": "连接状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.imsettingssection.b8f945ea49ff\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 295,
+          "context": "{i18n(\"components.imsettingssection.b8f945ea49ff\")}"
+        }
+      ],
+      "translation": "Connection status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.c432e0322b39",
+      "source": "飞书 bot（P0 通道）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 60,
+          "context": "return i18n(\"components.imsettingssection.c432e0322b39\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 305,
+          "context": "{i18n(\"components.imsettingssection.c432e0322b39\")}"
+        }
+      ],
+      "translation": "Feishu bot (P0 channel)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.d49461b1f610",
+      "source": "微信通道已启用（扫码登录成功）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 181,
+          "context": "flash(i18n(\"components.imsettingssection.d49461b1f610\"))"
+        }
+      ],
+      "translation": "WeChat channel enabled (QR sign-in succeeded)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.d5679a030605",
+      "source": "扫码创建飞书应用并自动绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 56,
+          "context": "return i18n(\"components.imsettingssection.d5679a030605\");"
+        }
+      ],
+      "translation": "Create the Feishu app via QR scan and bind automatically",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.e869014f4368",
+      "source": "飞书应用已创建并连接（扫码建应用成功）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 143,
+          "context": "flash(i18n(\"components.imsettingssection.e869014f4368\"))"
+        }
+      ],
+      "translation": "Feishu app created and connected (QR app creation succeeded)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.ecf1cf831460",
+      "source": "扫码创建应用（推荐，免手工配置）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 56,
+          "context": "return i18n(\"components.imsettingssection.ecf1cf831460\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 217,
+          "context": "{i18n(\"components.imsettingssection.ecf1cf831460\")}"
+        }
+      ],
+      "translation": "Create the app via QR scan (recommended, no manual setup)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.ee91e7a6f98f",
+      "source": "{value}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 284,
+          "context": "{i18nRich(\"components.imsettingssection.ee91e7a6f98f\", { value: wxNote || i18n(\"components.imsettingssection.516b7af343ed\") })}"
+        }
+      ],
+      "translation": "{value} (scan with WeChat; OneTHU on your phone can't scan itself, so use the Feishu channel first)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f48f46f71775",
+      "source": "绑定主人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.imsettingssection.f48f46f71775\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 238,
+          "context": "{i18n(\"components.imsettingssection.f48f46f71775\")}"
+        }
+      ],
+      "translation": "Bind owner",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f69e6a2f5669",
+      "source": "生成绑定码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 246,
+          "context": "{i18n(\"components.imsettingssection.f69e6a2f5669\")}"
+        }
+      ],
+      "translation": "Generate bind code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f779d8072854",
+      "source": "{value}{value2}（最近入站 {value3}）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "PHASE_TEXT[fs.phase] ?? fs.phase"
+        },
+        {
+          "name": "value2",
+          "expression": "fs.note ? `：${fs.note}` : \"\""
+        },
+        {
+          "name": "value3",
+          "expression": "fmtAt(fs.lastInboundAt)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 296,
+          "context": "{i18nRich(\"components.imsettingssection.f779d8072854\", { value: PHASE_TEXT[fs.phase] ?? fs.phase, value2: fs.note ? `：${fs.note}` : \"\", value3: fmtAt(fs.lastInboundAt) })}"
+        }
+      ],
+      "translation": "{value}{value2} (last inbound {value3})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.fb3f6cc3047d",
+      "source": "解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 248,
+          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 273,
+          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
+        }
+      ],
+      "translation": "Unbind",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.fea96ff7ab72",
+      "source": "请用手机飞书扫码，并在打开页确认创建智能体应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 161,
+          "context": "setFsNote(i18n(\"components.imsettingssection.fea96ff7ab72\"))"
+        }
+      ],
+      "translation": "Please scan with the Feishu mobile app and confirm creating the agent app on the opened page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.06657c279571",
+      "source": "通讯录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 106,
+          "context": "return i18n(\"components.layout.06657c279571\");"
+        }
+      ],
+      "translation": "Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.0be1eb29d29d",
+      "source": "侧栏：完整 → 切换为窄（悬停展开）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 159,
+          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
+        }
+      ],
+      "translation": "Sidebar: full → switch to narrow (expands on hover)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 116,
+          "context": "return i18n(\"components.layout.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.1760b98532ec",
+      "source": "在线服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 119,
+          "context": "return i18n(\"components.layout.1760b98532ec\");"
+        }
+      ],
+      "translation": "Online services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 231,
+          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 231,
+          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 117,
+          "context": "return i18n(\"components.layout.352cdc807892\");"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.487e926379fe",
+      "source": "我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 800,
+          "context": "label: i18n(\"components.layout.487e926379fe\")"
+        }
+      ],
+      "translation": "My card",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.layout.4ebe692f5dbb",
+      "source": "其他 Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 120,
+          "context": "return i18n(\"components.layout.4ebe692f5dbb\");"
+        }
+      ],
+      "translation": "Other Info apps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.52fdbbaeda4c",
+      "source": "待办",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 100,
+          "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
+        }
+      ],
+      "translation": "Tasks",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.56043fcf0aa1",
+      "source": "竖屏取景框（dev）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 861,
+          "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
+        }
+      ],
+      "translation": "Portrait viewfinder (dev)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.layout.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 105,
+          "context": "return i18n(\"components.layout.60458dfb4c14\");"
+        }
+      ],
+      "translation": "Directions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.layout.60db1afb4022",
       "source": "课程",
@@ -398,989 +1405,6 @@
         }
       ],
       "translation": " periods",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.3b5c96c7ffbd",
-      "source": "{value}{value2} · 空闲 {freeCnt}/6 节",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "week ? i18n(\"components.livetiles.9552fe3bd366\") + week + i18n(\"components.livetiles.6f347dff9110\") : \"\""
-        },
-        {
-          "name": "value2",
-          "expression": "\"日一二三四五六\"[now.getDay()]"
-        },
-        {
-          "name": "freeCnt",
-          "expression": "freeCnt"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 234,
-          "context": "{i18nRich(\"components.livetiles.3b5c96c7ffbd\", { value: week ? i18n(\"components.livetiles.teachingWeek\", { week }) : \"\", value2: formatDate(now, { weekday: \"short\" }), freeCnt: freeCnt })}"
-        }
-      ],
-      "translation": "{value}{value2} · {freeCnt}/6 periods free",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.40de54344d22",
-      "source": " 分钟",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 96,
-          "context": "i18n(\"components.livetiles.5cf755c0a421\") + w.eta + i18n(\"components.livetiles.40de54344d22\")"
-        }
-      ],
-      "translation": " min",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.546b7ed920d9",
-      "source": "节 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 242,
-          "context": "i18n(\"components.livetiles.af50a0fe2a50\") + (si + 1) + i18n(\"components.livetiles.546b7ed920d9\")"
-        }
-      ],
-      "translation": " period ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.5a0cc6c04776",
-      "source": "故障",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 99,
-          "context": "text: i18n(\"components.livetiles.5a0cc6c04776\")"
-        }
-      ],
-      "translation": "Fault",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.5cf755c0a421",
-      "source": "使用中 · 剩 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 96,
-          "context": "i18n(\"components.livetiles.5cf755c0a421\") + w.eta"
-        }
-      ],
-      "translation": "In use · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.64c2c95bc26f",
-      "source": "未找到该教室",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 163,
-          "context": "text: i18n(\"components.livetiles.64c2c95bc26f\")"
-        }
-      ],
-      "translation": "Classroom not found",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.6fd6014dd2cc",
-      "source": "当前第 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 250,
-          "context": "i18n(\"components.livetiles.6fd6014dd2cc\") + (cur + 1)"
-        }
-      ],
-      "translation": "Now in period ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.86eba7d9469d",
-      "source": " 节起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 173,
-          "context": "i18n(\"components.livetiles.9552fe3bd366\") + (next + 1) + i18n(\"components.livetiles.86eba7d9469d\")"
-        }
-      ],
-      "translation": " onward",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.89a5bb504b96",
-      "source": " · 占用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 242,
-          "context": "free ? i18n(\"components.livetiles.0fea828373b2\") : i18n(\"components.livetiles.89a5bb504b96\")"
-        }
-      ],
-      "translation": " · Occupied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.93e474c68ed5",
-      "source": "状态未知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 100,
-          "context": "text: i18n(\"components.livetiles.93e474c68ed5\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 105,
-          "context": "text: i18n(\"components.livetiles.93e474c68ed5\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 179,
-          "context": "text: i18n(\"components.livetiles.93e474c68ed5\")"
-        }
-      ],
-      "translation": "Unknown status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.9552fe3bd366",
-      "source": "第 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 173,
-          "context": "i18n(\"components.livetiles.9552fe3bd366\") + (next + 1)"
-        }
-      ],
-      "translation": "Period ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.af50a0fe2a50",
-      "source": "第",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 242,
-          "context": "i18n(\"components.livetiles.af50a0fe2a50\") + (si + 1)"
-        }
-      ],
-      "translation": "Period ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.be1b4f3c6c1c",
-      "source": "离线",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 98,
-          "context": "text: i18n(\"components.livetiles.be1b4f3c6c1c\")"
-        }
-      ],
-      "translation": "Offline",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.bed4c87f1838",
-      "source": "待机",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 97,
-          "context": "text: i18n(\"components.livetiles.bed4c87f1838\")"
-        }
-      ],
-      "translation": "Standby",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.bfb7cec90cc9",
-      "source": "今日情况查询中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 225,
-          "context": "{i18n(\"components.livetiles.bfb7cec90cc9\")}"
-        }
-      ],
-      "translation": "Loading today's status…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.c0aa76aebce6",
-      "source": "占用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 169,
-          "context": "free(cur) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 173,
-          "context": "free(next) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\")"
-        }
-      ],
-      "translation": "Occupied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.d1adf68fb7c1",
-      "source": "今日课程已结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 172,
-          "context": "text: i18n(\"components.livetiles.d1adf68fb7c1\")"
-        }
-      ],
-      "translation": "Today's classes are over",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.dae661d17c2d",
-      "source": "空闲",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 94,
-          "context": "text: i18n(\"components.livetiles.dae661d17c2d\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 169,
-          "context": "free(cur) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 173,
-          "context": "free(next) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\")"
-        },
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 250,
-          "context": "day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")"
-        }
-      ],
-      "translation": "Free",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.e48e9c51687a",
-      "source": "有课",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 250,
-          "context": "day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")"
-        }
-      ],
-      "translation": "Has class",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.eacbe16713ec",
-      "source": "本节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 169,
-          "context": "i18n(\"components.livetiles.eacbe16713ec\") + (free(cur) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\"))"
-        }
-      ],
-      "translation": "This period",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.f0aac199731c",
-      "source": "今日情况获取失败，可下拉重进刷新。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 226,
-          "context": "{i18n(\"components.livetiles.f0aac199731c\")}"
-        }
-      ],
-      "translation": "Failed to fetch today's status. Pull down and reopen to refresh.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.f174226b9387",
-      "source": "当前无课",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 250,
-          "context": "cur >= 0 ? i18n(\"components.livetiles.6fd6014dd2cc\") + (cur + 1) + i18n(\"components.livetiles.23f4f0e21d61\") + (day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")) : i18n(\"components.livetiles.f174226b9387\")"
-        }
-      ],
-      "translation": "No class right now",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.fa48e8938940",
-      "source": "使用中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 96,
-          "context": "w.eta > 0 ? i18n(\"components.livetiles.5cf755c0a421\") + w.eta + i18n(\"components.livetiles.40de54344d22\") : i18n(\"components.livetiles.fa48e8938940\")"
-        }
-      ],
-      "translation": "In use",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.livetiles.teachingWeek",
-      "source": "第 {week} 教学周 · ",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "week"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LiveTiles.tsx",
-          "line": 234,
-          "context": "week ? i18n(\"components.livetiles.teachingWeek\", { week }) : \"\""
-        }
-      ],
-      "translation": "Week {week} · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.032ff20471ee",
-      "source": "头像请控制在 200KB 以内",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 174,
-          "context": "new Error(i18n(\"components.namecardsection.032ff20471ee\"))"
-        }
-      ],
-      "translation": "Keep the avatar under 200KB",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.0c557ff432a7",
-      "source": "暂存箱里还没有名片：先把名片放进暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 415,
-          "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
-        }
-      ],
-      "translation": "No name cards in the Stash yet: add a name card to the Stash first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.12f63705ed44",
-      "source": "复制加入方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 672,
-          "context": "{i18n(\"components.namecardsection.12f63705ed44\")}"
-        }
-      ],
-      "translation": "Copy joining info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.140181c90ccb",
-      "source": "还没有写简介",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 86,
-          "context": "(c.card as PersonalCard).bio || i18n(\"components.namecardsection.140181c90ccb\")"
-        }
-      ],
-      "translation": "No bio yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.16b12866400d",
-      "source": "与组织资料同步；历史独立名片仍保留",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 301,
-          "context": "{i18n(\"components.namecardsection.16b12866400d\")}"
-        }
-      ],
-      "translation": "Synced with the organization profile; older standalone cards are kept",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.16c88a1bd8a9",
-      "source": "打开{name}的名片",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(c.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 555,
-          "context": "{i18n(\"components.namecardsection.16c88a1bd8a9\", { name: String(c.name) })}"
-        }
-      ],
-      "translation": "Open {name}'s card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.1aadd1661e1d",
-      "source": "留言（同步写进共享云盘）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 434,
-          "context": "label: i18nMsg(\"components.namecardsection.1aadd1661e1d\")"
-        }
-      ],
-      "translation": "Leave a note (synced to the shared cloud drive)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.1ce1f2806523",
-      "source": "好友通道",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 664,
-          "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 687,
-          "context": "{i18n(\"components.namecardsection.1ce1f2806523\")}"
-        }
-      ],
-      "translation": "Friend channel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.1da923d22b2f",
-      "source": "从暂存箱收",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 592,
-          "context": "{i18n(\"components.namecardsection.1da923d22b2f\")}"
-        }
-      ],
-      "translation": "Receive from Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.22530f991560",
-      "source": "个人网址",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 154,
-          "context": "label: i18nMsg(\"components.namecardsection.22530f991560\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 271,
-          "context": "k: i18n(\"components.namecardsection.22530f991560\")"
-        }
-      ],
-      "translation": "Personal URL",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.2335399f1fa8",
-      "source": "留言",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 712,
-          "context": "{i18n(\"components.namecardsection.2335399f1fa8\")}"
-        }
-      ],
-      "translation": "Notes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2506df7b2e41",
-      "source": "现在只有你的名片和组织名片；别人的名片收进来后会排在这里。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 573,
-          "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
-        }
-      ],
-      "translation": "Only your card and organization cards are here for now; cards you receive from others will appear here.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.28603f7d8ab4",
-      "source": "已写入共享云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 704,
-          "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
-        }
-      ],
-      "translation": "Written to the shared cloud drive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2a7be7efb999",
-      "source": "还没有留言。留言 / 文件会写进你们的共享云盘；对方通过共享链接查看。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 695,
-          "context": "{i18n(\"components.namecardsection.2a7be7efb999\")}"
-        }
-      ],
-      "translation": "No notes yet. Notes / files are written to your shared cloud drive; the other person views them via the share link.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2b80886afc39",
-      "source": "未识别 · 好友互传时需要",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 197,
-          "context": "email || i18n(\"components.namecardsection.2b80886afc39\")"
-        }
-      ],
-      "translation": "Unrecognized · needed for friend-to-friend transfer",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2da6ab45cd99",
-      "source": "卡面已保存；云盘备份失败：请到云盘页确认登录后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 226,
-          "context": "showToast(i18nMsg(\"components.namecardsection.2da6ab45cd99\"))"
-        }
-      ],
-      "translation": "Card saved; cloud drive backup failed. Go to the cloud drive page, make sure you're signed in, and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2f9daa828907",
-      "source": "删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 681,
-          "context": "{i18n(\"components.namecardsection.2f9daa828907\")}"
-        }
-      ],
-      "translation": "Delete",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.323a881ebd47",
-      "source": "联系方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 608,
-          "context": "k: i18n(\"components.namecardsection.323a881ebd47\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 641,
-          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
-        }
-      ],
-      "translation": "Contact info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.353e57027d77",
-      "source": "复制名片口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 250,
-          "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
-        }
-      ],
-      "translation": "Copy card share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.365d7c6687b0",
-      "source": "接收名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 520,
-          "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 577,
-          "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 586,
-          "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
-        }
-      ],
-      "translation": "Receive a card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.381574fa5f7b",
-      "source": "名片信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 267,
-          "context": "{i18n(\"components.namecardsection.381574fa5f7b\")}"
-        }
-      ],
-      "translation": "Card info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.3816a0cab667",
-      "source": "没有匹配的名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 569,
-          "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
-        }
-      ],
-      "translation": "No matching cards",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.385d439d3e16",
-      "source": "给好友留言",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 434,
-          "context": "openFormModal(i18nMsg(\"components.namecardsection.385d439d3e16\"), [{ key: \"text\", label: i18nMsg(\"components.namecardsection.1aadd1661e1d\"), kind: \"textarea\", required: true }])"
-        }
-      ],
-      "translation": "Leave a note",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.3e21bceb6dc5",
-      "source": "打开我的名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 529,
-          "context": "{i18n(\"components.namecardsection.3e21bceb6dc5\")}"
-        }
-      ],
-      "translation": "Open my card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 690,
-          "context": "{i18n(\"components.namecardsection.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.48659c30cb24",
-      "source": "扫码收名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 253,
-          "context": "{i18n(\"components.namecardsection.48659c30cb24\")}"
-        }
-      ],
-      "translation": "Scan to receive a card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.487e926379fe",
-      "source": "我的名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 53,
-          "context": "return i18n(\"components.namecardsection.487e926379fe\");"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 598,
-          "context": "{i18n(\"components.namecardsection.487e926379fe\")}"
-        }
-      ],
-      "translation": "My card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.4a49d50fc1ad",
-      "source": "这些名片已经在通讯录里了",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 415,
-          "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
-        }
-      ],
-      "translation": "These cards are already in Contacts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.4dd6695c0a10",
-      "source": "管理组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 302,
-          "context": "{i18n(\"components.namecardsection.4dd6695c0a10\")}"
-        }
-      ],
-      "translation": "Manage organizations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.56b63def0e29",
-      "source": "创建中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
-          "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\")\n                      : shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
-        }
-      ],
-      "translation": "Creating…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.57ce97c584ca",
-      "source": "暂存箱暂时不可用，稍后再试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 188,
-          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 650,
-          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
-        }
-      ],
-      "translation": "Stash is temporarily unavailable. Try again later",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.5a51f9817528",
-      "source": "仅本机",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 704,
-          "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
-        }
-      ],
-      "translation": "This device only",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

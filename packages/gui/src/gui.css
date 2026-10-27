@@ -29,5 +29,7 @@
 @import "./styles/overlay.css";
 @import "./styles/pattern.css";
 @import "./styles/shell.css";
-/* ⑤ 手机统一策略：必须最后（同选择器压过组件默认） */
+/* ⑤ 几何层：曲率连续圆角 + 同心嵌套（只改几何，不改材质/颜色） */
+@import "./styles/geometry.css";
+/* ⑥ 手机统一策略：必须最后（同选择器压过组件默认） */
 @import "./styles/phone.css";

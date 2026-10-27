@@ -11,10 +11,12 @@
 set -euo pipefail
 cd "$(dirname "$0")/.." # apps/desktop
 
+# Refresh the shared CLI bundle even when Vite is already running.
+node ./scripts/prebuild.mjs
+
 # ① vite :5180（没起就后台拉起；prebuild 与 tauri beforeDevCommand 同链）
 if ! curl -sf -o /dev/null http://127.0.0.1:5180 --max-time 1; then
   echo "· vite 未运行，后台启动（日志 /tmp/onethu-vite.log）…"
-  node ./scripts/prebuild.mjs
   ( nohup pnpm dev >/tmp/onethu-vite.log 2>&1 & )
   ok=""
   for _ in $(seq 1 30); do

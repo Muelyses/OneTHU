@@ -61,6 +61,7 @@ export type {
 
 // 信息门户
 export { InfoClient, isAuthError, ServiceUnavailableError } from "./info/client.js";
+export { mergeInfoCookieBody } from "./info/cookies.js";
 export * as infoUrls from "./info/urls.js";
 export type {
   AssessmentForm,
@@ -252,3 +253,4 @@ export type {
 
 // 二级课表格子 id 解析（a{session}_{day}，口径与 info app parseScript 一致）
 export { parseCellAnchor } from "./zhjwxk/anchor.js";
+export { createYuketangQueries, type YuketangQueryPorts } from "./exthw/query.js";

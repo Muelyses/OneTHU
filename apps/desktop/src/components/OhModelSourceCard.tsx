@@ -15,7 +15,7 @@ const HARNESS_ID = "onethu.harness";
 
 function patchHarnessSettings(patch: Record<string, unknown>): void {
   const rec = getPlugin(HARNESS_ID);
-  if (!rec) return;
+  if (!rec) {showToast(i18nMsg("components.simplesettings.1fa9a1f5453b"));return;}
   updatePlugin(HARNESS_ID, { settings: { ...(rec.settings ?? {}), ...patch } as typeof rec.settings });
 }
 

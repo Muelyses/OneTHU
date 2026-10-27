@@ -64,7 +64,7 @@ try {
       assert.equal(await page.getByRole('tab', { name: target === 'onego' ? '我的收藏' : '工作区', exact: true }).getAttribute('aria-selected'), 'true');
     } else if (target === 'learn') await page.locator('[data-tab-page="learn"]:visible').getByRole('heading', { name: '课程', exact: true }).waitFor();
     else if (target === 'plugins') await page.getByRole('dialog', { name: '我的', exact: true }).getByRole('heading', { name: '插件', exact: true }).waitFor();
-    else await page.getByRole('tabpanel', { name: target === 'appearance' ? '外观与布局' : '数据与同步', exact: true }).waitFor();
+    else await page.getByRole('tabpanel', { name: target === 'appearance' ? '外观' : '账号', exact: true }).waitFor();
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(1200);
     let visibleEvidence;

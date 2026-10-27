@@ -1,0 +1,78 @@
+{
+  "name": "@onethu/sdk",
+  "version": "0.11.4-fix-1",
+  "description": "Independent OneTHU runtime and embeddable campus service SDK",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./learn": {
+      "types": "./src/learn.ts",
+      "browser": "./src/learn.ts",
+      "import": "./dist/learn.mjs"
+    },
+    "./policy": {
+      "types": "./src/policy.ts",
+      "browser": "./src/policy.ts",
+      "import": "./dist/policy.mjs"
+    },
+    "./validation": {
+      "types": "./src/validation.ts",
+      "browser": "./src/validation.ts",
+      "import": "./dist/validation.mjs"
+    },
+    "./public-result": {
+      "types": "./src/publicResult.ts",
+      "browser": "./src/publicResult.ts",
+      "import": "./dist/publicResult.mjs"
+    },
+    "./catalog": "./src/catalog.json",
+    "./tasks": {
+      "types": "./src/tasks/index.ts",
+      "browser": "./src/tasks/index.ts",
+      "import": "./dist/tasks.mjs"
+    },
+    "./tasks/node": {
+      "types": "./src/tasks/node.ts",
+      "import": "./dist/tasks-node.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "README.en.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.*",
+    "pack:standalone": "node scripts/pack.mjs"
+  },
+  "dependencies": {
+    "@onethu/core": "workspace:*",
+    "@onethu/info-lib": "workspace:*",
+    "cheerio": "1.2.0",
+    "ws": "^8.18.0",
+    "imapflow": "^1.0.195",
+    "nodemailer": "^7.0.0",
+    "mailparser": "^3.9.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12",
+    "typescript": "^5.8.3",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.23.15",
+    "@types/ws": "^8.5.0",
+    "@types/nodemailer": "^7.0.0",
+    "@types/mailparser": "^3.4.0"
+  }
+}

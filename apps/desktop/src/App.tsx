@@ -112,9 +112,6 @@ function Routed() {
     openTabFromBootHash();
   }, []);
 
-  // 悬浮球窗口：只出全局悬浮球（红线：这条路径绝不把主窗口拉到前台）
-  if (IS_OVERLAY_WINDOW) return <GlobalOrb />;
-
   // OneGUI 画廊：开发期直接看组件矩阵（不走登录/标签页宿主）
   if (OneGUIGallery && new URLSearchParams(window.location.search).has("onegui-gallery")) {
     return (
@@ -196,6 +193,10 @@ const IS_OVERLAY_WINDOW = typeof window !== "undefined"
 
 export function App() {
   const uiLocale = useUiLocale();
+
+  // Branch before AppProvider: the orb must never resume/login a second session,
+  // run background account sync, or install a competing plugin facade.
+  if (IS_OVERLAY_WINDOW) return <GlobalOrb />;
 
   return (
     <AppProvider>

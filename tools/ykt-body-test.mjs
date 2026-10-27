@@ -77,6 +77,21 @@ console.log("\n[1] LaTeX 定界扫描与逐段降级");
 
   const fake = (tex, displayMode) => (tex === "坏" ? null : `[${displayMode ? "D" : "I"}:${tex}]`);
   eq(
+    yb.renderLatexInHtml("<p>求 \\[x^2+y^2=1\\] 的面积</p>", fake),
+    "<p>求 [D:x^2+y^2=1] 的面积</p>",
+    "\\[…\\] 显示模式公式（雨课堂少数题干定界）",
+  );
+  eq(
+    yb.renderLatexInHtml("<p>行内 \\(a+b\\) 与 \\[c+d\\]</p>", fake),
+    "<p>行内 [I:a+b] 与 [D:c+d]</p>",
+    "\\(…\\) / \\[…\\] 混用同时识别",
+  );
+  eq(
+    yb.renderLatexInHtml("<p>失败 \\[坏\\] 原文</p>", fake),
+    "<p>失败 \\[坏\\] 原文</p>",
+    "\\[…\\] 渲染失败保留定界原文",
+  );
+  eq(
     yb.renderLatexInHtml("<p>已知 $x^2$ 求解</p>", fake),
     "<p>已知 [I:x^2] 求解</p>",
     "行内 $…$ 渲染，标签不动",

@@ -6,7 +6,10 @@ import { t as i18n } from "../i18n/index.js";
  *   Android 无任意路径二进制执行权限，核心逻辑同一套 Rust 代码。
  * 两种形态的 onethu.call 都转发到同一套 TS 门面（权限集中门禁完全一致）。
  */
-import { buildApi } from "./facade.js";
+import { createCliService, invalidateCliRequests } from "../cli/service.js";
+import { isPluginRuntimeOwner, requirePluginRuntimeOwner } from "./windowOwner.js";
+import { setCliRuntimeActive } from "../state/cliRuntime.js";
+import { buildApi, CLI_GUARDED_MUTATIONS } from "./facade.js";
 import { getPlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi } from "./types.js";
@@ -19,10 +22,14 @@ const rpcHandlers = new Map<string, RpcHandler>();
 /** 内嵌形态的插件 id：onethu.call 回执走 harness_rpc_reply 而非 plugin_rpc_reply */
 const embeddedIds = new Set<string>();
 let rpcListenerReady = false;
+let rpcListenerPromise: Promise<void> | null = null;
 
+let nativeInvoke: typeof import("@tauri-apps/api/core").invoke | undefined;
 async function invoke<T = unknown>(cmd: string, args: Record<string, unknown>): Promise<T> {
-  const { invoke } = await import("@tauri-apps/api/core");
-  return invoke<T>(cmd, args);
+  // Cached after the first call: pagehide cancellation must enqueue its IPC
+  // immediately, without an extra dynamic-import microtask during teardown.
+  nativeInvoke ??= (await import("@tauri-apps/api/core")).invoke;
+  return nativeInvoke<T>(cmd, args);
 }
 
 /** 内嵌形态判定（loader 种入的 Android 内置插件） */
@@ -32,6 +39,7 @@ export function isEmbeddedRust(id: string): boolean {
 
 /** 内嵌：起 App 内 agent 线程 + 门面桥，返回 activate 应答（commands 清单） */
 export async function startHarnessEmbedded(id: string): Promise<unknown> {
+  requirePluginRuntimeOwner();
   const rec = getPlugin(id);
   if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.add(id);
@@ -48,6 +56,7 @@ export async function startHarnessEmbedded(id: string): Promise<unknown> {
 
 /** 拉起一个 rust 插件进程并完成 activate 握手（返回 activate 应答：约定含 commands 清单） */
 export async function spawnRustPlugin(id: string, binPath: string, args: string[] = []): Promise<unknown> {
+  requirePluginRuntimeOwner();
   const rec = getPlugin(id);
   if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.delete(id);
@@ -64,10 +73,23 @@ export async function spawnRustPlugin(id: string, binPath: string, args: string[
   });
 }
 
-async function ensureRpcListener(): Promise<void> {
+function ensureRpcListener(): Promise<void> {
+  if (!isPluginRuntimeOwner()) return Promise.resolve();
+  if (rpcListenerReady) return Promise.resolve();
+  // Occupy the slot before any await; one native event must execute its action once.
+  if (!rpcListenerPromise) rpcListenerPromise = Promise.resolve().then(initializeRpcListener).catch(error => {
+    rpcListenerPromise = null;
+    throw error;
+  });
+  return rpcListenerPromise;
+}
+
+async function initializeRpcListener(): Promise<void> {
+  if (!isPluginRuntimeOwner()) return;
   if (rpcListenerReady) return;
   const { listen } = await import("@tauri-apps/api/event");
   const handleRpc = async (payload: { pluginId: string; id: number; method: string; params: any }) => {
+    if (!isPluginRuntimeOwner()) return;
     const { pluginId, id, method, params } = payload;
     const t0 = Date.now();
     void import("../lib/clients.js").then((m) =>
@@ -123,7 +145,7 @@ async function ensureRpcListener(): Promise<void> {
   );
   // 内嵌长轮询泵：一次取走整批待处理调用，并发执行，消灭每调用事件往返
   void (async () => {
-    for (;;) {
+    while (isPluginRuntimeOwner()) {
       try {
         const batch = await invoke<any[]>("harness_bridge_take", { pluginId: "__any__" });
         for (const p of batch) void handleRpc(p);
@@ -137,8 +159,25 @@ async function ensureRpcListener(): Promise<void> {
 
 /** 门面执行器：rust 插件的 onethu.call 按命名空间分发（同一套权限门禁） */
 export function bindRustApi(id: string, perms: Set<string>): OnethuApi {
+  requirePluginRuntimeOwner();
   const api = buildApi(id, perms);
+  const cli = id === "onethu.harness" ? createCliService(api, perms, {
+    create: (beforeWrite) => buildApi(id, perms, { beforeWrite }), mutations: CLI_GUARDED_MUTATIONS,
+  }) : null;
+  const app = id === "onethu.harness" ? createCliService(api, perms, {
+    create: (beforeWrite) => buildApi(id, perms, { beforeWrite }), mutations: CLI_GUARDED_MUTATIONS, internal: true,
+  }) : null;
   rpcHandlers.set(id, async (ns, method, args) => {
+    if (cli && ns === "cli") {
+      if (method === "list" && args.length === 0) return cli.list();
+      if (method === "call" && args.length === 1) return cli.call(args[0]);
+      throw new Error("UNKNOWN_CLI_METHOD");
+    }
+    if (app && ns === "app") {
+      if (method === "list" && args.length === 0) return app.list();
+      if (method === "call" && args.length === 1) return app.call(args[0]);
+      throw new Error("UNKNOWN_APP_METHOD");
+    }
     if (id === "onethu.harness" && ns !== "settings") requireOhConsent();
     const target = (api as any)[ns];
     if (!target || typeof target[method] !== "function") {
@@ -151,10 +190,20 @@ export function bindRustApi(id: string, perms: Set<string>): OnethuApi {
 
 /** 停用/卸载时解绑门面 */
 export function unbindRustApi(id: string): void {
+  if (!isPluginRuntimeOwner()) return;
+  if (id === "onethu.harness") invalidateCliRequests();
   rpcHandlers.delete(id);
+  if (id === "onethu.harness") setCliRuntimeActive(false);
 }
 
 import { requireOhConsent } from "../state/privacyConsent.js";
+
+const activeChatStops = new Map<string, () => Promise<void>>();
+// A dev reload or closed window loses its UI AbortControllers. Retire only the
+// runs dispatched by that window, using their existing scoped cancellation id.
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("pagehide", () => {
+  for (const stop of activeChatStops.values()) void stop().catch(() => undefined);
+});
 
 export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000, signal?: AbortSignal): Promise<unknown> {
   if (id === "onethu.harness" && method === "run") requireOhConsent();
@@ -165,14 +214,20 @@ export async function callRust(id: string, method: string, params: unknown, time
   return runCancellable({
     signal,
     prepare: async () => {
-      if (id === "onethu.harness" && chat) {
+      // The orb uses the already-running native host. Model/session upkeep and
+      // all onethu.call callbacks belong to the main window's authenticated state.
+      if (id === "onethu.harness" && chat && isPluginRuntimeOwner()) {
         const { preflightMadModel } = await import("../state/madmodel.js");
         const warning = await preflightMadModel();
         if (warning) return { type: "chat", ok: false, error: warning };
       }
       return null;
     },
-    run: () => invoke(embeddedIds.has(id) ? "harness_call" : "plugin_call", { pluginId: id, method, params: runParams, timeoutMs }),
+    run: async () => {
+      if (runId) activeChatStops.set(runId, () => notifyRust(id, "interrupt", { runId }));
+      try { return await invoke(embeddedIds.has(id) ? "harness_call" : "plugin_call", { pluginId: id, method, params: runParams, timeoutMs }); }
+      finally { if (runId) activeChatStops.delete(runId); }
+    },
     interrupt: () => notifyRust(id, "interrupt", runId ? { runId } : {}),
     cancelled: () => ({ type: "chat", ok: true, answer: "（已打断）", interrupted: true }),
   });
@@ -187,6 +242,7 @@ export async function notifyRust(id: string, method: string, params: unknown = {
 }
 
 export async function killRust(id: string): Promise<void> {
+  requirePluginRuntimeOwner();
   if (embeddedIds.has(id)) {
     await invoke("harness_stop", { pluginId: id }).catch(() => undefined);
     return;
@@ -196,6 +252,8 @@ export async function killRust(id: string): Promise<void> {
 
 /** dispose（优雅）→ stop/kill（兜底） */
 export async function disposeRust(id: string): Promise<void> {
+  requirePluginRuntimeOwner();
+  if (id === "onethu.harness") invalidateCliRequests();
   await callRust(id, "dispose", {}, 3_000).catch(() => undefined);
   await killRust(id);
   unbindRustApi(id);

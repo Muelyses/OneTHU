@@ -8,7 +8,10 @@ const expectedVersion=process.env.ONETHU_EXPECT_VERSION??JSON.parse(readFileSync
 const ast=ts.createSourceFile(path,source,ts.ScriptTarget.Latest,true);
 const code=ast.statements.filter(node=>!ts.isImportDeclaration(node)).map(node=>node.getText(ast)).join('\n');
 let platform='macos',offlineGitHub=false;
-const isNewer=(a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i];}return false;};
+const comparisonSource=readFileSync('apps/desktop/src/lib/update.ts','utf8');
+const comparisonAst=ts.createSourceFile('update.ts',comparisonSource,ts.ScriptTarget.Latest,true);
+const comparisonCode=comparisonAst.statements.filter(n=>ts.isFunctionDeclaration(n)&&['toTuple','isNewer'].includes(n.name?.text)).map(n=>n.getText(comparisonAst)).join('\n');
+const {isNewer}=await import('data:text/javascript;base64,'+Buffer.from(ts.transpileModule(comparisonCode,{compilerOptions:{module:ts.ModuleKind.ES2022}}).outputText).toString('base64'));
 globalThis.__liveUpdater={
  i18n:key=>key, currentVersion:()=> '0.10.0',isNewer,logLine:async()=>{},isAndroidNavigator:()=>platform==='android',
  universalFetch:async(url,options)=>{if(offlineGitHub)throw Error('deliberately unavailable GitHub');return fetch(url,{...options,signal:AbortSignal.timeout(30000)});},

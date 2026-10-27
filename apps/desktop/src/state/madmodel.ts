@@ -1,6 +1,7 @@
 import { t as i18n } from "../i18n/index.js";
 import { http, logLine, session } from "../lib/clients.js";
-import { webvpnWrap } from "@onethu/core";
+import { webvpnWrap, webvpnDecodeUrl } from "@onethu/core";
+import { nativeSessionEpoch, assertNativeSessionEpoch } from "../lib/transport.js";
 import { getPlugin, updatePlugin } from "../plugins/registry.js";
 
 /** 清华 MadModel（校园免费 DeepSeek）token 泵 + 校外隧道通道 + 模型清单实时爬取。
@@ -28,6 +29,10 @@ const SSO_APP = "d736f067a6705ab942df52f958a0f23b";
 const SSO_FORM = `https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/${SSO_APP}/0?/authLogin`;
 /** checkSingle 指纹确认端点（info 客户端 #idCheckSingle / tuoj / zhjwxk 同款） */
 const SSO_CHECK_SINGLE = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/checkSingle";
+/** DSH 的门户漫游取票路径：已登录 info 的用户无需再次向 ID 提交密码。 */
+const INFO_COOKIE = "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index";
+const INFO_ROAM = webvpnWrap("https://info.tsinghua.edu.cn/b/yyfw/vyyfwxx/info/portal_fg/common/onlineAppRedirect");
+const MADMODEL_ROAM_ID = "19D04E39D96B36C494F2E48A1A4741FD";
 /** 站点上仍有但默认不挂的模型（纯推理/易乱码——DSH 插件同清单） */
 const EXCLUDED_MODEL_IDS = ["DeepSeek-R1-W8A8", "DeepSeek-V4-Flash-Vision-Exp", "DeepSeek-V4-Flash-0731"];
 const MODELS_KEY = "onethu.madmodel.models.v1";
@@ -51,6 +56,19 @@ let validation: { token: string; base: string; verdict: TokenVerdict; until: num
 
 class TemporaryMadModelError extends Error {
   constructor(message: string, readonly retryAfterAt = 0) { super(message); }
+}
+
+class MadModelSessionChangedError extends Error {
+  constructor() { super("AUTH_SESSION_CHANGED"); }
+}
+
+type MintContext = { epoch: number; username: string; token: string };
+async function assertMintContext(context: MintContext): Promise<void> {
+  await assertNativeSessionEpoch(context.epoch);
+  if (!madmodelActive() || session.username !== context.username
+    || String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "") !== context.token) {
+    throw new MadModelSessionChangedError();
+  }
 }
 
 function retryAt(res: Response): number {
@@ -190,6 +208,7 @@ export function refreshMadModelRoute(force = false): Promise<boolean> {
 export function ensureMadModelToken(force = false): Promise<string> {
   if (inflight) return inflight;
   inflight = acquireMadModelToken(force).catch((error) => {
+    if (error instanceof MadModelSessionChangedError || String(error?.message ?? error).includes("AUTH_SESSION_CHANGED")) throw error;
     if (!force && !(Number(getPlugin(HARNESS_ID)?.settings?.madmodelNextAttemptAt ?? 0) > Date.now())) {
       bumpBackoff(error instanceof TemporaryMadModelError ? error.retryAfterAt : 0);
     }
@@ -231,6 +250,10 @@ async function serverAccepts(token: string, base: string): Promise<TokenVerdict>
 
 async function acquireMadModelToken(force: boolean): Promise<string> {
   {
+    const context: MintContext = {
+      epoch: await nativeSessionEpoch(), username: session.username,
+      token: String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? ""),
+    };
     const st = getPlugin(HARNESS_ID)?.settings ?? {};
     const nextAt = Number(st.madmodelNextAttemptAt ?? 0);
     if (!force && nextAt && Date.now() < nextAt) {
@@ -239,6 +262,7 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
 
     // 层 1：校内直连签发（站点若恢复免登录时自愈；当前返回 10001 落到层 2）
     const direct = await exchangeCheck(`${SITE}/model-api/auth-login/check`, { direct: true });
+    await assertMintContext(context);
     if (direct) {
       markFreeTierOk({ token: direct, base: "", cookie: "" });
       void logLine(`[MADMODEL] token 已签发（校内直连，len=${direct.length}）`).catch(() => undefined);
@@ -248,7 +272,12 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
 
     // 层 2：SSO 取票 → 兑换（唯一出口 = ticket，站点已关闭免登录签发）
     let sso = await fetchSsoTicket();
-    if (sso.noSession) {
+    await assertMintContext(context);
+    // ID 的跨应用 SSO 与 info 门户会话分别建立。门户仍可发票时，不能让
+    // “SSO 是登录页 → 学习会话健康 → 重试同一个 SSO”成为永远失败的循环。
+    let portalTicket = sso.ticket ? null : await fetchPortalTicket(context);
+    await assertMintContext(context);
+    if (!sso.ticket && !portalTicket && sso.noSession) {
       // SSO 会话守卫（2026-10-10）：复用 lib 静默重登（记住密码 + 受信指纹 → 免 2FA，
       // 与 LIB-ENSURE 同一条路），成功后重试一次取票——不再干等退避。
       let relogged = false;
@@ -258,16 +287,23 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
       } catch {
         /* infoLib 不可用（如启动竞态）→ 按未重登处理 */
       }
-      void logLine(`[MADMODEL] SSO 会话守卫：${relogged ? "静默重登成功，重试取票" : "静默重登未成"}`).catch(() => undefined);
-      if (relogged) sso = await fetchSsoTicket();
+      await assertMintContext(context);
+      void logLine(`[MADMODEL] 门户会话守卫：${relogged ? "会话可用，重试门户取票" : "会话未恢复"}`).catch(() => undefined);
+      if (relogged) {
+        portalTicket = await fetchPortalTicket(context);
+        await assertMintContext(context);
+        if (!portalTicket) sso = await fetchSsoTicket();
+        await assertMintContext(context);
+      }
     }
-    const ticket = sso.ticket;
+    const ticket = portalTicket ?? sso.ticket;
     if (ticket) {
       // 2a 校内直连兑换
       const tokDirect = await exchangeCheck(
         `${SITE}/model-api/auth-login/check?ticket=${encodeURIComponent(ticket)}`,
         { direct: true },
       );
+      await assertMintContext(context);
       if (tokDirect) {
         markFreeTierOk({ token: tokDirect, base: "", cookie: "" });
         void logLine(`[MADMODEL] token 已签发（校内直连 + SSO 票，len=${tokDirect.length}）`).catch(() => undefined);
@@ -277,6 +313,7 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
       // 2b 校外：WebVPN 隧道兑换（2026-10-09 已收录 madmodel 域）
       const tunnelCheck = `${webvpnWrap(`${SITE}/model-api/auth-login/check`)}?ticket=${encodeURIComponent(ticket)}`;
       const tokTunnel = await exchangeCheck(tunnelCheck, {});
+      await assertMintContext(context);
       if (tokTunnel) {
         const base = webvpnWrap(`${SITE}/v1`);
         const cookie = http.cookieHeaderFor(tunnelCheck) ?? "";
@@ -322,7 +359,67 @@ async function exchangeCheck(url: string, opts: { direct?: boolean }): Promise<s
  *  （旧实现把 ② 也当"无会话"直接失败——泵永不自愈的根源，2026-10-10 实锤修复） */
 type TicketResult = { ticket: string | null; noSession: boolean };
 
-const TICKET_RE = /[?&]ticket=([^&\s"']+)/;
+const TICKET_RE = /[?&]ticket=([^&#\s"']+)/;
+
+function ticketFrom(value: string): string | null {
+  const raw = TICKET_RE.exec(value.replace(/&amp;/gi, "&"))?.[1];
+  if (!raw) return null;
+  try {
+    const ticket = decodeURIComponent(raw);
+    return ticket && !/^(?:BAD_CREDENTIALS|ERROR)/i.test(ticket) && !/[\s#]/.test(ticket) ? ticket : null;
+  } catch { return null; }
+}
+
+/** 只用已有门户会话取票；不调用模型，也不提交用户名/密码或登记信任设备。
+ * 与 DSH ticketFromTunnel 同源：门户发出的 /authLogin 入口需要先落地一次。
+ * URL 必须严格属于 MadModel，门户异常 HTML/空结果不能算续签成功。 */
+async function fetchPortalTicket(context: MintContext): Promise<string | null> {
+  try {
+    const cookie = await http.request(INFO_COOKIE, { redirect: "follow" });
+    await assertMintContext(context);
+    if (cookie.status === 429 || cookie.status >= 500) {
+      throw new TemporaryMadModelError(i18n("state.madmodel.795ecc37977c", { status: String(cookie.status) }), retryAt(cookie));
+    }
+    if (cookie.status !== 200) return null;
+    const cookieText = await cookie.text();
+    await assertMintContext(context);
+    const rawCsrf = /(?:^|[;\s])XSRF-TOKEN=([^;\s]+)/.exec(cookieText)?.[1];
+    if (!rawCsrf) return null;
+    let csrf = rawCsrf;
+    try { csrf = decodeURIComponent(rawCsrf); } catch { /* 保留服务端原值 */ }
+    const roam = await http.request(`${INFO_ROAM}?${new URLSearchParams({ yyfwid: MADMODEL_ROAM_ID, _csrf: csrf, machine: "p" })}`, { redirect: "follow" });
+    await assertMintContext(context);
+    if (roam.status === 429 || roam.status >= 500) {
+      throw new TemporaryMadModelError(i18n("state.madmodel.795ecc37977c", { status: String(roam.status) }), retryAt(roam));
+    }
+    if (roam.status !== 200) return null;
+    const body = await roam.json().catch(() => null) as { object?: { roamingurl?: unknown } } | null;
+    await assertMintContext(context);
+    if (typeof body?.object?.roamingurl !== "string") return null;
+    const rawTarget = body.object.roamingurl.replace(/&amp;/gi, "&");
+    const target = new URL(webvpnDecodeUrl(rawTarget) || rawTarget);
+    if (target.origin !== SITE || target.username || target.password || target.pathname !== "/authLogin") return null;
+    const ticket = ticketFrom(target.href);
+    if (!ticket) return null;
+    // 复用已确认的直连或隧道路线；落地失败保留票据，兑换接口给出最终结果。
+    const base = String(getPlugin(HARNESS_ID)?.settings?.madmodelBase ?? "");
+    try {
+      const landing = await http.request(base ? webvpnWrap(target.href) : target.href, { redirect: "follow", direct: !base });
+      await assertMintContext(context);
+      if (landing.status === 429 || landing.status >= 500) {
+        throw new TemporaryMadModelError(i18n("state.madmodel.6aa588205779", { status: String(landing.status) }), retryAt(landing));
+      }
+    } catch (error) {
+      if (error instanceof TemporaryMadModelError || String((error as Error)?.message ?? error).includes("AUTH_SESSION_CHANGED")) throw error;
+    }
+    void logLine("[MADMODEL] info 门户漫游已取得应用票据").catch(() => undefined);
+    return ticket;
+  } catch (error) {
+    if (error instanceof TemporaryMadModelError || String((error as Error)?.message ?? error).includes("AUTH_SESSION_CHANGED")) throw error;
+    void logLine("[MADMODEL] info 门户漫游暂未取得票据").catch(() => undefined);
+    return null;
+  }
+}
 
 async function fetchSsoTicket(): Promise<TicketResult> {
   try {
@@ -330,8 +427,8 @@ async function fetchSsoTicket(): Promise<TicketResult> {
     if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(i18n("state.madmodel.795ecc37977c", { status: String(res.status) }), retryAt(res));
     const finalUrl = res.headers.get("x-onethu-final-url") ?? "";
     const body = await res.text();
-    const m = TICKET_RE.exec(finalUrl) ?? TICKET_RE.exec(body);
-    if (m?.[1]) return { ticket: decodeURIComponent(m[1]), noSession: false };
+    const ticket = ticketFrom(finalUrl) ?? ticketFrom(body);
+    if (ticket) return { ticket, noSession: false };
 
     if (/checkSingle/i.test(body)) {
       const ticket = await confirmCheckSingle();
@@ -365,8 +462,7 @@ async function confirmCheckSingle(): Promise<string | null> {
     });
     const finalUrl = res.headers.get("x-onethu-final-url") ?? "";
     const html = await res.text();
-    const m = TICKET_RE.exec(finalUrl) ?? TICKET_RE.exec(html) ?? /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html);
-    return m?.[1] ? decodeURIComponent(m[1]) : null;
+    return ticketFrom(finalUrl) ?? ticketFrom(html);
   } catch (e) {
     void logLine("[MADMODEL] checkSingle 确认网络异常").catch(() => undefined);
     return null;
@@ -577,11 +673,11 @@ export function startMadModelPump(): void {
     );
   };
   void tick();
-  setInterval(tick, 10 * 60_000).unref?.();
+  (setInterval(tick, 10 * 60_000) as ReturnType<typeof setInterval> & { unref?: () => void }).unref?.();
   // 免费档没签出来时 60s 快速重试（校园网刚连上/刚回校的场景，不必等满 10 分钟）
-  setInterval(() => {
+  (setInterval(() => {
     if (!madmodelActive()) return;
     if (String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "")) return;
     void preflightMadModel().catch(() => undefined);
-  }, 60_000).unref?.();
+  }, 60_000) as ReturnType<typeof setInterval> & { unref?: () => void }).unref?.();
 }

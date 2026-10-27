@@ -257,7 +257,8 @@ export class VenueClient {
   }
 
   /** 退订/取消预约 */
-  async cancelReserve(resvUuid: string): Promise<void> {
+  async cancelReserve(resvUuid: string, beforeWrite?: () => Promise<void>): Promise<void> {
+    await beforeWrite?.();
     await this.#request("POST", "/api/reserve/cancelReserve", { json: { resvUuid } });
   }
 }

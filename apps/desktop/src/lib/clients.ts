@@ -23,7 +23,10 @@ import { loginCooldownLeftMs } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 import { redactNetworkLog } from "./networkLog.js";
 import { loginFailureDiagnostic } from "./loginErrors.js";
+import { probeLearnSession } from "./learnRecovery.js";
 import { withPrivacy } from "./privacy.js";
+import { adoptSharedSession, exportSharedSession, exportNativeSessionCookies, importNativeSessionCookies, mergeSameAccountServiceCookies, getSharedRuntimeStatus, logoutSharedSession, updateSharedPolicy, usesSharedRuntime, type SharedRuntimeStatus, type SharedSessionSnapshot } from "./sharedRuntime.js";
+import { canBindDeferredLogin, isSharedRuntimeUnavailable } from "./sharedAuthPolicy.js";
 
 export type { TwoFactorMethod };
 
@@ -51,6 +54,8 @@ export const store = localStorageStore();
  * 优先、缺失则从文件回灌。 */
 const SESSION_FILE = "session";
 const SECRET_FILE = "credentials";
+const SHARED_LOGOUT_FILE = "cli-pending-logout-v1";
+const SHARED_HANDOFF_FILE = "cli-pending-handoff-v1";
 
 /** strict 供日历/邮箱等不能把 I/O 失败当成功的事务使用；其他调用保持旧兜底。 */
 export interface StateFileOptions { strict?: boolean }
@@ -346,6 +351,21 @@ function retryTuojAfterTrust(): void {
  *  opts.remember（默认 true）：成功后把密码混淆存本机，boot 恢复失败时静默重登。 */
 type ClientLoginResult = { state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string };
 let clientLoginRequest: { username: string; p: Promise<ClientLoginResult> } | null = null;
+let sharedSessionEpoch: number | null = null;
+let sharedSessionState: string | null = null;
+let loginSharedEpoch: number | null = null;
+let loginSharedAccount: string | null = null;
+let sharedLoggedOut = false;
+let sharedHandoffRequest: Promise<SharedSessionSnapshot | null> | null = null;
+let sharedHandoffRetryAfter = 0;
+let pendingSharedHandoffMemory: PendingSharedHandoff | null = null;
+function sharedSessionStateKey(shared: SharedRuntimeStatus): string {
+  return JSON.stringify([shared.username, shared.session.state, shared.session.twoFactor?.pending === true]);
+}
+function rememberSharedSession(shared: SharedRuntimeStatus): void {
+  sharedSessionEpoch = shared.epoch;
+  sharedSessionState = sharedSessionStateKey(shared);
+}
 
 export function login(username: string, password: string, opts: { remember?: boolean } = {}): Promise<ClientLoginResult> {
   if (resumeRequest) {
@@ -367,6 +387,21 @@ async function performLogin(
   password: string,
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
+  // Capture before credential submission. A CLI logout/account switch during
+  // the school login must win over the result of this older attempt.
+  if (usesSharedRuntime()) {
+    try {
+      await finishPendingSharedLogout();
+      const shared = await getSharedRuntimeStatus();
+      if (shared.session.twoFactor?.pending || shared.session.state === "need-2fa") throw Object.assign(new Error("A CLI login is still in progress."), { code: "AUTH_IN_PROGRESS" });
+      loginSharedEpoch = shared.epoch;
+      loginSharedAccount = shared.username;
+    } catch (error) {
+      if (!isSharedRuntimeUnavailable(error)) throw error;
+      loginSharedEpoch = null;loginSharedAccount = null;
+      void logLine("CLI unavailable; explicit school login continues with native session").catch(() => undefined);
+    }
+  }
   void logLine("AUTH-PHASE import-login");
   const { libLogin, setLibFinger3, helper, assertLoginAccount } = await import("./infoLib.js");
   assertLoginAccount(username, password);
@@ -405,6 +440,7 @@ async function performLogin(
       // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
       // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
       await resumeLearnAfterLogin();
+      await adoptSuccessfulDesktopLogin();
     } else {
       session.username = username;
       session.state = "need-2fa";
@@ -443,10 +479,22 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 /** Both trusted sign-in and fresh 2FA must establish the same scoped session.
  * A school-service failure is local to that service, not a failed main login. */
 async function resumeLearnAfterLogin(): Promise<void> {
-  let ready = await learn.resume().catch(() => false);
+  const generation = resumeGeneration;
+  learn.applyCsrf("");
+  const read = async () => {
+    const result = await probeLearnSession({ fetch: (url, init) => nativeFetch(url, init as Parameters<typeof nativeFetch>[1]),
+      seed: learnHttp.nativeSeedHook,
+      check: () => { if (generation !== resumeGeneration) throw new Error("AUTH_SESSION_CHANGED"); },
+    });
+    if (generation !== resumeGeneration) return false;
+    learn.lastDebug = result.page;learn.lastCsrfDebug = result.diagnostic;
+    if (result.ready && result.csrf) learn.applyCsrf(result.csrf);
+    return result.ready;
+  };
+  let ready = await read().catch(() => false);
   if (!ready) {
     const { libRoamLearn } = await import("./infoLib.js");
-    if (await libRoamLearn()) ready = await learn.resume().catch(() => false);
+    if (generation === resumeGeneration && await libRoamLearn()) ready = await read().catch(() => false);
   }
   await logLine(`LOGIN learn-resume ${ready ? "ok" : "unavailable"}`).catch(() => undefined);
 }
@@ -473,6 +521,7 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
     retryTuojAfterTrust();
     // 同 login()：2FA 完成即主会话活，learn 透明 SSO 建 csrf
     await resumeLearnAfterLogin();
+    await adoptSuccessfulDesktopLogin();
     return null;
   } catch (err) {
     // finger3 必须保住：即使验证失败也不能丢受信凭据
@@ -483,17 +532,140 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
   }
 }
 
+function currentSessionSnapshot(): SessionData {
+  return { username: session.username, fingerprint: session.fingerprint, cookiesJson: http.jar.serialize(), finger3: session.finger3, savedAt: Date.now() };
+}
+interface PendingSharedHandoff {
+  version: 1;
+  snapshot: SessionData;
+  expectedAccount: string | null;
+  expectedEpoch: number | null;
+  reason: "bootstrap" | "login";
+  nativeComplete: boolean;
+}
+async function markSharedHandoffPending(value: boolean): Promise<void> {
+  (await import("../state/cliRuntime.js")).setCliHandoffPending(value);
+}
+async function readPendingSharedHandoff(): Promise<PendingSharedHandoff | null> {
+  if (pendingSharedHandoffMemory) return pendingSharedHandoffMemory;
+  const raw = await fileRead(SHARED_HANDOFF_FILE, { strict: true });
+  if (!raw) return null;
+  const value = JSON.parse(raw) as PendingSharedHandoff;
+  if (value?.version !== 1 || !(Number.isSafeInteger(value.expectedEpoch) || (value.expectedEpoch === null && value.reason === "login"))
+    || !(value.expectedAccount === null || typeof value.expectedAccount === "string")
+    || !["bootstrap", "login"].includes(value.reason) || typeof value.nativeComplete !== "boolean"
+    || !value.snapshot?.username || !value.snapshot.fingerprint || typeof value.snapshot.cookiesJson !== "string") {
+    throw new Error("CLI_PENDING_HANDOFF_INVALID");
+  }
+  return pendingSharedHandoffMemory = value;
+}
+async function saveSessionSnapshot(snapshot: SessionData): Promise<void> {
+  await fileWrite(SESSION_FILE, JSON.stringify(snapshot), { strict: true });
+  await store.saveSession(snapshot);
+}
+async function stageSharedHandoff(snapshot: SessionData, expected: { username: string | null; epoch: number | null }, reason: PendingSharedHandoff["reason"]): Promise<void> {
+  const generation = resumeGeneration;
+  const intent: PendingSharedHandoff = { version: 1, snapshot, expectedAccount: expected.username, expectedEpoch: expected.epoch, reason, nativeComplete: false };
+  // Persist the successful school login before any bridge call can fail. A
+  // subsequent status poll must not mistake a still-empty daemon for logout.
+  pendingSharedHandoffMemory = intent;
+  await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
+  await markSharedHandoffPending(true);
+  const native = await exportNativeSessionCookies();
+  if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  intent.snapshot = { ...snapshot, cookiesJson: JSON.stringify(native.cookies), savedAt: Date.now() };
+  intent.nativeComplete = true;
+  await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
+  await saveSessionSnapshot(intent.snapshot);
+  sharedHandoffRetryAfter = 0;
+}
+async function performSharedSessionHandoff(): Promise<SharedSessionSnapshot | null> {
+  const generation = resumeGeneration;
+  let intent = await readPendingSharedHandoff();
+  if (!intent) return null;
+  await markSharedHandoffPending(true);
+  const shared = await getSharedRuntimeStatus();
+  if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  if (intent.expectedEpoch === null) {
+    if (!canBindDeferredLogin(shared, intent.snapshot.username)) throw new Error("CLI_SHARED_SESSION_CHANGED");
+    intent = { ...intent, expectedAccount: shared.username, expectedEpoch: shared.epoch };
+    pendingSharedHandoffMemory = intent;
+    await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
+    if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  }
+  if (shared.epoch !== intent.expectedEpoch || shared.username !== intent.expectedAccount) {
+    // A new CLI login or logout owns the newer epoch. Its verified export will
+    // restore the GUI; never replay this old cookie candidate against it.
+    await fileDelete(SHARED_HANDOFF_FILE, { strict: true });
+    pendingSharedHandoffMemory = null;
+    await markSharedHandoffPending(false);
+    return null;
+  }
+  if (await fileRead(SHARED_LOGOUT_FILE, { strict: true })) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  if (!intent.nativeComplete) {
+    const local = await loadConsistentSessionSnapshot();
+    if (!local || local.username !== intent.snapshot.username || local.fingerprint !== intent.snapshot.fingerprint) throw new Error("AUTH_SESSION_CONFLICT");
+    const native = await exportNativeSessionCookies();
+    if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+    intent = { ...intent, nativeComplete: true, snapshot: { ...intent.snapshot, cookiesJson: JSON.stringify(native.cookies), savedAt: Date.now() } };
+    pendingSharedHandoffMemory = intent;
+    await fileWrite(SHARED_HANDOFF_FILE, JSON.stringify(intent), { strict: true });
+    await saveSessionSnapshot(intent.snapshot);
+  }
+  if (intent.expectedEpoch === null) throw new Error("CLI_PENDING_HANDOFF_INVALID");
+  const adopted = await adoptSharedSession(intent.snapshot, intent.expectedEpoch, intent.reason);
+  if (generation !== resumeGeneration) throw new Error("CLI_SHARED_SESSION_CHANGED");
+  rememberSharedSession(adopted);
+  sharedLoggedOut = false; loginSharedEpoch = null;
+  if (adopted.snapshot) fingerprintRequest = Promise.resolve(adopted.snapshot.fingerprint);
+  await fileDelete(SHARED_HANDOFF_FILE, { strict: true });
+  pendingSharedHandoffMemory = null;
+  await markSharedHandoffPending(false);
+  sharedHandoffRetryAfter = 0;
+  return adopted;
+}
+export function retrySharedSessionHandoff(): Promise<SharedSessionSnapshot | null> {
+  if (sharedHandoffRequest) return sharedHandoffRequest;
+  const pending = performSharedSessionHandoff();
+  sharedHandoffRequest = pending;
+  const clear = () => { if (sharedHandoffRequest === pending) sharedHandoffRequest = null; };
+  void pending.then(clear, () => { sharedHandoffRetryAfter = Date.now() + 30_000; clear(); });
+  return pending;
+}
+async function adoptSuccessfulDesktopLogin(): Promise<void> {
+  if (!usesSharedRuntime()) return;
+  try {
+    await stageSharedHandoff(currentSessionSnapshot(), { username: loginSharedAccount, epoch: loginSharedEpoch }, "login");
+    if (loginSharedEpoch === null) {
+      await logLine("CLI unavailable; verified school session saved for deferred handoff").catch(() => undefined);
+      return;
+    }
+    const adopted = await retrySharedSessionHandoff();
+    if (!adopted) {
+      session.state = "idle";
+      session.username = "";
+      throw new Error("CLI_SHARED_SESSION_CHANGED");
+    }
+    await prepareSharedTasksAfterLogin();
+  } catch (error) {
+    if (/CLI_SHARED_SESSION_CHANGED/.test(String(error))) throw error;
+    // The university login already succeeded. Background availability is a
+    // separate state; keep this session usable and retain the retry intent.
+    await markSharedHandoffPending(true);
+    await logLine("CLI handoff pending; school session retained").catch(() => undefined);
+  }
+}
+async function prepareSharedTasksAfterLogin(): Promise<void> {
+  if (!usesSharedRuntime()) return;
+  try { await (await import("../state/cliTasks.js")).prepareDesktopTaskRuntime(); }
+  catch (error) { (await import("../state/cliRuntime.js")).reportCliRuntimeError(error); }
+}
+
 export async function persist(): Promise<void> {
   // R10：新会话落盘前清 InfoClient 静态缓存——libToken 是 10 分钟静态缓存且跨
   // 重登录存活，旧 token 配新会话会让订座恒报「没有登录或登录已超时」
   info.resetStaticSessionCaches();
-  const snapshot: SessionData = {
-    username: session.username,
-    fingerprint: session.fingerprint,
-    cookiesJson: http.jar.serialize(),
-    finger3: session.finger3,
-    savedAt: Date.now(),
-  };
+  const snapshot = currentSessionSnapshot();
   await store.saveSession(snapshot);
   // 镜像到 appData 文件：localStorage 被 WKWebView 驱逐时 boot 仍可恢复
   await fileWrite(SESSION_FILE, JSON.stringify(snapshot));
@@ -517,6 +689,16 @@ let fingerprintRequest: Promise<string> | null = null;
 export function currentFingerprint(): Promise<string> {
   if (fingerprintRequest) return fingerprintRequest;
   fingerprintRequest = (async () => {
+    if (usesSharedRuntime()) {
+      try {
+        const shared = await exportSharedSession();
+        if (shared.snapshot?.fingerprint) {
+          session.fingerprint = shared.snapshot.fingerprint;
+          if (shared.snapshot.username === session.username) session.finger3 = shared.snapshot.finger3 ?? "";
+          return shared.snapshot.fingerprint;
+        }
+      } catch (error) { if (!isSharedRuntimeUnavailable(error)) throw error; }
+    }
     let saved = await store.loadSession().catch(() => null);
     const raw = await fileRead(SESSION_FILE).catch(() => null);
     let mirrored: SessionData | null = null;
@@ -634,17 +816,90 @@ async function performResumeSession(): Promise<boolean> {
   void logLine("PROBE resume-entry").catch(() => undefined);
   let saved: SessionData | null;
   try {
-    saved = await loadConsistentSessionSnapshot();
+    if (usesSharedRuntime()) {
+      await finishPendingSharedLogout();
+      const pendingHandoff = await readPendingSharedHandoff();
+      if (pendingHandoff) {
+        resumeSnapshotUsername = pendingHandoff.snapshot.username;
+        await retrySharedSessionHandoff();
+      }
+      let shared = await exportSharedSession();
+      sharedLoggedOut = shared.tombstone === true;
+      if (shared.session.twoFactor?.pending || shared.session.state === "need-2fa") {
+        // The CLI owns this pending verification. Keep the old durable GUI
+        // snapshot until the new login completes, and suppress silent password
+        // submission that would interrupt its 2FA flow.
+        sharedLoggedOut = true;
+        rememberSharedSession(shared);
+        session.state = "idle"; session.username = ""; pendingSecret = null;
+        return false;
+      }
+      if (!shared.snapshot && shared.bootstrapAllowed === true) {
+        const local = await loadConsistentSessionSnapshot();
+        if (local?.fingerprint) { session.fingerprint = local.fingerprint; fingerprintRequest = Promise.resolve(local.fingerprint); }
+        if (local?.username && local.cookiesJson && local.cookiesJson !== "{}") {
+          resumeSnapshotUsername = local.username;
+          await stageSharedHandoff(local, shared, "bootstrap");
+          shared = await retrySharedSessionHandoff() ?? await exportSharedSession();
+          if (shared.policy.configured === false) {
+            const [{ mcpServerEnabled, cliAutoExecuteEnabled }, { ohAuthorized }] = await Promise.all([
+              import("../state/userext.js"), import("../state/privacyConsent.js"),
+            ]);
+            await updateSharedPolicy(mcpServerEnabled() && ohAuthorized(), cliAutoExecuteEnabled());
+          }
+        }
+      }
+      if (generation !== resumeGeneration) return false;
+      saved = shared.snapshot;
+      if (saved && shared.session.state !== "ready") {
+        // A nonblocking export is a durable snapshot, not a completed identity
+        // proof. Keep the existing native jar only for a matching local owner;
+        // never replace it with the daemon's still-unverified older cookies.
+        const local = await loadConsistentSessionSnapshot();
+        if (generation !== resumeGeneration) return false;
+        if (!local?.username || local.username !== shared.username) {
+          resumeSnapshotUsername = null;
+          throw new Error("CLI_SHARED_RESTORE_PENDING");
+        }
+        saved = local;
+      } else {
+        const native = await exportNativeSessionCookies();
+        if (generation !== resumeGeneration) return false;
+        const localOwner = (await loadConsistentSessionSnapshot().catch(() => null))?.username ?? null;
+        const cookies = mergeSameAccountServiceCookies(saved ? JSON.parse(saved.cookiesJson) : [], native.cookies,
+          localOwner, shared.session.state === "ready" ? saved?.username ?? null : null);
+        if (generation !== resumeGeneration) return false;
+        await importNativeSessionCookies(cookies, native.revision);
+        if (generation !== resumeGeneration) return false;
+        // Atomic native import must succeed before changing JS ownership or the
+        // durable GUI mirror. An import/disk failure leaves the old account whole.
+        session.reset(); session.username = ""; pendingSecret = null;
+        const { libAcceptSharedSession } = await import("./infoLib.js");
+        await libAcceptSharedSession(saved?.username ?? null);
+        if (saved) {
+          fingerprintRequest = Promise.resolve(saved.fingerprint);
+          await saveSessionSnapshot(saved);
+        } else {
+          await saveSessionSnapshot({ username: "", fingerprint: session.fingerprint, finger3: "", cookiesJson: "[]", savedAt: Date.now() });
+        }
+      }
+      rememberSharedSession(shared);
+    } else saved = await loadConsistentSessionSnapshot();
   } catch (error) {
     if (generation !== resumeGeneration) return false;
-    const { libDiscardLocalSession } = await import("./infoLib.js");
-    if (generation !== resumeGeneration) return false;
-    await libDiscardLocalSession();
-    session.reset();
-    session.username = "";
-    session.finger3 = "";
-    pendingSecret = null;
-    throw error;
+    if (usesSharedRuntime()) {
+      // Bridge/proof failure is separate from school authentication. Preserve
+      // the existing ready session and its native jar until adoption succeeds.
+      if (!isSharedRuntimeUnavailable(error)) throw error;
+      saved = await loadConsistentSessionSnapshot();
+      void logLine("CLI unavailable; probing owned native school session").catch(() => undefined);
+    } else {
+      const { libDiscardLocalSession } = await import("./infoLib.js");
+      if (generation !== resumeGeneration) return false;
+      await libDiscardLocalSession();
+      session.reset();session.username = "";session.finger3 = "";pendingSecret = null;
+      throw error;
+    }
   }
   void logLine("PROBE store-loaded").catch(() => undefined);
   if (generation !== resumeGeneration) return false;
@@ -658,6 +913,7 @@ async function performResumeSession(): Promise<boolean> {
     return false;
   }
   http.jar.hydrate(saved.cookiesJson);
+  learnHttp.jar.hydrate(saved.cookiesJson);
   resumeSnapshotUsername = saved.username;
   session.username = saved.username;
   session.fingerprint = saved.fingerprint;
@@ -667,6 +923,7 @@ async function performResumeSession(): Promise<boolean> {
     if (generation !== resumeGeneration) return false;
     setLibFinger3(session.finger3);
     helper.fingerprint = saved.fingerprint;
+    helper.userId = saved.username;
   }
   // 记住的密码（仅内存）：dorm/library 的 id 直登与静默重登都要用
   const candidate = await loadRemembered();
@@ -687,24 +944,31 @@ async function performResumeSession(): Promise<boolean> {
   // resume 只需探活：learn 拿得到 _csrf = webvpn 会话活 + learn 可达。
   // Gateway pages, HTTP 403/429/5xx and transport failures propagate as service
   // errors. Only a confirmed missing authentication returns false.
-  const okLearn = await learn.resume();
+  const probe = await probeLearnSession({ fetch: (url, init) => nativeFetch(url, init as Parameters<typeof nativeFetch>[1]),
+    seed: learnHttp.nativeSeedHook,
+    check: () => { if (generation !== resumeGeneration) throw new Error("AUTH_SESSION_CHANGED"); },
+  });
   if (generation !== resumeGeneration) return false;
+  const okLearn = probe.ready;
+  learn.lastDebug = probe.page;
+  learn.lastCsrfDebug = probe.diagnostic;
+  if (okLearn && probe.csrf) learn.applyCsrf(probe.csrf);
   mark(okLearn ? "learn.resume(会话活)" : "learn.resume(过期)");
   if (!okLearn) {
     await logLine("RESUME fail (learn 探活失败——boot 将走静默重登)");
     return false;
   }
-  await info.resume().catch(() => false);
   if (generation !== resumeGeneration) return false;
-  session.state = "ready";
-  mark("info.resume");
-  // lib 凭据注入（2026-09-17）：快路径（learn 会话活）不跑 libLogin，
-  // helper.userId 恒空 → card/日历/新闻等 lib 数据调用秒抛 Please login.
-  // 有记住的密码就补上（roamingWrapper 需要账密才能按需漫游）。
+  // Info has its own lazy service establishment. A best-effort warm-up here
+  // used to keep the sign-in mutex held even after Learn proved the session.
+  // Resume submits no login. Legacy roaming services still need matching local
+  // remembered credentials in memory before the GUI starts loading their data.
   if (remembered) {
     const { helper } = await import("./infoLib.js");
     if (generation !== resumeGeneration) return false;
-    if (!helper.userId) {
+    // CLI adoption already supplies userId but deliberately carries no password.
+    // Restore only this verified owner's remembered credentials in GUI memory.
+    if (!helper.userId || helper.userId === remembered.username) {
       helper.userId = remembered.username;
       helper.password = remembered.password;
       helper.fingerprint = saved.fingerprint;
@@ -712,13 +976,20 @@ async function performResumeSession(): Promise<boolean> {
       await logLine("RESUME lib-凭据注入(快路径)").catch(() => undefined);
     }
   }
+  if (generation !== resumeGeneration) return false;
+  session.state = "ready";
+  mark("会话就绪");
   await logLine("RESUME ok (lib 单管线)");
   mark("READY(总耗时)");
+  // Task-channel synchronization has an independent account/epoch guard and
+  // its own error reporting; it must not hold the foreground login mutex.
+  void prepareSharedTasksAfterLogin().catch(() => undefined);
   return true;
 }
 
 /** 是否存在「曾登录」的会话快照（显式 logout 会清空，防止 boot 静默重登顶替登出） */
 async function hasLiveSnapshot(): Promise<boolean> {
+  if (usesSharedRuntime() && sharedLoggedOut) return false;
   const saved = await loadConsistentSessionSnapshot().catch(() => null);
   return Boolean(saved?.username && ((saved.cookiesJson && saved.cookiesJson !== "{}") || saved.demoCookies));
 }
@@ -771,6 +1042,25 @@ export async function logout(): Promise<void> {
   // A probe that was still running after the boot deadline cannot revive logout.
   resumeGeneration++;
   resumeSnapshotUsername = null;
+  let sharedError: unknown;
+  if (usesSharedRuntime()) {
+    sharedLoggedOut = true;
+    pendingSharedHandoffMemory = null;
+    try {
+      await fileDelete(SHARED_HANDOFF_FILE, { strict: true });
+      await markSharedHandoffPending(false);
+      if (session.username && sharedSessionEpoch !== null) await fileWrite(SHARED_LOGOUT_FILE,
+        JSON.stringify({ expectedAccount: session.username, expectedEpoch: sharedSessionEpoch }), { strict: true });
+      const status = await getSharedRuntimeStatus();
+      // A newer account in the CLI must not be signed out by this stale UI.
+      if (status.username && status.username !== session.username) throw new Error("CLI_SHARED_SESSION_CHANGED");
+      if (status.username) await fileWrite(SHARED_LOGOUT_FILE,
+        JSON.stringify({ expectedAccount: status.username, expectedEpoch: status.epoch }), { strict: true });
+      await logoutSharedSession(status.username, status.epoch);
+      await fileDelete(SHARED_LOGOUT_FILE, { strict: true });
+      rememberSharedSession(await getSharedRuntimeStatus());
+    } catch (error) { sharedError = error; }
+  }
   // 体育系统 token 与会话解耦但跟随登出清空（防串账号）
   const { venueLogout } = await import("./venue.js");
   venueLogout();
@@ -784,17 +1074,75 @@ export async function logout(): Promise<void> {
   // R10：图书馆静态 token 同步清空（防串账号/防旧 token 撞新会话）
   info.resetStaticSessionCaches();
   // lib 链登出（webvpn LOGOUT + 共享 jar 清空）
-  const { libLogout } = await import("./infoLib.js");
+  const { libLogout, libDiscardLocalSession } = await import("./infoLib.js");
   try {
     // cookieBoundary writes an explicit signed-out record in both stores.
     // Keep that tombstone: deleting one copy could expose an older surviving copy.
-    await libLogout();
+    if (usesSharedRuntime()) await libDiscardLocalSession();
+    else await libLogout();
   } finally {
     pendingSecret = null;
     session.reset();
     session.username = "";
     session.finger3 = "";
   }
+  if (sharedError) {
+    (await import("../state/cliRuntime.js")).reportCliRuntimeError(sharedError);
+    throw sharedError;
+  }
+}
+
+/** A disconnected sign-out is retried only against its original identity. A
+ * subsequent CLI login has a newer epoch and supersedes this old intention. */
+async function finishPendingSharedLogout(): Promise<void> {
+  const raw = await fileRead(SHARED_LOGOUT_FILE, { strict: true });
+  if (!raw) return;
+  const pending = JSON.parse(raw) as { expectedAccount: string; expectedEpoch: number };
+  if (typeof pending.expectedAccount !== "string" || !Number.isSafeInteger(pending.expectedEpoch)) throw new Error("CLI_PENDING_LOGOUT_INVALID");
+  const status = await getSharedRuntimeStatus();
+  if (status.username === pending.expectedAccount && status.epoch === pending.expectedEpoch) {
+    await logoutSharedSession(pending.expectedAccount, pending.expectedEpoch);
+  }
+  await fileDelete(SHARED_LOGOUT_FILE, { strict: true });
+}
+
+/** Observe account changes made through the CLI without password re-submission.
+ * Polling reads status; account, epoch or authentication-stage changes trigger
+ * one fenced hydrate. CLI 2FA can finish without rotating its prepared epoch. */
+export async function refreshSharedSession(onChanging?: () => void): Promise<BootResumeOutcome | null> {
+  if (!usesSharedRuntime() || clientLoginRequest || resumeRequest || session.state === "need-2fa") return null;
+  await finishPendingSharedLogout();
+  let requiresHydration = false;
+  const pendingHandoff = await readPendingSharedHandoff();
+  if (pendingHandoff) {
+    await markSharedHandoffPending(true);
+    if (Date.now() < sharedHandoffRetryAfter) return null;
+    try {
+      const adopted = await retrySharedSessionHandoff();
+      if (adopted && session.state === "ready" && session.username === adopted.username) {
+        await prepareSharedTasksAfterLogin();
+        return null;
+      }
+      requiresHydration = adopted !== null;
+    } catch {
+      // No connecting screen or empty-daemon cleanup while the successful
+      // school login is waiting for its background proof. Retry is bounded.
+      return null;
+    }
+  }
+  const shared = await getSharedRuntimeStatus();
+  if (!requiresHydration && sharedSessionEpoch !== null && sharedSessionEpoch === shared.epoch && sharedSessionState === sharedSessionStateKey(shared)) return null;
+  if (!requiresHydration && session.state === "ready" && sharedSessionEpoch === shared.epoch && session.username === shared.username && shared.session.state === "ready") {
+    // An idle -> ready startup probe at the same epoch does not represent a
+    // login/account change. Keep the GUI's newer service cookies and CSRF.
+    rememberSharedSession(shared);
+    return null;
+  }
+  onChanging?.();
+  resumeGeneration++;
+  pendingSecret = null;
+  return resumeSession().then(ok => ok ? { kind: "ready", username: session.username } as const : { kind: "unauthenticated" } as const)
+    .catch(error => ({ kind: "unavailable", username: resumeSnapshotUsername, error } as const));
 }
 
 /** learn 下载/二进制 URL 附加 _csrf —— mobile fs.downloadFile 的 addCSRF 同款：

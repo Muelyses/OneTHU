@@ -165,4 +165,14 @@ for (const message of ["LLM HTTP 401：unauthorized", "token 需要重新签发"
   vm.runInNewContext(consume, legacy);
   check(legacy.deltaBuf.current, "legacy-answer", "third-party plugins retain their legacy event protocol");
 }
+
+
+{
+  let interrupts=0;
+  const error=new Error('fixture host timeout');
+  try { await runCancellable({prepare:async()=>null,run:async()=>{throw error},interrupt:async()=>{interrupts++},cancelled:()=>null});throw Error('Expected timeout'); }
+  catch(e){check(e===error,true,'host timeout retains its original error');}
+  check(interrupts,1,'host timeout cancels its owned run ticket');
+}
+
 console.log(`✓ OH frontend request lifecycle: ${assertions} assertions passed`);

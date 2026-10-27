@@ -75,7 +75,7 @@ try {
  let scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,300);await p.waitForTimeout(300);console.log('SCROLL',scroll,await p.evaluate(()=>({window:scrollY,nodes:[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&getComputedStyle(e).overflowY.match(/auto|scroll/)).map(e=>({cls:e.className,top:e.scrollTop,h:e.clientHeight,total:e.scrollHeight}))})));check(await p.evaluate(()=>window.scrollY)>scroll,'wheel over homework scrolls home down');
  scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,-250);await p.waitForTimeout(300);check(await p.evaluate(()=>window.scrollY)<scroll,'wheel scrolls home up');
  await p.evaluate(()=>window.scrollTo(0,0));await p.screenshot({path:`${out}/home.png`});
- await go(p,'settings-tab&settings-tab=外观与布局');check(!(await p.locator('body').innerText()).includes('想昼夜自动切换就打开上面的开关'),'settings sentence removed');
+ await go(p,'settings-tab&settings-tab=外观');check(!(await p.locator('body').innerText()).includes('想昼夜自动切换就打开上面的开关'),'settings sentence removed');
  await call(p,'/src/lib/glassLevel.ts','setGlassLevel',['clear']);await call(p,'/src/state/explorer.ts','closeSettings');
  const image=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=1280;c.height=840;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,1280,840);g.addColorStop(0,'#102c46');g.addColorStop(.45,'#6a90ad');g.addColorStop(.55,'#dca37d');g.addColorStop(1,'#faf0d5');x.fillStyle=g;x.fillRect(0,0,1280,840);return c.toDataURL();});
  await call(p,'/src/state/wallpaper.ts','setGlobalWallpaper',[image]);await p.waitForTimeout(1500);

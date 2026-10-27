@@ -1,7 +1,985 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.tabdrawer.e9a95effb2f5",
+      "source": "彻底删除（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 907,
+          "context": "label: i18n(\"components.explorer.tabdrawer.e9a95effb2f5\")"
+        }
+      ],
+      "translation": "Delete permanently (with tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f22548ae0eb0",
+      "source": "标签页的归属组合；恢复时按实例去重",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 739,
+          "context": "{i18n(\"components.explorer.tabdrawer.f22548ae0eb0\")}"
+        }
+      ],
+      "translation": "The grouping a tab belongs to; deduplicated by instance when restored",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f3683b41fe52",
+      "source": "竖版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 980,
+          "context": "{i18n(\"components.explorer.tabdrawer.f3683b41fe52\")}"
+        }
+      ],
+      "translation": "Vertical",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f807a7b72a2c",
+      "source": "横版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 979,
+          "context": "{i18n(\"components.explorer.tabdrawer.f807a7b72a2c\")}"
+        }
+      ],
+      "translation": "Horizontal",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f853a70b1204",
+      "source": "上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 825,
+          "context": "{i18n(\"components.explorer.tabdrawer.f853a70b1204\")}"
+        }
+      ],
+      "translation": "Move up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f991f79fa551",
+      "source": "当前标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 993,
+          "context": "{i18n(\"components.explorer.tabdrawer.f991f79fa551\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 995,
+          "context": "{i18n(\"components.explorer.tabdrawer.f991f79fa551\")}"
+        }
+      ],
+      "translation": "Current tab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabhost.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 287,
+          "context": "title: i18n(\"components.explorer.tabhost.203c08e0d44a\")"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.5a45a31ad546",
+      "source": "换壁纸 · 从库选…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 155,
+          "context": "label: i18n(\"components.explorer.tabhost.5a45a31ad546\")"
+        }
+      ],
+      "translation": "Change wallpaper · pick from library…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.6af504b380f2",
+      "source": "清除全屏壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 160,
+          "context": "label: i18n(\"components.explorer.tabhost.6af504b380f2\")"
+        }
+      ],
+      "translation": "Clear full-screen wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.83deaec053e9",
+      "source": "关闭标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 161,
+          "context": "label: i18n(\"components.explorer.tabhost.83deaec053e9\")"
+        }
+      ],
+      "translation": "Close tab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.9a857306bfc3",
+      "source": "在新标签页打开此页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 154,
+          "context": "label: i18n(\"components.explorer.tabhost.9a857306bfc3\")"
+        }
+      ],
+      "translation": "Open this page in a new tab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.e5f5d7df200a",
+      "source": "全屏壁纸 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 157,
+          "context": "i18n(\"components.explorer.tabhost.e5f5d7df200a\") + b.label"
+        }
+      ],
+      "translation": "Full-screen wallpaper · ",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.07bb25e3e6ea",
+      "source": "关闭工作区（同时关闭其中的标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 226,
+          "context": "{i18n(\"components.explorer.tabstrip.07bb25e3e6ea\")}"
+        }
+      ],
+      "translation": "Close workspace (and all its tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.0bd930dcb332",
+      "source": "复制本标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1006,
+          "context": "label: i18n(\"components.explorer.tabstrip.0bd930dcb332\")"
+        }
+      ],
+      "translation": "Duplicate this tab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.126e112774d5",
+      "source": "底板颜色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 626,
+          "context": "{i18n(\"components.explorer.tabstrip.126e112774d5\")}"
+        }
+      ],
+      "translation": "Canvas color",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.1831b25872ac",
+      "source": "确定删除 OnePage「{name}」（{full}）？\n这块白板和其中的内容都会永久消失！",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(existing.name)"
+        },
+        {
+          "name": "full",
+          "expression": "String(name.full)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 998,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.1831b25872ac\", { name: String(existing.name), full: String(name.full) }))"
+        }
+      ],
+      "translation": "Delete OnePage \"{name}\" ({full})?\nThe board and everything on it will be gone permanently!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.1cff7673a712",
+      "source": "首页 · 不可关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 90,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.1cff7673a712\") : full"
+        }
+      ],
+      "translation": "Home · cannot be closed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 89,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(tab.page, tab.params).full"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1149,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(t.page, t.params).label"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1150,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(t.page, t.params).full"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.2389ded014dd",
+      "source": "关闭工作区「{name}」及其中的 {count} 个标签页？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(ws.name)"
+        },
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 228,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.2389ded014dd\", { name: String(ws.name), count: String(count) }))"
+        }
+      ],
+      "translation": "Close workspace \"{name}\" and its {count} tabs?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 658,
+          "context": "{i18n(\"components.explorer.tabstrip.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.37979829426b",
+      "source": "工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 605,
+          "context": "useState(i18n(\"components.explorer.tabstrip.37979829426b\"))"
+        }
+      ],
+      "translation": "Workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.40561d059752",
+      "source": "解散工作区（保留标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 197,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 909,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1013,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        }
+      ],
+      "translation": "Disband workspace (keep tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.4068d620bc34",
+      "source": "彻底删除工作区（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 199,
+          "context": "label: i18n(\"components.explorer.tabstrip.4068d620bc34\")"
+        }
+      ],
+      "translation": "Delete workspace permanently (with tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.49b14b7e938c",
+      "source": "关闭 · {full}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "full",
+          "expression": "String(full)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1169,
+          "context": "{i18n(\"components.explorer.tabstrip.49b14b7e938c\", { full: String(full) })}"
+        }
+      ],
+      "translation": "Close · {full}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.4b8b25735e9b",
+      "source": "颜色 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 632,
+          "context": "i18n(\"components.explorer.tabstrip.4b8b25735e9b\") + c"
+        }
+      ],
+      "translation": "Color ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.52fc5d80cf25",
+      "source": "折叠工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 215,
+          "context": "ws.collapsed ? i18n(\"components.explorer.tabstrip.5d3f97b3fe45\") : i18n(\"components.explorer.tabstrip.52fc5d80cf25\")"
+        }
+      ],
+      "translation": "Collapse workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.5d3f97b3fe45",
+      "source": "展开工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 215,
+          "context": "ws.collapsed ? i18n(\"components.explorer.tabstrip.5d3f97b3fe45\") : i18n(\"components.explorer.tabstrip.52fc5d80cf25\")"
+        }
+      ],
+      "translation": "Expand workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.6e00cb5b1b1c",
+      "source": "移出 OnePage（取消一星）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1008,
+          "context": "isStarred(t) ? i18n(\"components.explorer.tabstrip.6e00cb5b1b1c\") : i18n(\"components.explorer.tabstrip.7788d86c6f5d\")"
+        }
+      ],
+      "translation": "Remove from OnePage (remove star)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.7788d86c6f5d",
+      "source": "加入 OnePage（一星）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1008,
+          "context": "isStarred(t) ? i18n(\"components.explorer.tabstrip.6e00cb5b1b1c\") : i18n(\"components.explorer.tabstrip.7788d86c6f5d\")"
+        }
+      ],
+      "translation": "Add to OnePage (star)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.8bcb372db593",
+      "source": "移出工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1011,
+          "context": "label: i18n(\"components.explorer.tabstrip.8bcb372db593\")"
+        }
+      ],
+      "translation": "Remove from workspace",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.946897d10708",
+      "source": "新建工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 621,
+          "context": "{i18n(\"components.explorer.tabstrip.946897d10708\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 624,
+          "context": "{i18n(\"components.explorer.tabstrip.946897d10708\")}"
+        }
+      ],
+      "translation": "New workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.9c5d341609cd",
+      "source": "新标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1192,
+          "context": "{i18n(\"components.explorer.tabstrip.9c5d341609cd\")}"
+        }
+      ],
+      "translation": "New tab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.9da364f29a6e",
+      "source": "关闭 {label}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1168,
+          "context": "{i18n(\"components.explorer.tabstrip.9da364f29a6e\", { label: String(label) })}"
+        }
+      ],
+      "translation": "Close {label}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.9e76a0089e2c",
+      "source": "彻底删除工作区「{name}」及其中的 {count} 个标签页？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(ws.name)"
+        },
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 203,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 913,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
+        }
+      ],
+      "translation": "Permanently delete workspace \"{name}\" and its {count} tabs?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1137,
+          "context": "{i18n(\"components.explorer.tabstrip.a626aad412b7\")}"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.b2a947fe366c",
+      "source": "工作区名字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 625,
+          "context": "{i18n(\"components.explorer.tabstrip.b2a947fe366c\")}"
+        }
+      ],
+      "translation": "Workspace name",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.bfdc8bd31343",
+      "source": "复制当前页面 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 90,
+          "context": "i18n(\"components.explorer.tabstrip.bfdc8bd31343\") + resolveTabTitle(activeTab().page, activeTab().params).full"
+        }
+      ],
+      "translation": "Duplicate current page · ",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.c3b5c8e51c87",
+      "source": "新标签页（回首页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1191,
+          "context": "{i18n(\"components.explorer.tabstrip.c3b5c8e51c87\")}"
+        }
+      ],
+      "translation": "New tab (to Home)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.c6a451fd4a5b",
+      "source": "聚焦此标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1005,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6a451fd4a5b\")"
+        }
+      ],
+      "translation": "Focus this tab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.c6d80849d9f5",
+      "source": "编辑工作区…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 196,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6d80849d9f5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 908,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6d80849d9f5\")"
+        }
+      ],
+      "translation": "Edit workspace…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.cde2cd071d25",
+      "source": "创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 659,
+          "context": "{i18n(\"components.explorer.tabstrip.cde2cd071d25\")}"
+        }
+      ],
+      "translation": "Create",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.df3d58c7d84b",
+      "source": "设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 90,
+          "context": "tip.kind === \"gear\" ? i18n(\"components.explorer.tabstrip.df3d58c7d84b\") : (isHome ? i18n(\"components.explorer.tabstrip.1cff7673a712\") : full)"
+        }
+      ],
+      "translation": "Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.e5d7d964c0e2",
+      "source": "关闭本标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1007,
+          "context": "label: i18n(\"components.explorer.tabstrip.e5d7d964c0e2\")"
+        }
+      ],
+      "translation": "Close this tab",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.e9913cd546bf",
+      "source": "关闭工作区 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 225,
+          "context": "i18n(\"components.explorer.tabstrip.e9913cd546bf\") + ws.name"
+        }
+      ],
+      "translation": "Close workspace ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.e9a95effb2f5",
+      "source": "彻底删除（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 911,
+          "context": "label: i18n(\"components.explorer.tabstrip.e9a95effb2f5\")"
+        }
+      ],
+      "translation": "Delete permanently (with tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.03f0454aea68",
+      "source": "处理失败，请换一个文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 101,
+          "context": "r.error ?? i18n(\"components.explorer.wallpaperlibrary.03f0454aea68\")"
+        }
+      ],
+      "translation": "Processing failed. Try a different file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.0cfe12ee47a2",
+      "source": "；已应用不入库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 110,
+          "context": "variant === \"picker\" ? i18n(\"components.explorer.wallpaperlibrary.9c5daef675e0\") : i18n(\"components.explorer.wallpaperlibrary.0cfe12ee47a2\")"
+        }
+      ],
+      "translation": "; applied but not added to the library",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.1609bca7aff5",
+      "source": "上传入库…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 143,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.1609bca7aff5\")}"
+        }
+      ],
+      "translation": "Upload to library…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.2f22a69b07de",
+      "source": "我的壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 60,
+          "context": "entry.builtin ? i18n(\"components.explorer.wallpaperlibrary.9b66c437f94a\") : i18n(\"components.explorer.wallpaperlibrary.2f22a69b07de\")"
+        }
+      ],
+      "translation": "My wallpapers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.3b9fd74eda41",
+      "source": "从云盘恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 145,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3b9fd74eda41\")}"
+        }
+      ],
+      "translation": "Restore from Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 139,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3fd47edce45b\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 139,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.44f11be688f1",
+      "source": "当前全屏壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 77,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.44f11be688f1\")}"
+        }
+      ],
+      "translation": "Current full-screen wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.45793e136b90",
+      "source": "同步含库内图片与视频，恢复会覆盖本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 159,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.45793e136b90\")}"
+        }
+      ],
+      "translation": "Sync includes images and videos in the library; restoring overwrites this device",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.5e15e538d386",
+      "source": "上传图片或视频…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 163,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.5e15e538d386\")}"
+        }
+      ],
+      "translation": "Upload an image or video…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.66252e2d86ba",
+      "source": "从库里删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 72,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.66252e2d86ba\")}"
+        }
+      ],
+      "translation": "Remove from library",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.9b66c437f94a",
+      "source": "内置壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 60,
+          "context": "entry.builtin ? i18n(\"components.explorer.wallpaperlibrary.9b66c437f94a\") : i18n(\"components.explorer.wallpaperlibrary.2f22a69b07de\")"
+        }
+      ],
+      "translation": "Built-in wallpapers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.wallpaperlibrary.9c5daef675e0",
       "source": "；已直接应用",
@@ -412,946 +1390,6 @@
         }
       ],
       "translation": "Search mode finds features, assignments, and files and jumps straight to them; OH mode goes directly into the chat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorerprefssection.563b252befe6",
-      "source": "再点一次确认清空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
-          "line": 61,
-          "context": "arming ? i18n(\"components.explorerprefssection.563b252befe6\") : i18n(\"components.explorerprefssection.80e015bfff38\")"
-        }
-      ],
-      "translation": "Tap again to confirm clearing",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorerprefssection.80e015bfff38",
-      "source": "清空记录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
-          "line": 61,
-          "context": "arming ? i18n(\"components.explorerprefssection.563b252befe6\") : i18n(\"components.explorerprefssection.80e015bfff38\")"
-        }
-      ],
-      "translation": "Clear records",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorerprefssection.faa18ef93208",
-      "source": "搜索与胶囊",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExplorerPrefsSection.tsx",
-          "line": 42,
-          "context": "{i18n(\"components.explorerprefssection.faa18ef93208\")}"
-        }
-      ],
-      "translation": "Search & capsule",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.problembody.cd833817789d",
-      "source": "题目内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/ProblemBody.tsx",
-          "line": 138,
-          "context": "title = i18n(\"components.exthw.problembody.cd833817789d\")"
-        }
-      ],
-      "translation": "Problem statement",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.39c1233830b4",
-      "source": "{title} 第 {value} 页",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "title",
-          "expression": "String(title)"
-        },
-        {
-          "name": "value",
-          "expression": "String(idx + 1)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 66,
-          "context": "{i18n(\"components.exthw.yktcontentbody.39c1233830b4\", { title: String(title), value: String(idx + 1) })}"
-        }
-      ],
-      "translation": "Page {value} of {title}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.87a7c227bdf5",
-      "source": "文档在应用内预览（可翻页 / 缩放 / 另存），不跳转官方网页。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 56,
-          "context": "{i18n(\"components.exthw.yktcontentbody.87a7c227bdf5\")}"
-        }
-      ],
-      "translation": "Documents are previewed inside the app (page through, zoom, or save a copy); it does not jump to the official website.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.8a8542f69648",
-      "source": "下一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 74,
-          "context": "{i18n(\"components.exthw.yktcontentbody.8a8542f69648\")}"
-        }
-      ],
-      "translation": "Next page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.8e86f9b1d54f",
-      "source": "复制链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 92,
-          "context": "{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}"
-        }
-      ],
-      "translation": "Copy link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.94e6755106d8",
-      "source": "这条内容没有可直接渲染的正文（可能是直播、讨论或需要互动的类型）。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "fallbackUrl ? (\n          <Btn variant=\"ghost\" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}</Btn>\n        ) : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 91,
-          "context": "{i18nRich(\"components.exthw.yktcontentbody.94e6755106d8\", { value: fallbackUrl ? (\n          <Btn variant=\"ghost\" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>{i18n(\"components.exthw.yktcontentbody.8e86f9b1d54f\")}</Btn>\n        ) : null })}"
-        }
-      ],
-      "translation": "This item has no body that can be rendered directly (it may be a live stream, a discussion, or an interactive type). {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.c9b9ae7a6144",
-      "source": "上一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 70,
-          "context": "{i18n(\"components.exthw.yktcontentbody.c9b9ae7a6144\")}"
-        }
-      ],
-      "translation": "Previous page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentbody.f79a5a5c204e",
-      "source": "用内置预览打开",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentBody.tsx",
-          "line": 55,
-          "context": "{i18n(\"components.exthw.yktcontentbody.f79a5a5c204e\")}"
-        }
-      ],
-      "translation": "Open with built-in preview",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.21bd738e0d71",
-      "source": "正在加载…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 107,
-          "context": "isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
-        }
-      ],
-      "translation": "Loading…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.2b1fde913dc6",
-      "source": "正在加载内容…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 115,
-          "context": "{i18n(\"components.exthw.yktcontentlist.2b1fde913dc6\")}"
-        }
-      ],
-      "translation": "Loading content…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.3afccd0197f6",
-      "source": "点击收起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 107,
-          "context": "isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
-        }
-      ],
-      "translation": "Click to collapse",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.7965aadb4537",
-      "source": "这条公告没有取到可用的内容标识。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 48,
-          "context": "error: i18n(\"components.exthw.yktcontentlist.7965aadb4537\")"
-        }
-      ],
-      "translation": "No usable content ID was found for this announcement.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.ca6001f90452",
-      "source": "这条内容没有可内嵌渲染的正文。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 69,
-          "context": "error: i18n(\"components.exthw.yktcontentlist.ca6001f90452\")"
-        }
-      ],
-      "translation": "This item has no body that can be rendered inline.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.dc91444c4449",
-      "source": "加载失败，请重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 75,
-          "context": "e instanceof Error ? e.message : i18n(\"components.exthw.yktcontentlist.dc91444c4449\")"
-        }
-      ],
-      "translation": "Failed to load. Please try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.ddbd641e1d5c",
-      "source": "没取到这条公告的正文，请稍后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 53,
-          "context": "error: i18n(\"components.exthw.yktcontentlist.ddbd641e1d5c\")"
-        }
-      ],
-      "translation": "The body of this announcement could not be fetched. Please try again later.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.f053f24bd333",
-      "source": "雨课堂 · {value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 107,
-          "context": "{i18nRich(\"components.exthw.yktcontentlist.f053f24bd333\", { value: isOpen && open?.state === \"loading\" ? i18n(\"components.exthw.yktcontentlist.21bd738e0d71\") : isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\") })}"
-        }
-      ],
-      "translation": "Rain Classroom · {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktcontentlist.f0b19fcb3a58",
-      "source": "点击查看",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktContentList.tsx",
-          "line": 107,
-          "context": "isOpen ? i18n(\"components.exthw.yktcontentlist.3afccd0197f6\") : i18n(\"components.exthw.yktcontentlist.f0b19fcb3a58\")"
-        }
-      ],
-      "translation": "Click to view",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.075910113c11",
-      "source": "独立成行（display 模式）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 376,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.075910113c11\")}"
-        }
-      ],
-      "translation": "On its own line (display mode)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.1edb50ac35be",
-      "source": "📷 拍照上传",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 356,
-          "context": "isAndroid ? i18n(\"components.exthw.yktsubjectiveeditor.1edb50ac35be\") : i18n(\"components.exthw.yktsubjectiveeditor.6126742dc24f\")"
-        }
-      ],
-      "translation": "📷 Take photo to upload",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 386,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.3878a2a84b5d",
-      "source": "粘贴的图片读取失败，请用「插图」按钮重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 245,
-          "context": "onError?.(i18n(\"components.exthw.yktsubjectiveeditor.3878a2a84b5d\"))"
-        }
-      ],
-      "translation": "Failed to read the pasted image. Please retry with the Insert image button",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 365,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.6126742dc24f",
-      "source": "📎 从文件上传",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 356,
-          "context": "isAndroid ? i18n(\"components.exthw.yktsubjectiveeditor.1edb50ac35be\") : i18n(\"components.exthw.yktsubjectiveeditor.6126742dc24f\")"
-        }
-      ],
-      "translation": "📎 Upload from file",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.6687b327b24f",
-      "source": "渲染器加载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 381,
-          "context": "latexBundle ? i18n(\"components.exthw.yktsubjectiveeditor.edeea1592b3d\") : i18n(\"components.exthw.yktsubjectiveeditor.6687b327b24f\")"
-        }
-      ],
-      "translation": "Loading renderer…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.700c885fd7e5",
-      "source": "图片上传中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 354,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.700c885fd7e5\")}"
-        }
-      ],
-      "translation": "Uploading image…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.85fbe03102bd",
-      "source": "插入公式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 387,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.85fbe03102bd\")}"
-        }
-      ],
-      "translation": "Insert formula",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.8e2f0b394d65",
-      "source": "插入公式（LaTeX）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 260,
-          "context": "btn.title = i18n(\"components.exthw.yktsubjectiveeditor.8e2f0b394d65\")"
-        },
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 364,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.8e2f0b394d65\")}"
-        }
-      ],
-      "translation": "Insert formula (LaTeX)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.a2a00684a717",
-      "source": "插图上传失败：{msg}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "msg",
-          "expression": "String(msg)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 186,
-          "context": "onError?.(i18n(\"components.exthw.yktsubjectiveeditor.a2a00684a717\", { msg: String(msg) }))"
-        }
-      ],
-      "translation": "Image upload failed: {msg}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.ba8c366b11da",
-      "source": "在此作答…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 326,
-          "context": "props.placeholder ?? i18n(\"components.exthw.yktsubjectiveeditor.ba8c366b11da\")"
-        }
-      ],
-      "translation": "Type your answer here…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.edeea1592b3d",
-      "source": "预览：输入 LaTeX 后实时显示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 381,
-          "context": "latexBundle ? i18n(\"components.exthw.yktsubjectiveeditor.edeea1592b3d\") : i18n(\"components.exthw.yktsubjectiveeditor.6687b327b24f\")"
-        }
-      ],
-      "translation": "Preview: updates live as you type LaTeX",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktsubjectiveeditor.f339cc2aea2c",
-      "source": "例如：{example}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "example",
-          "expression": "LaTeX syntax example; preserve verbatim"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx",
-          "line": 372,
-          "context": "{i18n(\"components.exthw.yktsubjectiveeditor.f339cc2aea2c\", { example: String.raw`\\vec{u}=(1,2,3)  /  \\frac{a}{b}` })}"
-        }
-      ],
-      "translation": "For example: {example}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktvideoplayer.0e09b5f31d3c",
-      "source": "播放组件加载失败，请重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
-          "line": 53,
-          "context": "setErr(i18n(\"components.exthw.yktvideoplayer.0e09b5f31d3c\"))"
-        }
-      ],
-      "translation": "Failed to load the player. Please try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktvideoplayer.19a7e7a919c4",
-      "source": "当前环境不支持 HLS 播放，可复制直链用其它播放器打开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
-          "line": 33,
-          "context": "setErr(i18n(\"components.exthw.yktvideoplayer.19a7e7a919c4\"))"
-        }
-      ],
-      "translation": "HLS playback is not supported in this environment. Copy the direct link and open it in another player.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktvideoplayer.6a4fbd94df3d",
-      "source": "视频播放失败，请刷新后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
-          "line": 43,
-          "context": "data.type === Hls.ErrorTypes.NETWORK_ERROR\n                ? i18n(\"components.exthw.yktvideoplayer.e76486fc8553\")\n                : i18n(\"components.exthw.yktvideoplayer.6a4fbd94df3d\")"
-        }
-      ],
-      "translation": "Video playback failed. Please refresh and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktvideoplayer.aedc355f35ae",
-      "source": "复制直链",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
-          "line": 75,
-          "context": "{i18n(\"components.exthw.yktvideoplayer.aedc355f35ae\")}"
-        }
-      ],
-      "translation": "Copy direct link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthw.yktvideoplayer.e76486fc8553",
-      "source": "视频分片加载失败（可能是地址已过期），请刷新后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/exthw/YktVideoPlayer.tsx",
-          "line": 42,
-          "context": "data.type === Hls.ErrorTypes.NETWORK_ERROR\n                ? i18n(\"components.exthw.yktvideoplayer.e76486fc8553\")\n                : i18n(\"components.exthw.yktvideoplayer.6a4fbd94df3d\")"
-        }
-      ],
-      "translation": "Failed to load video segments (the URL may have expired). Please refresh and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.0a5f3151f8a9",
-      "source": "官方网页登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 51,
-          "context": "return i18n(\"components.exthwloginmodal.0a5f3151f8a9\");"
-        }
-      ],
-      "translation": "Sign in on the official website",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.0bcb1544085c",
-      "source": "已打开官方登录窗口，请在其中完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 298,
-          "context": "{i18n(\"components.exthwloginmodal.0bcb1544085c\")}"
-        }
-      ],
-      "translation": "The official sign-in window is open. Please complete sign-in there",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.20cc23f01ce2",
-      "source": "刷新二维码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 205,
-          "context": "{i18n(\"components.exthwloginmodal.20cc23f01ce2\")}"
-        }
-      ],
-      "translation": "Refresh QR code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.2246ac32dbba",
-      "source": "二维码已过期，正在刷新…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 143,
-          "context": "status === \"expired\"\n        ? i18n(\"components.exthwloginmodal.2246ac32dbba\")\n        : status === \"error\"\n          ? null\n          : i18n(\"components.exthwloginmodal.eb13f4204eea\")"
-        }
-      ],
-      "translation": "QR code expired, refreshing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.25c27fb1eedc",
-      "source": "另一台设备",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 200,
-          "context": "{i18n(\"components.exthwloginmodal.25c27fb1eedc\")}"
-        }
-      ],
-      "translation": "another device",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 206,
-          "context": "{i18n(\"components.exthwloginmodal.2cd0f3be8738\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 304,
-          "context": "{i18n(\"components.exthwloginmodal.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.3161f2096285",
-      "source": "手机号 + 图形验证码 + 短信验证码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 298,
-          "context": "{i18n(\"components.exthwloginmodal.3161f2096285\")}"
-        }
-      ],
-      "translation": "Phone number + captcha + SMS code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.346ff60e6c7c",
-      "source": "读取中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 303,
-          "context": "phase === \"reading\" ? i18n(\"components.exthwloginmodal.346ff60e6c7c\") : i18n(\"components.exthwloginmodal.81c3e95469e8\")"
-        }
-      ],
-      "translation": "Reading…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.4927a53bcc88",
-      "source": "加载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 187,
-          "context": "status === \"error\" ? \"—\" : i18n(\"components.exthwloginmodal.4927a53bcc88\")"
-        }
-      ],
-      "translation": "Loading…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.5f3fad354ea2",
-      "source": "建议用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 200,
-          "context": "{i18n(\"components.exthwloginmodal.5f3fad354ea2\")}"
-        }
-      ],
-      "translation": "We recommend using ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.78c3c2e4d511",
-      "source": "微信扫码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 47,
-          "context": "return i18n(\"components.exthwloginmodal.78c3c2e4d511\");"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 298,
-          "context": "{i18n(\"components.exthwloginmodal.78c3c2e4d511\")}"
-        }
-      ],
-      "translation": "WeChat QR scan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.7a78a769870e",
-      "source": "二维码约 5 分钟有效，过期自动刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 192,
-          "context": "{i18n(\"components.exthwloginmodal.7a78a769870e\")}"
-        }
-      ],
-      "translation": "The QR code is valid for about 5 minutes and refreshes automatically when it expires",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.81c3e95469e8",
-      "source": "我已登录，读取登录信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 303,
-          "context": "phase === \"reading\" ? i18n(\"components.exthwloginmodal.346ff60e6c7c\") : i18n(\"components.exthwloginmodal.81c3e95469e8\")"
-        }
-      ],
-      "translation": "I'm signed in — read my session",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.8373be2175f3",
-      "source": "（平板 / 电脑微信）扫码，并",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 200,
-          "context": "{i18n(\"components.exthwloginmodal.8373be2175f3\")}"
-        }
-      ],
-      "translation": " to scan the code (tablet / desktop WeChat), and ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.8a4ef3e48e4e",
-      "source": "已开启",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 198,
-          "context": "{i18n(\"components.exthwloginmodal.8a4ef3e48e4e\")}"
-        }
-      ],
-      "translation": "Enabled",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.9122f70abae5",
-      "source": "扫码保活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 198,
-          "context": "{i18n(\"components.exthwloginmodal.9122f70abae5\")}"
-        }
-      ],
-      "translation": "QR keep-alive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwloginmodal.96b3620be2f0",
-      "source": "登录未完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
-          "line": 124,
-          "context": "r.message ?? i18n(\"components.exthwloginmodal.96b3620be2f0\")"
-        }
-      ],
-      "translation": "Sign-in not completed",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

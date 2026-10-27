@@ -3,7 +3,7 @@ name = "onethu"
 # 本包有两个二进制（应用 onethu 与通知探针 notify_probe）：不给默认项时 `cargo run`
 # （tauri dev 走的就是它）无法自行选择，直接报 could not determine which binary to run
 default-run = "onethu"
-version = "0.11.3"
+version = "0.11.4-fix-1"
 description = "OneTHU — 清华万物，汇合于一体"
 edition = "2021"
 
@@ -17,6 +17,7 @@ cc = "1"
 
 [dependencies]
 sha2 = "0.10"
+flate2 = "1"
 jni = "0.21"
 
 encoding_rs = "0.8"
@@ -49,6 +50,7 @@ lettre = { version = "0.11", default-features = false, features = ["builder", "s
 url = "2"
 # reqwest 内建仓的同一实现（RFC6265 全语义）——替换手搓 HashMap 仓
 cookie_store = "0.22"
+time = "0.3"
 # 已在依赖树中（reqwest 传递依赖 0.22.1），直连引用无新增下载
 base64 = "0.22"
 aes = "0.8"
@@ -66,6 +68,9 @@ futures-util = "0.3"
 
 [target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))'.dependencies]
 tauri-plugin-single-instance = "2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 
 [target.'cfg(target_os = "android")'.dependencies]
 # Android bindings are generated with the NDK headers (upstream has no bundled Android bindings).
@@ -94,6 +99,7 @@ windows = { version = "0.61", features = [
   "Data_Xml_Dom", "UI_Notifications",
   "Win32_System_Com", "Win32_System_Registry",
   "Win32_Security", # RegCreateKeyExW 在该 feature 下（notify_windows.rs 注册表写入）
+  "Win32_Security_Authorization", "Win32_System_Threading",
 ] }
 
 [features]

@@ -80,6 +80,13 @@ export interface PhoneWidgetContent {
 }
 
 const KEY = "onethu.userext.v1";
+// Device consent intentionally lives outside UserExtDoc and all portable/cloud
+// documents. Restoring tools/themes/settings must never grant automatic writes.
+const CLI_AUTO_EXECUTE_KEY = "onethu.device.cli-auto-execute.v1";
+function loadCliAutoExecute(): boolean {
+  try { return localStorage.getItem(CLI_AUTO_EXECUTE_KEY) === "true"; } catch { return false; }
+}
+let cliAutoExecute = loadCliAutoExecute();
 
 export interface UserExtDoc {
   v: 1;
@@ -281,6 +288,16 @@ export function setMcpServer(on: boolean): void {
 /** 读 OH MCP 服务器开关（门面 settings.get 与设置页开关共用，避免两处各读各的） */
 export function mcpServerEnabled(): boolean {
   return doc.mcpServer;
+}
+
+/** Local device consent, exposed only to the settings UI and service policy. */
+export function cliAutoExecuteEnabled(): boolean { return cliAutoExecute; }
+export function setCliAutoExecute(on: boolean): void {
+  const next = on === true;
+  if (cliAutoExecute === next) return;
+  cliAutoExecute = next;
+  try { localStorage.setItem(CLI_AUTO_EXECUTE_KEY, String(next)); } catch { /* Current explicit consent remains valid for this app session. */ }
+  listeners.forEach((f) => f());
 }
 
 export function touchFlow(id: string, ok: boolean, error?: string): void {

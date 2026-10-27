@@ -10,7 +10,7 @@ import { IconBtn, IconUser } from "@onethu/gui";
  * 打开，段内切换走 goEntry（= explorer overlay store，旧 Entry 状态机的本体）。
  * 手机=全屏浮层，桌面=右侧推入面板（同 TabManageModal 的 PC 形态语言）。
  */
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
@@ -40,6 +40,53 @@ export function SettingsOverlay(): ReactNode {
   const [closing, requestClose] = useExitPhase(closeSettings, entry !== null);
   useOverlayBack("explorer-settings", entry !== null, requestClose);
 
+  /* 入场：用 Web Animations 只播一次。
+     以前入场动画写在 CSS 的 .settings-panel/.settings-mask 上——面板在打开后还会
+     因 class/布局变化重新命中样式，动画可能被重启（用户实测“连续播两次、闪一下”）。
+     WAAPI 动画绑定在本次挂载的节点上，样式重算不会重启；关闭时取消，让 .is-closing
+     的退场动画接管。 */
+  const maskRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const enterAnims = useRef<Animation[]>([]);
+  const enteredRef = useRef(false);
+  useEffect(() => {
+    if (entry === null) {
+      enterAnims.current = [];
+      enteredRef.current = false;
+      return;
+    }
+    /* 段内切换（我的名片 ↔ 个人设置 ↔ 插件 ↔ Harness）不重播入场。 */
+    if (enteredRef.current) return;
+    enteredRef.current = true;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    if (reduce) return;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const token = (name: string, fallback: string): string => rootStyle.getPropertyValue(name).trim() || fallback;
+    const ms = (value: string, fallback: number): number => {
+      const n = Number.parseFloat(value);
+      return Number.isFinite(n) ? (value.trim().endsWith("ms") ? n : n * 1000) : fallback;
+    };
+    const panel = panelRef.current;
+    const mask = maskRef.current;
+    if (panel) {
+      enterAnims.current.push(panel.animate(
+        [{ opacity: 0, transform: "translate3d(18px, 0, 0)" }, { opacity: 1, transform: "none" }],
+        { duration: ms(token("--dur-3", "300ms"), 300), easing: token("--ease-ios", "ease"), fill: "both" },
+      ));
+    }
+    if (mask) {
+      enterAnims.current.push(mask.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: ms(token("--dur-2", "200ms"), 200), easing: token("--ease-out", "ease"), fill: "both" },
+      ));
+    }
+  }, [entry]);
+  useEffect(() => {
+    if (!closing) return;
+    for (const anim of enterAnims.current) anim.cancel();
+    enterAnims.current = [];
+  }, [closing]);
+
   /* Esc 关闭 */
   useEffect(() => {
     if (entry === null) return;
@@ -63,8 +110,8 @@ export function SettingsOverlay(): ReactNode {
   const panel = "settings-panel" + (expanded ? " is-desktop" : "") + (closing ? " is-closing" : "");
 
   return createPortal(
-    <div className={mask} onClick={requestClose}>
-      <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={i18n("components.explorer.settingsoverlay.7f1d9dd04cd1")}>
+    <div className={mask} ref={maskRef} onClick={requestClose}>
+      <div className={panel} ref={panelRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={i18n("components.explorer.settingsoverlay.7f1d9dd04cd1")}>
         <div className="settings-head">
           <span className="workbench-settings-brand">OneTHU</span>
           {!simple && <div className="settings-seg" role="tablist" aria-label={i18n("components.explorer.settingsoverlay.b31841ccaf3d")}>
@@ -83,7 +130,7 @@ export function SettingsOverlay(): ReactNode {
           </div>}
           <IconBtn label={i18n("components.explorer.settingsoverlay.77b17fc4a52a")} size="sm" variant="outline" titleAttr={i18n("components.explorer.settingsoverlay.51f560817509")} icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
-        <div className={"explorer-settings-body" + (entry === "settings" ? "" : " workbench-plugin-settings")}>
+        <div className={"explorer-settings-body" + (simple || entry === "profile" || entry === "plugins" ? " workbench-plugin-settings" : "") + (simple ? " workbench-simple-settings" : "")}>
           {simple ? <SimpleSettings/> : entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}
         </div>
       </div>

@@ -5,6 +5,8 @@ import type { WallpaperDoc, WallpaperLibItem } from "./wallpaper.js";
 export interface WallpaperArchive {
   v: 3;
   global: string | null;
+  day?: string | null;
+  night?: string | null;
   library: WallpaperLibItem[];
   assets: Record<string, string>;
 }
@@ -67,9 +69,11 @@ export async function exportWallpaperArchive(doc: WallpaperDoc, readLocal: (path
     return id;
   }
   const global = doc.global === null ? null : await portable(doc.global);
+  const day = doc.day == null ? null : await portable(doc.day);
+  const night = doc.night == null ? null : await portable(doc.night);
   const entries: WallpaperLibItem[] = [];
   for (const row of rows) entries.push({ ...row, ref: await portable(row.ref) });
-  return { v: 3, global, library: entries, assets };
+  return { v: 3, global, day, night, library: entries, assets };
 }
 
 /** Validate every field before the first filesystem write. Old inline archives
@@ -78,11 +82,14 @@ export async function importWallpaperArchive(raw: unknown, save: (b64: string, e
   const input = shape(raw);
   if (input.v !== 2 && input.v !== 3) return invalid();
   if (input.global !== null && typeof input.global !== "string") return invalid();
+  const day = input.day === undefined ? null : input.day;
+  const night = input.night === undefined ? null : input.night;
+  if ((day !== null && typeof day !== "string") || (night !== null && typeof night !== "string")) return invalid();
   const rows = library(input.library);
   const assets = input.v === 3 ? shape(input.assets) : {};
-  if (Object.keys(assets).length > LIBRARY_MAX + 1) return invalid();
+  if (Object.keys(assets).length > LIBRARY_MAX + 3) return invalid();
   const decoded = new Map<string, { b64: string; ext: string }>();
-  const references = [input.global, ...rows.map(row => row.ref)];
+  const references = [input.global, day, night, ...rows.map(row => row.ref)];
   for (const ref of references) {
     if (ref === null || (typeof ref === "string" && BUILTIN.test(ref))) continue;
     if (typeof ref !== "string") return invalid();
@@ -94,5 +101,11 @@ export async function importWallpaperArchive(raw: unknown, save: (b64: string, e
   const local = new Map<string, string>();
   for (const [ref, value] of decoded) local.set(ref, `local:${await save(value.b64, value.ext)}`);
   const resolved = (ref: string): string => local.get(ref) ?? ref;
-  return { v: 2, global: input.global === null ? null : resolved(input.global as string), library: rows.map(row => ({ ...row, ref: resolved(row.ref) })) };
+  return {
+    v: 3,
+    global: input.global === null ? null : resolved(input.global as string),
+    day: day === null ? null : resolved(day as string),
+    night: night === null ? null : resolved(night as string),
+    library: rows.map(row => ({ ...row, ref: resolved(row.ref) })),
+  };
 }

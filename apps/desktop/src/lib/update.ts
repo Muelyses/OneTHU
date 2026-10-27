@@ -8,19 +8,21 @@ declare const __APP_VERSION__: string;
 /** 关于页与构建元数据共用 package.json 注入的版本。 */
 export const APP_VERSION_LABEL = __APP_VERSION__;
 
-/** "v0.9.1"/"0.9.1-beta" → [0,9,1]（取前三段数字） */
+/** Stable hotfixes follow their base release and precede the next patch. */
 function toTuple(v: string): number[] {
-  return v
+  const base = v
     .replace(/^[vV]/, "")
     .split(/[.\-+]/)
     .slice(0, 3)
     .map((x) => parseInt(x, 10) || 0);
+  const fix = /^v?\d+\.\d+\.\d+-fix-(\d+)$/i.exec(v)?.[1];
+  return [...base, fix ? Number(fix) : 0];
 }
 
 export function isNewer(latest: string, current: string): boolean {
   const a = toTuple(latest);
   const b = toTuple(current);
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     const d = (a[i] ?? 0) - (b[i] ?? 0);
     if (d !== 0) return d > 0;
   }

@@ -97,9 +97,10 @@ assert.ok(network.includes('"GET" | "POST" | "PUT" | "DELETE"'), "uFetchMethod �
 // 分页：每页 50，空串与 undefined 不进查询串（stringify 会把它们编成 "undefined"）
 // 写操作必须带 CSRF 令牌：会话 cookie 认证下 GitLab 的 RequestForgeryProtection 校验
 // X-CSRF-Token，缺了就是 401（2026-10-08 应用内实录：发表评论 401）
-assert.ok(api.includes('"X-CSRF-Token": await gitlabCsrfToken(force)'), "写请求必须带 X-CSRF-Token");
+assert.ok(api.includes('"X-CSRF-Token": token') && api.includes('const token = await gitlabCsrfToken()'), "写请求必须带 X-CSRF-Token");
 assert.ok(api.includes("meta[name=csrf-token]") && api.includes("GITLAB_WEB_BASE_URL}/`"), "CSRF 令牌必须从已登录页面的 meta 取");
-assert.ok(/csrfCache = null;\s*return await send\(true\)/.test(api), "写请求被拒时必须换新令牌重试一次");
+assert.ok(api.includes('if (e.status === 401) csrfCache = null') && api.includes('roamingWriteWrapper'), "明确401拒绝后由独立写包装器换票并读取新令牌，最多重试一次");
+assert.ok(api.includes('GitLabWriteOutcomeUnknownError') && !api.includes('/40[13]|422/'), "不确定写入结果不能按错误文本猜测认证失败并重放");
 assert.ok(network.includes("extraHeaders"), "网络层必须支持附加请求头（CSRF 靠它带出去）");
 
 // 评论可编辑：PUT notes/:note_id（GitLab 只允许作者本人改）

@@ -125,7 +125,41 @@ async function lookupMe(
   }
 }
 
-/** 查单个作业（contest）是否已提交：ranklist 里找到自己且 details 非空 → 已提交 */
+/** 宽松数字：number / 数字串；其余 undefined（分数偶见 "12.00" 形态） */
+function toNum(v: unknown): number | undefined {
+  if (typeof v === "number") return Number.isFinite(v) ? v : undefined;
+  if (typeof v === "string" && v.trim()) {
+    const n = Number(v.trim());
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+/** 从对象里按常见键取一个分数（TUOJ 不同版本字段命名不完全一致）。 */
+function pickScore(row: Record<string, unknown>, keys: string[]): number | undefined {
+  for (const key of keys) {
+    const n = toNum(row[key]);
+    if (n !== undefined) return n;
+  }
+  return undefined;
+}
+
+/** details 里逐题分数求和（无逐题分时不编造）。 */
+function sumDetailScores(details: Record<string, unknown>): number | undefined {
+  let sum = 0;
+  let seen = false;
+  for (const value of Object.values(details)) {
+    if (!value || typeof value !== "object") continue;
+    const row = value as Record<string, unknown>;
+    const n = pickScore(row, ["pretestScore", "score", "points", "myScore", "my_score"]);
+    if (n !== undefined) { sum += n; seen = true; }
+  }
+  return seen ? Math.round(sum * 100) / 100 : undefined;
+}
+
+/** 查单个作业（contest）的提交与评分：ranklist 里找到自己；details 非空 = 已提交。
+ *  评分字段在 ranklist/player/details 各版本命名不一，按常见键宽松读取；读不到分数时
+ *  不设 score（不谎报 0 分）。 */
 async function fetchTuojStatus(
   fetchLike: FetchLike,
   base: string,
@@ -134,7 +168,8 @@ async function fetchTuojStatus(
   tid: unknown,
   me: { id: unknown; username: string | undefined } | null,
   fallbackUsername: string | undefined,
-): Promise<{ submitted: boolean; submittedCount?: number; totalCount?: number }> {
+  contest: Record<string, unknown>,
+): Promise<{ submitted: boolean; submittedCount?: number; totalCount?: number; score?: number; totalScore?: number; graded?: boolean }> {
   const rl = await getJson(fetchLike, `${base}/api/course/${cid}/contest/${tid}/ranklist`, cookie);
   const ranklist = (rl["ranklist"] ?? {}) as Record<string, unknown>;
   const players = Array.isArray(ranklist["players"])
@@ -145,10 +180,77 @@ async function fetchTuojStatus(
     if (me && me.id !== undefined && me.id !== null && p["_id"] === me.id) return true;
     return Boolean(wantedUser && p["username"] === wantedUser);
   });
+  // 题目清单只在 contest problem/list 里带 totalScore（ranklist.problems 没有）：
+  // 用户要求“每一题得分/满分相加”，且“反馈：期待听到你的声音（0/0）”不计入进度分母。
+  let problemTotals = new Map<unknown, number>();
+  let problemListOk = false;
+  try {
+    const pl = await getJson(fetchLike, `${base}/api/course/${cid}/contest/${tid}/problem/list`, cookie);
+    const rows = Array.isArray(pl["problems"]) ? (pl["problems"] as Array<Record<string, unknown>>) : [];
+    for (const row of rows) {
+      const id = row["_id"];
+      const total = toNum(row["totalScore"]);
+      if (id !== undefined && total !== undefined) problemTotals.set(id, total);
+    }
+    problemListOk = rows.length > 0;
+  } catch {
+    problemListOk = false;
+  }
   if (!player) return { submitted: false };
   const details = (player["details"] ?? {}) as Record<string, unknown>;
+  const problems = Array.isArray(ranklist["problems"])
+    ? (ranklist["problems"] as Array<Record<string, unknown>>)
+    : [];
   const keys = Object.keys(details);
-  return { submitted: keys.length > 0, submittedCount: keys.length > 0 ? keys.length : undefined };
+
+  // 无题目明细（老接口/异常）才退回“有 details 就算交过”的保守口径。
+  if (!problemListOk || problems.length === 0) {
+    return { submitted: keys.length > 0, submittedCount: keys.length > 0 ? keys.length : undefined };
+  }
+
+  // 可计分题目 = problem/list 里 totalScore > 0 的题；反馈题（0/0）自动排除出分母。
+  const gradeable = problems
+    .map((problem, index) => ({ problem, index, id: problem["_id"], total: problemTotals.get(problem["_id"]) ?? 0 }))
+    .filter((row) => row.total > 0);
+  const totalCount = gradeable.length;
+  let submittedCount = 0;
+  let gradedCount = 0;
+  let scoreSum = 0;
+  let totalScoreSum = 0;
+  let allSubmitted = totalCount > 0;
+  let allGraded = totalCount > 0;
+  for (const row of gradeable) {
+    totalScoreSum += row.total;
+    const detail = details[String(row.index)];
+    if (!detail || typeof detail !== "object") {
+      allSubmitted = false;
+      allGraded = false;
+      continue;
+    }
+    submittedCount += 1;
+    const rowDetail = detail as Record<string, unknown>;
+    const finalScore = toNum(rowDetail["score"]);
+    if (finalScore === undefined) {
+      allGraded = false;
+    } else {
+      gradedCount += 1;
+      scoreSum += finalScore;
+    }
+  }
+  const submitted = totalCount > 0 ? allSubmitted : keys.length > 0;
+  if (!submitted) {
+    return {
+      submitted: false,
+      ...(totalCount > 0 ? { submittedCount, totalCount } : {}),
+    };
+  }
+  const graded = allGraded && gradedCount === totalCount && totalCount > 0;
+  return {
+    submitted: true,
+    ...(totalCount > 0 ? { submittedCount: gradeable.length, totalCount } : {}),
+    // 分数仅在「全部可计分题目都已批改」时透出；未批改时绝不用 0/Submitted 冒充。
+    ...(graded ? { score: Math.round(scoreSum * 100) / 100, totalScore: Math.round(totalScoreSum * 100) / 100, graded: true } : {}),
+  };
 }
 
 export function createTuojSource(
@@ -203,11 +305,11 @@ export function createTuojSource(
               if (typeof msRaw !== "number" || !Number.isFinite(msRaw)) continue;
               if (msRaw > limit) continue;
               // 提交状态（仅对时间窗内的 contest 查，省请求）；失败只跳过（保守 false）
-              let status: { submitted: boolean; submittedCount?: number; totalCount?: number } = {
+              let status: { submitted: boolean; submittedCount?: number; totalCount?: number; score?: number; totalScore?: number; graded?: boolean } = {
                 submitted: false,
               };
               try {
-                status = await fetchTuojStatus(fetchLike, base, cookie, cid, tid, me, fallbackUsername);
+                status = await fetchTuojStatus(fetchLike, base, cookie, cid, tid, me, fallbackUsername, ct);
               } catch {
                 /* 状态查询失败：保守保持未提交 */
               }
@@ -223,6 +325,9 @@ export function createTuojSource(
               };
               if (status.submittedCount !== undefined) hw.submittedCount = status.submittedCount;
               if (status.totalCount !== undefined) hw.totalCount = status.totalCount;
+              if (status.score !== undefined) hw.score = status.score;
+              if (status.totalScore !== undefined) hw.totalScore = status.totalScore;
+              if (status.graded !== undefined) hw.graded = status.graded;
               out.push(hw);
             } catch {
               /* 单个 contest 失败跳过 */

@@ -33,7 +33,7 @@ const SCENARIOS: Record<string, () => void> = {
   overlay: () => window.setTimeout(() => openSettings("settings"), 250),
   "settings-tab": () => window.setTimeout(() => {
     openSettings("settings");
-    const tab = new URLSearchParams(window.location.search).get("settings-tab") ?? "外观与布局";
+    const tab = new URLSearchParams(window.location.search).get("settings-tab") ?? "外观";
     requestSettingsTab(tab);
   }, 250),
   "overlay-oh": () => window.setTimeout(() => openSettings("oh"), 250),

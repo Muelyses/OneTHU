@@ -1,6 +1,6 @@
 {
   "name": "@onethu/desktop",
-  "version": "0.11.3",
+  "version": "0.11.4-fix-1",
   "private": true,
   "description": "OneTHU 桌面端 —— Tauri 2 就绪的 React 界面",
   "type": "module",
@@ -43,7 +43,8 @@
     "react-quill-new": "^3.8.3",
     "remark-gfm": "^4.0.1",
     "three": "^0.186.1",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "@onethu/sdk": "workspace:*"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.5.0",

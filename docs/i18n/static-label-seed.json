@@ -1311,6 +1311,394 @@
     "login.error.sessionChanged": {
       "zh-CN": "登录状态已变化，请重试当前操作。",
       "en-US": "Your sign-in state has changed. Please retry this action."
+    },
+    "pages.learn.shared.inProgress": {
+      "zh-CN": "进行中",
+      "en-US": "In progress"
+    },
+    "pages.learn.shared.quiz": {
+      "zh-CN": "试卷",
+      "en-US": "Quiz"
+    },
+    "pages.plugins.efcccbda5d2b": {
+      "zh-CN": "外观",
+      "en-US": "Appearance"
+    },
+    "pages.settings.1d6e1d3ecceb": {
+      "zh-CN": "开启后按系统的深色模式自动切换：亮色用「白天主题/背景」，深色用「黑夜主题/背景」。{value}",
+      "en-US": "When enabled, switches automatically with the system dark mode: light theme/background in light mode, dark theme/background in dark mode. {value}"
+    },
+    "pages.taskspage.openDetailTab": {
+      "zh-CN": "打开详情",
+      "en-US": "Open details"
+    },
+    "settings.label.features": {
+      "zh-CN": "功能",
+      "en-US": "Features"
+    },
+    "settings.wallpaper.day": {
+      "zh-CN": "白天背景",
+      "en-US": "Day background"
+    },
+    "settings.wallpaper.night": {
+      "zh-CN": "黑夜背景",
+      "en-US": "Night background"
+    },
+    "settings.wallpaper.inherit": {
+      "zh-CN": "沿用常驻壁纸",
+      "en-US": "Use the regular wallpaper"
+    },
+    "settings.wallpaper.dayDesc": {
+      "zh-CN": "系统处于白天时使用；不指定则沿用常驻壁纸。",
+      "en-US": "Shown while the system is in light mode; falls back to the regular wallpaper."
+    },
+    "settings.wallpaper.nightDesc": {
+      "zh-CN": "系统处于黑夜时使用；不指定则沿用常驻壁纸。",
+      "en-US": "Shown while the system is in dark mode; falls back to the regular wallpaper."
+    },
+    "settings.tab.desc.account": {
+      "zh-CN": "登录、云同步与外部作业源都在这里。",
+      "en-US": "Account, sync and external homework sources."
+    },
+    "settings.tab.desc.notifications": {
+      "zh-CN": "课程、日程与作业提醒的推送方式。",
+      "en-US": "How course, schedule and homework reminders reach you."
+    },
+    "settings.tab.desc.features": {
+      "zh-CN": "使用模式、快捷入口、收藏夹与小组件。",
+      "en-US": "Experience mode, quick actions, favorites and widgets."
+    },
+    "settings.tab.desc.appearance": {
+      "zh-CN": "主题、壁纸、玻璃程度与首页布局。",
+      "en-US": "Theme, wallpaper, glass level and home layout."
+    },
+    "settings.tab.desc.downloads": {
+      "zh-CN": "下载目录与缓存管理。",
+      "en-US": "Download folder and cache management."
+    },
+    "settings.tab.desc.help": {
+      "zh-CN": "操作指南与重新运行新手导览。",
+      "en-US": "Guides and replaying the onboarding tour."
+    },
+    "settings.tab.desc.about": {
+      "zh-CN": "版本更新、诊断信息与开源项目。",
+      "en-US": "Version updates, diagnostics and the open-source project."
+    },
+    "settings.label.mode": {
+      "zh-CN": "使用模式",
+      "en-US": "Experience"
+    },
+    "settings.label.language": {
+      "zh-CN": "语言",
+      "en-US": "Language"
+    },
+    "cli.server.off": {
+      "zh-CN": "已关闭。开启后，本机命令行和 MCP 客户端可使用学校服务，无需调用模型。",
+      "en-US": "Off. Enable local CLI and MCP access to university services, with no model required."
+    },
+    "cli.server.authorization": {
+      "zh-CN": "请先在导览中授权智能体服务。",
+      "en-US": "Grant agent-service access in onboarding first."
+    },
+    "cli.server.syncing": {
+      "zh-CN": "正在核对本机服务状态…",
+      "en-US": "Checking the local service…"
+    },
+    "cli.server.ready": {
+      "zh-CN": "服务已就绪：{endpoint} · MCP：/mcp",
+      "en-US": "Ready: {endpoint} · MCP: /mcp"
+    },
+    "cli.server.portBusy": {
+      "zh-CN": "端口被占用。请退出另一份 OneTHU 后重试。",
+      "en-US": "Port in use. Close the other OneTHU instance and retry."
+    },
+    "cli.server.stopped": {
+      "zh-CN": "OneTHU Harness 尚未运行。请启用插件后重试。",
+      "en-US": "OneTHU Harness is not running. Enable the plugin and retry."
+    },
+    "cli.server.error": {
+      "zh-CN": "本机服务未就绪。请更新 OneTHU 并重新启动，或重试连接。",
+      "en-US": "The local service is not ready. Update and restart OneTHU, or retry."
+    },
+    "cli.server.desktopOnly": {
+      "zh-CN": "OneTHU CLI 本机服务适用于 macOS 和 Windows。",
+      "en-US": "The OneTHU CLI local service is available on macOS and Windows."
+    },
+    "cli.server.retry": {
+      "zh-CN": "重新连接",
+      "en-US": "Reconnect"
+    },
+    "cli.confirm.title": {
+      "zh-CN": "OneTHU CLI 操作确认",
+      "en-US": "OneTHU CLI request"
+    },
+    "cli.confirm.execute": {
+      "zh-CN": "执行此操作",
+      "en-US": "Execute this request"
+    },
+    "cli.auto.title": {
+      "zh-CN": "允许 CLI / MCP 自动执行",
+      "en-US": "Allow automatic CLI / MCP execution"
+    },
+    "cli.auto.description": {
+      "zh-CN": "开启后，本机 CLI / MCP 可直接执行预约、取消、发送邮件和改写数据等已开放操作，省略每次确认弹窗。授权仅保存在这台设备；关闭后恢复逐次确认。",
+      "en-US": "When enabled, local CLI / MCP clients can execute supported bookings, cancellations, email sending and data changes without a confirmation dialog for each request. This authorization stays on this device. Turn it off to restore per-request confirmation."
+    },
+    "cli.auto.enabled": {
+      "zh-CN": "本机自动执行已授权。CLI / MCP 可执行预约、取消、发送和改写等操作，无需逐次确认。关闭此开关会撤销待执行请求；已经完成的操作仍然保留。此授权仅保存在本设备。",
+      "en-US": "Automatic execution is authorized on this device. CLI / MCP clients can book, cancel, send and change data without per-request confirmation. Turning this off revokes pending requests; completed actions remain in effect. This authorization stays on this device."
+    },
+    "components.onboardingtour.307ebc489657": {
+      "zh-CN": "OneTHU CLI 本机服务开关",
+      "en-US": "OneTHU CLI local service switch"
+    },
+    "pages.plugins.307ebc489657": {
+      "zh-CN": "OneTHU CLI 本机服务开关",
+      "en-US": "OneTHU CLI local service switch"
+    },
+    "lib.onboardinglessons.fd6248cc4365": {
+      "zh-CN": "可开启 OneTHU CLI，供本机命令行与 MCP 客户端调用学校服务（默认关闭）。",
+      "en-US": "Enable OneTHU CLI for local command-line and MCP access to university services (off by default)."
+    },
+    "components.ohsettingspage.af7a3fa54da7": {
+      "zh-CN": "OneTHU CLI 与 MCP",
+      "en-US": "OneTHU CLI & MCP"
+    },
+    "cli.tasks.title": {
+      "zh-CN": "常驻任务",
+      "en-US": "Background tasks"
+    },
+    "cli.tasks.description": {
+      "zh-CN": "检查课程资料与截止时间，把变化汇总给你。",
+      "en-US": "Check course materials and deadlines, then send a concise update."
+    },
+    "cli.tasks.create": {
+      "zh-CN": "新建任务",
+      "en-US": "New task"
+    },
+    "cli.tasks.error": {
+      "zh-CN": "任务操作未完成",
+      "en-US": "The task operation could not complete"
+    },
+    "cli.tasks.defaultName": {
+      "zh-CN": "课程资料与截止提醒",
+      "en-US": "Course materials and deadlines"
+    },
+    "cli.tasks.name": {
+      "zh-CN": "任务名称",
+      "en-US": "Task name"
+    },
+    "cli.tasks.interval": {
+      "zh-CN": "检查频率",
+      "en-US": "Check interval"
+    },
+    "cli.tasks.minutes": {
+      "zh-CN": "每 {value} 分钟",
+      "en-US": "Every {value} minutes"
+    },
+    "cli.tasks.courses": {
+      "zh-CN": "检查哪些课程",
+      "en-US": "Courses to watch"
+    },
+    "cli.tasks.directory": {
+      "zh-CN": "下载文件夹（可选）",
+      "en-US": "Download folder (optional)"
+    },
+    "cli.tasks.directoryHint": {
+      "zh-CN": "填写已存在的完整文件夹路径；留空时只检查和提醒。",
+      "en-US": "Enter the full path of an existing folder. Leave empty to check and notify only."
+    },
+    "cli.tasks.channels": {
+      "zh-CN": "发送到",
+      "en-US": "Send to"
+    },
+    "cli.tasks.inbox": {
+      "zh-CN": "本机收件箱",
+      "en-US": "Local inbox"
+    },
+    "cli.tasks.scope": {
+      "zh-CN": "持续检查选中的课程，提醒新资料及 24 小时、1 小时内到期的作业。可随时暂停。",
+      "en-US": "Keep checking the selected courses. Notify about new materials and assignments due within 24 hours or 1 hour. Pause at any time."
+    },
+    "cli.tasks.authorize": {
+      "zh-CN": "授权并创建",
+      "en-US": "Authorize and create"
+    },
+    "cli.tasks.loading": {
+      "zh-CN": "正在读取任务…",
+      "en-US": "Loading tasks…"
+    },
+    "cli.tasks.empty": {
+      "zh-CN": "添加课程检查任务后，执行记录会显示在这里。",
+      "en-US": "Add a course watch to see its run history here."
+    },
+    "cli.tasks.active": {
+      "zh-CN": "已启用",
+      "en-US": "Active"
+    },
+    "cli.tasks.paused": {
+      "zh-CN": "已暂停",
+      "en-US": "Paused"
+    },
+    "cli.tasks.next": {
+      "zh-CN": "下次检查 · {value}",
+      "en-US": "Next check · {value}"
+    },
+    "cli.tasks.result": {
+      "zh-CN": "{time} · {status} · 下载 {downloads} 项 · 通知 {notifications} 条",
+      "en-US": "{time} · {status} · Downloads: {downloads} · Notifications: {notifications}"
+    },
+    "cli.tasks.run": {
+      "zh-CN": "立即检查",
+      "en-US": "Check now"
+    },
+    "cli.tasks.pause": {
+      "zh-CN": "暂停",
+      "en-US": "Pause"
+    },
+    "cli.tasks.resume": {
+      "zh-CN": "恢复",
+      "en-US": "Resume"
+    },
+    "cli.tasks.history": {
+      "zh-CN": "执行记录",
+      "en-US": "Run history"
+    },
+    "cli.tasks.remove": {
+      "zh-CN": "删除任务",
+      "en-US": "Delete task"
+    },
+    "cli.tasks.resident": {
+      "zh-CN": "任务由 OneTHU 后台运行，与 CLI 共用。关闭 App 后继续检查；电脑休眠或离线期间暂停。",
+      "en-US": "Tasks run in the shared OneTHU background process and continue after the app closes. Checks pause while the computer is asleep or offline."
+    },
+    "cli.tasks.status.running": {
+      "zh-CN": "检查中",
+      "en-US": "Checking"
+    },
+    "cli.tasks.status.succeeded": {
+      "zh-CN": "完成",
+      "en-US": "Completed"
+    },
+    "cli.tasks.status.partial": {
+      "zh-CN": "部分完成",
+      "en-US": "Partially completed"
+    },
+    "cli.tasks.status.failed": {
+      "zh-CN": "需要处理",
+      "en-US": "Needs attention"
+    },
+    "cli.tasks.status.cancelled": {
+      "zh-CN": "已取消",
+      "en-US": "Cancelled"
+    },
+    "cli.tasks.status.interrupted": {
+      "zh-CN": "已中断",
+      "en-US": "Interrupted"
+    },
+    "cli.tasks.edit": {
+      "zh-CN": "编辑任务",
+      "en-US": "Edit task"
+    },
+    "cli.tasks.save": {
+      "zh-CN": "授权并保存",
+      "en-US": "Approve and save"
+    },
+    "cli.tasks.noHistory": {
+      "zh-CN": "首次检查后，执行记录会显示在这里。",
+      "en-US": "Run this task to see its history here."
+    },
+    "cli.tasks.noMessages": {
+      "zh-CN": "任务通知会保存在这里。",
+      "en-US": "Task notifications will appear here."
+    },
+    "cli.tasks.unavailableCourse": {
+      "zh-CN": "暂不可用的课程 · {id}",
+      "en-US": "Unavailable course · {id}"
+    },
+    "cli.tasks.pausedSchedule": {
+      "zh-CN": "恢复后继续检查",
+      "en-US": "Checks resume when you enable this task."
+    },
+    "cli.server.background": {
+      "zh-CN": "后台已连接 · OH 与 CLI 共用任务，关闭 App 后继续运行",
+      "en-US": "Background connected · OH and CLI share tasks that continue after the app closes"
+    },
+    "cli.tasks.migrationPending": {
+      "zh-CN": "部分旧任务等待移交，原始记录已保留。你可以继续管理后台已接收的任务；检查通知绑定后，点上方「重试」继续移交。",
+      "en-US": "Some older tasks await transfer, and their original records are preserved. You can manage tasks already in the background. Check notification bindings, then select Retry above to continue the transfer."
+    },
+    "cli.server.handoffPending": {
+      "zh-CN": "学校登录已完成，后台会话仍在连接。可继续使用并点击重连，无需重新输入密码。",
+      "en-US": "University sign-in is complete. The background session is still connecting. You can keep using the app and reconnect without entering your password again."
+    },
+    "plugins.types.5bbe605e0a01": {
+      "zh-CN": "雨课堂课程、作业、课件与公告查询，以及 TUOJ / Tyche / DSA OJ 作业快照",
+      "en-US": "Rain Classroom courses, assignments, materials and announcements, plus TUOJ / Tyche / DSA OJ assignment snapshots"
+    },
+    "permissions.contacts.label": {
+      "zh-CN": "OneTHU 通讯录（只读）",
+      "en-US": "OneTHU contacts (read only)"
+    },
+    "permissions.contacts.desc": {
+      "zh-CN": "查询保存的好友及名片信息，不读取微信或系统通讯录。",
+      "en-US": "Read saved OneTHU friends and cards. Does not access WeChat or system contacts."
+    },
+    "permissions.org.label": {
+      "zh-CN": "OneTHU 组织（只读）",
+      "en-US": "OneTHU organizations (read only)"
+    },
+    "permissions.org.desc": {
+      "zh-CN": "查询组织成员、项目、公告和关联资源；远程组织核验当前成员权限。",
+      "en-US": "Read members, projects, announcements and linked resources; verify live membership for remote organizations."
+    },
+    "permissions.xiaoda.label": {
+      "zh-CN": "清小搭与技能广场（只读）",
+      "en-US": "Qingxiaoda and skill plaza (read only)"
+    },
+    "permissions.xiaoda.desc": {
+      "zh-CN": "查询清小搭智能体、技能广场、本机技能，以及本账号的会话记录、模型和余额。",
+      "en-US": "Read Qingxiaoda agents, skill plaza, installed skills, and this account’s conversation history, models and balance."
+    },
+    "permissions.xiaodaManage.label": {
+      "zh-CN": "导入与启停技能",
+      "en-US": "Import and enable skills"
+    },
+    "permissions.xiaodaManage.desc": {
+      "zh-CN": "导入和启停本机技能，受支持的轻量运行环境保持原有限制。",
+      "en-US": "Import and enable local skills within the existing lightweight runtime limits."
+    },
+    "permissions.vault.label": {
+      "zh-CN": "暂存箱（只读）",
+      "en-US": "Temporary boxes (read only)"
+    },
+    "permissions.vault.desc": {
+      "zh-CN": "查询暂存箱内容摘要、文字和文件引用，不读取分享口令。",
+      "en-US": "Read box summaries, text and file references without share codes."
+    },
+    "permissions.vaultWrite.label": {
+      "zh-CN": "编辑与分享暂存箱",
+      "en-US": "Edit and share temporary boxes"
+    },
+    "permissions.vaultWrite.desc": {
+      "zh-CN": "新增、修改、移除暂存内容，显式生成或接收分享口令；保留来源文件。",
+      "en-US": "Add, edit or remove stored items, and explicitly generate or receive share codes; preserve source files."
+    },
+    "permissions.orgWrite.label": {
+      "zh-CN": "编辑组织资料、项目与公告",
+      "en-US": "Edit organization details, projects and announcements"
+    },
+    "permissions.orgWrite.desc": {
+      "zh-CN": "新建本地组织，修改组织资料、项目与公告；共享组织核验真实权限并检查版本冲突。",
+      "en-US": "Create local organizations and edit details, projects and announcements; verify live permissions and revisions for shared organizations."
+    },
+    "permissions.xiaodaChat.label": {
+      "zh-CN": "向清小搭智能体提问",
+      "en-US": "Ask Qingxiaoda agents"
+    },
+    "permissions.xiaodaChat.desc": {
+      "zh-CN": "经确认向选定的清小搭智能体发送问题，并建立独立会话。",
+      "en-US": "Send an approved question to a selected Qingxiaoda agent and create a separate conversation."
     }
   }
 }

@@ -550,6 +550,7 @@
    占满左右按钮之间的整段；白底细边框无阴影；常态=占位文字「搜索或问小OH」；
    按住/展开时左右弹性伸长（margin 负值扩张，快贴上两侧按钮）。 */
 .ex-bbar-center .ohx-capsule {
+  position: relative;
   display: flex; /* 必须显式 flex：button 计算成 block 时 input(width:100%) 会掉到下一行 */
   flex-wrap: nowrap;
   align-items: center; /* 垂直中线（explorer-oh 基类丢了这条，文字会顶到上边框） */
@@ -608,6 +609,15 @@
   font-weight: 500;
   font-size: 13px;
 }
+.ex-bbar-center .ohx-mark-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  margin-left: auto;
+}
+.ex-bbar-center .ohx-capsule .ohx-mark-wrap .harness-mark { margin-left: 0; transition: none; }
+.ex-bbar-center .ohx-capsule.is-open .ohx-mark-wrap,
+.ex-bbar-center .ohx-capsule.is-hold .ohx-mark-wrap { margin-left: 0; }
 .ex-bbar-center .ohx-capsule .harness-mark {
   margin-left: auto;
   transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1));
@@ -616,6 +626,21 @@
 .ex-bbar-center .ohx-capsule.is-open .harness-mark,
 .ex-bbar-center .ohx-capsule.is-hold .harness-mark {
   margin-left: 0;
+}
+/* 展开态：占位文字脱离 flex 流、压在 (OH) 右侧；左边缘由 JS 按标尺实测写入。
+   输入框本身不再带 placeholder，避免动画期间两段文字重叠。 */
+.ex-bbar-center .ohx-capsule .ohx-capsule-ph.is-open {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 !important;
+  pointer-events: none;
+  max-width: calc(100% - var(--og-space-9));
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.ex-bbar-center .ohx-capsule .ohx-capsule-ph.is-open.is-typing {
+  opacity: 0;
+  visibility: hidden;
 }
 .ex-bbar-center .ohx-capsule.is-hold .ohx-capsule-voice { flex: 1 1 auto; min-width: 0; }
 
@@ -842,3 +867,32 @@ html.is-phone .sched-tools > .og-spacer { flex: 1 1 12px; min-width: 12px; }
    也能生效——内联只写了 padding，不管高度。 */
 html.is-phone .sched-cal .og-btn { min-height: 40px; height: 40px; padding: 0; }
 html.is-phone .sched-cal button { min-height: 40px; }
+
+
+/* ══════════ 右键就地菜单展开 ══════════
+   两套菜单（标签页 ContextMenu / TabHost）此前分别是淡入或无动画；统一给「以按点为原点」
+   的展开：160ms ease-out，scale .92 → 1 + fade。transform-origin 由组件按按点写内联。 */
+@keyframes ex-ctxmenu-bloom {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+.ex-ctxmenu,
+.explorer-ctxmenu {
+  transform-origin: var(--ctx-origin, top left);
+  animation: ex-ctxmenu-bloom var(--dur-2, 0.2s) var(--ease-out, ease-out) both;
+}
+@keyframes ex-ctxmenu-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scale(0.94); }
+}
+.ex-ctxmenu.is-out,
+.explorer-ctxmenu.is-out {
+  animation: ex-ctxmenu-out var(--dur-2, 0.2s) var(--md-sys-motion-easing-standard-accelerate, ease-in) both;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ex-ctxmenu,
+  .ex-ctxmenu.is-out,
+  .explorer-ctxmenu,
+  .explorer-ctxmenu.is-out { animation: none; }
+}

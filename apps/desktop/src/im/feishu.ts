@@ -357,6 +357,18 @@ class FeishuChannel implements ChannelAdapter {
     });
   }
 
+  async notify(recipient: string, text: string, idempotencyKey: string, beforeWrite: () => Promise<void>, signal: AbortSignal): Promise<void> {
+    const token = await feishuToken(true);
+    await beforeWrite();
+    if (signal.aborted) throw new Error("TASK_CANCELLED");
+    const response = await tauriFetch(`${FEISHU_BASE}/open-apis/im/v1/messages?receive_id_type=open_id`, {
+      method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ receive_id: recipient, msg_type: "text", content: JSON.stringify({ text }), uuid: idempotencyKey.slice(-50) }), signal,
+    });
+    const result = await response.json() as { code?: number };
+    if (!response.ok || result.code !== 0) throw new Error("TASK_NOTIFICATION_SEND_FAILED");
+  }
+
   private pumpSendQueue(_reject: (e: unknown) => void): void {
     if (this.sending) return;
     this.sending = true;

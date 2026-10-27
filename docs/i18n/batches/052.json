@@ -1,7 +1,912 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.libroomtab.7f2e89deee04",
+      "source": "开放 {openStart}~{openEnd} · 单次 {minMinute}~{maxMinute} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "openStart",
+          "expression": "String(r.openStart)"
+        },
+        {
+          "name": "openEnd",
+          "expression": "String(r.openEnd)"
+        },
+        {
+          "name": "minMinute",
+          "expression": "String(r.minMinute)"
+        },
+        {
+          "name": "maxMinute",
+          "expression": "String(r.maxMinute)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 828,
+          "context": "r.openStart && r.openEnd\n                      ? i18n(\"pages.info.libroomtab.7f2e89deee04\", { openStart: String(r.openStart), openEnd: String(r.openEnd), minMinute: String(r.minMinute), maxMinute: String(r.maxMinute) })\n                      : i18n(\"pages.info.libroomtab.447c95b50fda\")"
+        }
+      ],
+      "translation": "Open {openStart}~{openEnd} · {minMinute}~{maxMinute} minutes per reservation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.85247a78ead3",
+      "source": "打开研讨间网站",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 82,
+          "context": "{i18n(\"pages.info.libroomtab.85247a78ead3\")}"
+        }
+      ],
+      "translation": "Open seminar room website",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.8733d2e2c8bb",
+      "source": "（{minUser}~{maxUser} 人）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "minUser",
+          "expression": "String(r.minUser)"
+        },
+        {
+          "name": "maxUser",
+          "expression": "String(r.maxUser)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 822,
+          "context": "r.maxUser > 1 ? i18n(\"pages.info.libroomtab.8733d2e2c8bb\", { minUser: String(r.minUser), maxUser: String(r.maxUser) }) : \"\""
+        }
+      ],
+      "translation": "({minUser}~{maxUser} people)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.8a0bfbb5427c",
+      "source": "{label}{value} · 时段格 绿=可约 红=已被占 灰=不可选{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(day.label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(filterValid ? i18n(\"pages.info.libroomtab.17d2ede12828\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : \"\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(resState === \"loading\" && resources !== null ? i18n(\"pages.info.libroomtab.383229129c45\") : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 779,
+          "context": "{i18n(\"pages.info.libroomtab.8a0bfbb5427c\", { label: String(day.label), value: String(filterValid ? i18n(\"pages.info.libroomtab.17d2ede12828\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : \"\"), value2: String(resState === \"loading\" && resources !== null ? i18n(\"pages.info.libroomtab.383229129c45\") : \"\") })}"
+        }
+      ],
+      "translation": "{label}{value} · Slot grid: green = bookable, red = occupied, gray = unavailable{value2}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.libroomtab.8f0adfe5e873",
+      "source": "已取消该预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 669,
+          "context": "text: i18n(\"pages.info.libroomtab.8f0adfe5e873\")"
+        }
+      ],
+      "translation": "Reservation cancelled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.90bd6800e5b6",
+      "source": "需要先登录（未读取到学号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 593,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.90bd6800e5b6\"))"
+        }
+      ],
+      "translation": "Sign-in required (student ID not detected)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.91a1c26035d5",
+      "source": "开始…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 753,
+          "context": "{i18n(\"pages.info.libroomtab.91a1c26035d5\")}"
+        }
+      ],
+      "translation": "Start…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.98c9b122a6cf",
+      "source": "暂未开放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 824,
+          "context": "{i18n(\"pages.info.libroomtab.98c9b122a6cf\")}"
+        }
+      ],
+      "translation": "Not yet open",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.9ea0b476aafe",
+      "source": " 该房间标称需 {minUser}~{maxUser} 人成组：应用会先以仅本人提交，馆方若拒绝会给出原话，届时请到研讨间系统网页端添加成员。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "minUser",
+          "expression": "String(target.res.minUser)"
+        },
+        {
+          "name": "maxUser",
+          "expression": "String(target.res.maxUser)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 904,
+          "context": "target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) })"
+        }
+      ],
+      "translation": " This room nominally requires a group of {minUser}~{maxUser} people: the app will first submit as yourself only. If the library rejects it, you will see their exact message; then add members on the seminar room system website.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.9fa1db46b010",
+      "source": "研讨间账号信息缺失（accNo），请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 597,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.9fa1db46b010\"))"
+        }
+      ],
+      "translation": "Seminar room account info missing (accNo). Please retry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.a88520a9ca6c",
+      "source": "研讨间预约记录（未来 6 天）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 916,
+          "context": "{i18n(\"pages.info.libroomtab.a88520a9ca6c\")}"
+        }
+      ],
+      "translation": "Seminar room reservations (next 6 days)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.a89e82b07621",
+      "source": "房型列表为空（ic-web 未返回数据，请稍后重试）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 434,
+          "context": "new Error(i18n(\"pages.info.libroomtab.a89e82b07621\"))"
+        }
+      ],
+      "translation": "Room type list is empty (ic-web returned no data; please try again later)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b120e1334a3f",
+      "source": "成员：本人。{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) })"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 903,
+          "context": "{i18nRich(\"pages.info.libroomtab.b120e1334a3f\", { value: target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) }) })}"
+        }
+      ],
+      "translation": "Members: myself only. {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b3935f1363ac",
+      "source": "确认并重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 908,
+          "context": "{i18n(\"pages.info.libroomtab.b3935f1363ac\")}"
+        }
+      ],
+      "translation": "Confirm and retry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b477db89f407",
+      "source": "可约房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 778,
+          "context": "{i18n(\"pages.info.libroomtab.b477db89f407\")}"
+        }
+      ],
+      "translation": "Bookable rooms",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b741efb628be",
+      "source": "确认取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 959,
+          "context": "busyCancel !== null ? i18n(\"pages.info.libroomtab.0addd7784578\") : i18n(\"pages.info.libroomtab.b741efb628be\")"
+        }
+      ],
+      "translation": "Confirm cancellation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 704,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 794,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 930,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "Retry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.bce2377283c2",
+      "source": "清除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 771,
+          "context": "{i18n(\"pages.info.libroomtab.bce2377283c2\")}"
+        }
+      ],
+      "translation": "Clear",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.bee1f96066cd",
+      "source": "研讨间房型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 731,
+          "context": "kinds?.find((k) => k.kindId === kindId)?.kindName ?? i18n(\"pages.info.libroomtab.bee1f96066cd\")"
+        }
+      ],
+      "translation": "Seminar room types",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c2de2822c57e",
+      "source": "无可约时段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 888,
+          "context": "begins.length === 0 ? i18n(\"pages.info.libroomtab.c2de2822c57e\") : i18n(\"pages.info.libroomtab.d2bb025a2e51\")"
+        }
+      ],
+      "translation": "No bookable slots",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c31c70fef156",
+      "source": " · 点击选此开始时刻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 353,
+          "context": "interactive ? i18n(\"pages.info.libroomtab.c31c70fef156\") : \"\""
+        }
+      ],
+      "translation": " · Tap to set this as start time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Mon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c73899395698",
+      "source": "确认取消？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 957,
+          "context": "{i18n(\"pages.info.libroomtab.c73899395698\")}"
+        }
+      ],
+      "translation": "Confirm cancellation?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c7b24e7997e9",
+      "source": "结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 893,
+          "context": "{i18n(\"pages.info.libroomtab.c7b24e7997e9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 897,
+          "context": "ends.length === 0 ? \"–\" : i18n(\"pages.info.libroomtab.c7b24e7997e9\")"
+        }
+      ],
+      "translation": "End",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.cc3c388dfc29",
+      "source": "首次使用研讨间？需要先绑定邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 80,
+          "context": "{i18n(\"pages.info.libroomtab.cc3c388dfc29\")}"
+        }
+      ],
+      "translation": "First time using seminar rooms? An email must be bound first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.cd970b5c7fd4",
+      "source": "首次预约需绑定邮箱地址（未能自动获取邮箱），请先在图书馆研讨间系统网页端绑定后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 631,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.cd970b5c7fd4\"))"
+        }
+      ],
+      "translation": "The first reservation requires binding an email address (it could not be fetched automatically). Please bind it on the library seminar room system website and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d074b567fa9a",
+      "source": "预约 {roomName}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "roomName",
+          "expression": "String(target.res.roomName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 860,
+          "context": "{i18n(\"pages.info.libroomtab.d074b567fa9a\", { roomName: String(target.res.roomName) })}"
+        }
+      ],
+      "translation": "Reserve {roomName}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Tue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d191869abcc3",
+      "source": "结束…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 760,
+          "context": "{i18n(\"pages.info.libroomtab.d191869abcc3\")}"
+        }
+      ],
+      "translation": "End…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d1d50368fefe",
+      "source": "可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 321,
+          "context": "return i18n(\"pages.info.libroomtab.d1d50368fefe\");"
+        }
+      ],
+      "translation": "Bookable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d2bb025a2e51",
+      "source": "开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 884,
+          "context": "{i18n(\"pages.info.libroomtab.d2bb025a2e51\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 888,
+          "context": "begins.length === 0 ? i18n(\"pages.info.libroomtab.c2de2822c57e\") : i18n(\"pages.info.libroomtab.d2bb025a2e51\")"
+        }
+      ],
+      "translation": "Start",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 131,
+          "context": "k === 0 ? i18n(\"pages.info.libroomtab.d5f5a7a01073\") : `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${WEEKDAYS[d.getDay()]}`"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d90dc196c21b",
+      "source": " · 成员 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.members.map((m) => m.name).join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 951,
+          "context": "r.members.length > 0 ? i18n(\"pages.info.libroomtab.d90dc196c21b\", { value: String(r.members.map((m) => m.name).join(\"、\")) }) : \"\""
+        }
+      ],
+      "translation": " · Members: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.dbeb70190aef",
+      "source": "房型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 718,
+          "context": "{i18n(\"pages.info.libroomtab.dbeb70190aef\")}"
+        }
+      ],
+      "translation": "Room type",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 691,
+          "context": "{i18n(\"pages.info.libroomtab.e4d40b4d6759\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 949,
+          "context": "r.devName || i18n(\"pages.info.libroomtab.e4d40b4d6759\")"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.e9d3b01a5a00",
+      "source": "周四",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Thu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.ee239f394329",
+      "source": "周日",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Sun",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.f37e39e9300f",
+      "source": "研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。 请在原网站绑定邮箱后，回到这里点「重试」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 84,
+          "context": "{i18n(\"pages.info.libroomtab.f37e39e9300f\")}"
+        }
+      ],
+      "translation": "The seminar room system requires signing in on the original website (cab.lib.tsinghua.edu.cn) and binding an email before you can make reservations. For new students without a bound email, it keeps reporting \"Session could not be established\". Please bind your email on the original website, then come back here and tap \"Retry\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.f9aa11dbb15c",
+      "source": "周六",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Sat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.fa437861d75f",
+      "source": "{roomName} {iso} {begin}~{finish} 预约成功，请留意图书馆邮件通知",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "roomName",
+          "expression": "String(t.res.roomName)"
+        },
+        {
+          "name": "iso",
+          "expression": "String(t.day.iso)"
+        },
+        {
+          "name": "begin",
+          "expression": "String(begin)"
+        },
+        {
+          "name": "finish",
+          "expression": "String(finish)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 610,
+          "context": "message = i18n(\"pages.info.libroomtab.fa437861d75f\", { roomName: String(t.res.roomName), iso: String(t.day.iso), begin: String(begin), finish: String(finish) })"
+        }
+      ],
+      "translation": "{roomName} {iso} {begin}~{finish} reserved successfully. Watch for the library email notification",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.12526376d387",
+      "source": "管理栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 99,
+          "context": "{i18n(\"pages.info.lifepage.12526376d387\")}"
+        }
+      ],
+      "translation": "Manage sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 95,
+          "context": "{i18n(\"pages.info.lifepage.15d208d1b4c9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 98,
+          "context": "{i18n(\"pages.info.lifepage.15d208d1b4c9\")}"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.24be2018df29",
+      "source": "银行代发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 45,
+          "context": "return i18n(\"pages.info.lifepage.24be2018df29\");"
+        }
+      ],
+      "translation": "Payroll",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.336dbe5fd82f",
+      "source": "研究生收入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 46,
+          "context": "return i18n(\"pages.info.lifepage.336dbe5fd82f\");"
+        }
+      ],
+      "translation": "Graduate stipend",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.3a74de9a9014",
+      "source": "宿舍",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 40,
+          "context": "return i18n(\"pages.info.lifepage.3a74de9a9014\");"
+        }
+      ],
+      "translation": "Dorm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.41d497d6e07e",
+      "source": "卫生成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 42,
+          "context": "return i18n(\"pages.info.lifepage.41d497d6e07e\");"
+        }
+      ],
+      "translation": "Hygiene score",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.420754341ee2",
+      "source": "生活功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 103,
+          "context": "{i18n(\"pages.info.lifepage.420754341ee2\")}"
+        }
+      ],
+      "translation": "Life features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.info.lifepage.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 44,
+          "context": "return i18n(\"pages.info.lifepage.92341cf02c56\");"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.b735bde6b0d7",
+      "source": "管理生活栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 136,
+          "context": "{i18n(\"pages.info.lifepage.b735bde6b0d7\")}"
+        }
+      ],
+      "translation": "Manage life sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.lifepage.caf1f095b108",
       "source": "校园卡",
@@ -504,874 +1409,6 @@
         }
       ],
       "translation": "Tap to retry",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.9bc45ac6f5f0",
-      "source": "修改 Tsinghua-Secure 密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 329,
-          "context": "{i18n(\"pages.info.networktab.9bc45ac6f5f0\")}"
-        }
-      ],
-      "translation": "Change Tsinghua-Secure password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.9da8e7301f4e",
-      "source": "下线",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 299,
-          "context": "{i18n(\"pages.info.networktab.9da8e7301f4e\")}"
-        }
-      ],
-      "translation": "Go offline",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.aed9c158c9ae",
-      "source": "usereg 自服务 · 验证码登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 203,
-          "context": "{i18n(\"pages.info.networktab.aed9c158c9ae\")}"
-        }
-      ],
-      "translation": "usereg self-service · Captcha sign-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.bb015c60bafc",
-      "source": "验证码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 238,
-          "context": "{i18n(\"pages.info.networktab.bb015c60bafc\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 249,
-          "context": "{i18n(\"pages.info.networktab.bb015c60bafc\")}"
-        }
-      ],
-      "translation": "Captcha",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.bb6d995724f4",
-      "source": "管理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 307,
-          "context": "{i18n(\"pages.info.networktab.bb6d995724f4\")}"
-        }
-      ],
-      "translation": "Manage",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.be8995021004",
-      "source": "密码已修改（下次连接 Tsinghua-Secure 用新密码）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 177,
-          "context": "setPwdMsg(i18n(\"pages.info.networktab.be8995021004\"))"
-        }
-      ],
-      "translation": "Password changed (use the new password the next time you connect to Tsinghua-Secure)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.cca768b12e76",
-      "source": "允许设备数",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 93,
-          "context": "[i18n(\"pages.info.networktab.cca768b12e76\"), String(a.allowedDevices)]"
-        }
-      ],
-      "translation": "Allowed device count",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.cd24d9aacefa",
-      "source": "usereg 验证码登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 214,
-          "context": "{i18n(\"pages.info.networktab.cd24d9aacefa\")}"
-        }
-      ],
-      "translation": "usereg captcha sign-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.d48b614e9571",
-      "source": "该功能暂时不可用（获取失败，可稍后重试）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 208,
-          "context": "{i18n(\"pages.info.networktab.d48b614e9571\")}"
-        }
-      ],
-      "translation": "This feature is temporarily unavailable (fetch failed; try again later)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.dd94488f5269",
-      "source": "校园网",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 203,
-          "context": "{i18n(\"pages.info.networktab.dd94488f5269\")}"
-        }
-      ],
-      "translation": "Campus network",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.decb065f369c",
-      "source": "已用流量",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 86,
-          "context": "[i18n(\"pages.info.networktab.decb065f369c\"), b.usedBytes || \"–\"]"
-        }
-      ],
-      "translation": "Data used",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.e4e1122260bc",
-      "source": "已用时长",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 86,
-          "context": "[i18n(\"pages.info.networktab.e4e1122260bc\"), b.usedSeconds || \"–\"]"
-        }
-      ],
-      "translation": "Time used",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.e6a28243ce79",
-      "source": "新数量",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 317,
-          "context": "{i18n(\"pages.info.networktab.e6a28243ce79\")}"
-        }
-      ],
-      "translation": "New count",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.e7028601e7da",
-      "source": "信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 269,
-          "context": "{i18n(\"pages.info.networktab.e7028601e7da\")}"
-        }
-      ],
-      "translation": "Info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.edb3f8bb40a5",
-      "source": "验证码拉取失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(err instanceof Error ? err.message : String(err))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 57,
-          "context": "setLoginErr(i18n(\"pages.info.networktab.edb3f8bb40a5\", { value: String(err instanceof Error ? err.message : String(err)) }))"
-        }
-      ],
-      "translation": "Failed to fetch captcha: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.ee38ec30b36a",
-      "source": "格式不符：8~19 位，含字母+数字+特殊字符(!@#$%^*().~)至少各一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 171,
-          "context": "setPwdMsg(i18n(\"pages.info.networktab.ee38ec30b36a\"))"
-        }
-      ],
-      "translation": "Invalid format: 8~19 characters with at least one letter, one digit, and one special character (!@#$%^*().~)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.ef611c008f80",
-      "source": "在线设备",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 285,
-          "context": "{i18n(\"pages.info.networktab.ef611c008f80\")}"
-        }
-      ],
-      "translation": "Online devices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.f37abc08ae82",
-      "source": "校园网未登录（它与统一身份认证是两回事）。可在本页用验证码自助登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 206,
-          "context": "{i18n(\"pages.info.networktab.f37abc08ae82\")}"
-        }
-      ],
-      "translation": "The campus network is not signed in (it is separate from unified identity authentication). You can sign in here with a captcha.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.045f5aadace2",
-      "source": "全部订阅",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 692,
-          "context": "subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`"
-        }
-      ],
-      "translation": "All subscriptions",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.newstab.088536fe1994",
-      "source": "可订阅单位列表为空。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 947,
-          "context": "{i18n(\"pages.info.newstab.088536fe1994\")}"
-        }
-      ],
-      "translation": "The list of subscribable units is empty.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.0986893ba243",
-      "source": "第 {subPage} 页",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "subPage",
-          "expression": "subPage"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 754,
-          "context": "{i18nRich(\"pages.info.newstab.0986893ba243\", { subPage: subPage })}"
-        }
-      ],
-      "translation": "Page {subPage}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.0b4ff6ccd332",
-      "source": "订阅管理{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "subs.length > 0 ? `（${subs.length}）` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 611,
-          "context": "{i18nRich(\"pages.info.newstab.0b4ff6ccd332\", { value: subs.length > 0 ? `（${subs.length}）` : \"\" })}"
-        }
-      ],
-      "translation": "Manage subscriptions{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.13d61fea9f17",
-      "source": "预览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 835,
-          "context": "{i18n(\"pages.info.newstab.13d61fea9f17\")}"
-        }
-      ],
-      "translation": "Preview",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.1629c4dfeeb4",
-      "source": "订阅条件以信息门户服务端为权威（与 thu-info 同接口、同账号），添加/删除 即时写入门户订阅并刷新；本机 localStorage 仅作界面偏好缓存。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 870,
-          "context": "{i18n(\"pages.info.newstab.1629c4dfeeb4\")}"
-        }
-      ],
-      "translation": "Subscription state is authoritative on the info portal server (same API and account as thu-info). Adding or removing writes to portal subscriptions immediately and refreshes; local localStorage is only a UI preference cache.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.173f88d28ebf",
-      "source": "置顶",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 159,
-          "context": "{i18n(\"pages.info.newstab.173f88d28ebf\")}"
-        }
-      ],
-      "translation": "Bring to front",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.1bd26803ad79",
-      "source": "来源：{source}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "source",
-          "expression": "String(c.source)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 892,
-          "context": "c.source ? i18n(\"pages.info.newstab.1bd26803ad79\", { source: String(c.source) }) : \"\""
-        }
-      ],
-      "translation": "Source: {source}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.1dad8492f8c1",
-      "source": "正在检索…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 666,
-          "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
-        }
-      ],
-      "translation": "Searching…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.21ac3d54fe13",
-      "source": "暂无新闻。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 771,
-          "context": "page > 1 ? i18n(\"pages.info.newstab.c23d1354916d\") : i18n(\"pages.info.newstab.21ac3d54fe13\")"
-        }
-      ],
-      "translation": "No news.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.23d18fc44de0",
-      "source": "订阅动态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 689,
-          "context": "{i18n(\"pages.info.newstab.23d18fc44de0\")}"
-        }
-      ],
-      "translation": "Subscription feed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.241cfdfe3554",
-      "source": "添加订阅（点选发布单位）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 916,
-          "context": "{i18n(\"pages.info.newstab.241cfdfe3554\")}"
-        }
-      ],
-      "translation": "Add subscriptions (tap publishing units)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.260cbb8afb63",
-      "source": "搜索新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 608,
-          "context": "{i18n(\"pages.info.newstab.260cbb8afb63\")}"
-        }
-      ],
-      "translation": "Search news",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.260d6f3af87e",
-      "source": "“{query}” 命中 {length} 条（{value}内检索）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "query",
-          "expression": "String(query)"
-        },
-        {
-          "name": "length",
-          "expression": "String(subShown.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 692,
-          "context": "searching\n                ? i18n(\"pages.info.newstab.260d6f3af87e\", { query: String(query), length: String(subShown.length), value: String(subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`) })\n                : subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
-        }
-      ],
-      "translation": "\"{query}\" matched {length} items (searched within {value})",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.newstab.279658ea601c",
-      "source": "校内新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 592,
-          "context": "{i18n(\"pages.info.newstab.279658ea601c\")}"
-        }
-      ],
-      "translation": "Campus news",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.2a5dc59262cb",
-      "source": "本地检索 · {length} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(searchItems.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 658,
-          "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
-        }
-      ],
-      "translation": "Local search · {length} items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.2d2ab24375ce",
-      "source": "已下载到：{path}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "path",
-          "expression": "String(path)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 209,
-          "context": "text: i18n(\"pages.info.newstab.2d2ab24375ce\", { path: String(path) })"
-        }
-      ],
-      "translation": "Downloaded to: {path}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.2f9daa828907",
-      "source": "删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 904,
-          "context": "opBusy === c.id ? i18n(\"pages.info.newstab.5e8e7af57abb\") : i18n(\"pages.info.newstab.2f9daa828907\")"
-        }
-      ],
-      "translation": "Delete",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.3725212d2092",
-      "source": "订阅管理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 867,
-          "context": "{i18n(\"pages.info.newstab.3725212d2092\")}"
-        }
-      ],
-      "translation": "Manage subscriptions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.3b275fe0df2c",
-      "source": "搜索标题 / 正文 / 来源（服务端优先，本地兜底）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 607,
-          "context": "{i18n(\"pages.info.newstab.3b275fe0df2c\")}"
-        }
-      ],
-      "translation": "Search titles / bodies / sources (server first, local fallback)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.3dd09b78c050",
-      "source": "信息门户发布 · 点击在系统浏览器打开",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 593,
-          "context": "{i18n(\"pages.info.newstab.3dd09b78c050\")}"
-        }
-      ],
-      "translation": "Published on the info portal · Tap to open in system browser",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.3f0a56b66693",
-      "source": "服务端搜索中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 655,
-          "context": "localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")"
-        }
-      ],
-      "translation": "Searching on the server…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 804,
-          "context": "{i18n(\"pages.info.newstab.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.44125167a03f",
-      "source": "本页没有更多订阅动态了。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 733,
-          "context": "subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
-        }
-      ],
-      "translation": "No more subscription updates on this page.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.44c55113208f",
-      "source": "添加未成功，请刷新后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 534,
-          "context": "new Error(i18n(\"pages.info.newstab.44c55113208f\"))"
-        }
-      ],
-      "translation": "Adding failed. Refresh and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.4673a2306165",
-      "source": "下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 837,
-          "context": "dlAtt === a.url ? i18n(\"pages.info.newstab.bcc2333dc631\") : i18n(\"pages.info.newstab.4673a2306165\")"
-        }
-      ],
-      "translation": "Downloads",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.477b586d63a0",
-      "source": "服务端搜索 · {length} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(searchItems.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 651,
-          "context": "showServer\n                ? i18n(\"pages.info.newstab.477b586d63a0\", { length: String(searchItems.length) })\n                : serverState === \"loading\"\n                  ? localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")\n                  : serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
-        }
-      ],
-      "translation": "Server search · {length} items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.4d022a7599b4",
-      "source": "本地兜底 · 已抓取 {length} 条内检索（服务端搜索不可用）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(fetchedList.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 657,
-          "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
-        }
-      ],
-      "translation": "Local fallback · Searched within {length} fetched items (server search unavailable)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5a91a7f48009",
-      "source": "没有与“{query}”相关的新闻。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "query",
-          "expression": "String(query)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 667,
-          "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
-        }
-      ],
-      "translation": "No news related to \"{query}\".",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5c55a67935af",
-      "source": "全部",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 707,
-          "context": "{i18n(\"pages.info.newstab.5c55a67935af\")}"
-        }
-      ],
-      "translation": "All",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5e8e7af57abb",
-      "source": "删除中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 904,
-          "context": "opBusy === c.id ? i18n(\"pages.info.newstab.5e8e7af57abb\") : i18n(\"pages.info.newstab.2f9daa828907\")"
-        }
-      ],
-      "translation": "Deleting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5f172c5140ca",
-      "source": "删除未成功，请刷新后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 510,
-          "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 530,
-          "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
-        }
-      ],
-      "translation": "Deletion failed. Refresh and try again",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

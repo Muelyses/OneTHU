@@ -156,8 +156,10 @@ export async function nativeFetch(
     body?: string | URLSearchParams | FormData | Uint8Array;
     headers?: Record<string, string>;
     timeoutMs?: number;
+    signal?: AbortSignal;
   } = {},
 ): Promise<Response> {
+  if (init.signal?.aborted) throw new DOMException("Aborted", "AbortError");
   const epoch = await nativeSessionEpoch();
   const { invoke } = await import("@tauri-apps/api/core");
   // body 统一压成 string / base64（2026-09-17 实录：URLSearchParams 直接传会被 invoke
@@ -218,6 +220,7 @@ export async function nativeFetch(
   } catch {
     /* 畸形 URL 原样 */
   }
+  if (init.signal?.aborted) throw new DOMException("Aborted", "AbortError");
   const p = invoke<HttpOutput>("http_native", {
     epoch,
     input: {
@@ -226,17 +229,26 @@ export async function nativeFetch(
       headers: plainHeaders,
       body: bodyStr,
       body_b64: bodyB64,
+      timeout_ms: init.timeoutMs ?? null,
     },
   });
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let onAbort: (() => void) | undefined;
+  const cancelled = new Promise<never>((_, reject) => {
+    if (!init.signal) return;
+    onAbort = () => reject(new DOMException("Aborted", "AbortError"));
+    if (init.signal.aborted) onAbort();
+    else init.signal.addEventListener("abort", onAbort, { once: true });
+  });
   const guard = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(i18n("lib.transport.81870141c552", { value: networkLogUrl(url) }))), 90_000);
+    timer = setTimeout(() => rej(new Error(i18n("lib.transport.81870141c552", { value: networkLogUrl(url) }))), init.timeoutMs === undefined ? 90_000 : Math.max(1, init.timeoutMs) + 2_000);
   });
   let res: HttpOutput;
   try {
-    res = await Promise.race([p, guard]).catch(normalizeNativeSessionError);
+    res = await Promise.race([p, guard, cancelled]).catch(normalizeNativeSessionError);
   } finally {
     if (timer) clearTimeout(timer);
+    if (init.signal && onAbort) init.signal.removeEventListener("abort", onAbort);
   }
   await assertNativeSessionEpoch(epoch);
   const respHeaders = new Headers(res.headers as HeadersInit);
@@ -504,6 +516,7 @@ export function formatNetworkError(err: unknown): string {
   if (loginExplanation) return loginExplanation;
   if (!raw) return i18n("lib.transport.noReason");
   if (raw === "LEARN_RESPONSE_UNEXPECTED") return i18n("learn.responseUnexpected");
+  if (raw === "LEARN_PROBE_TIMEOUT") return i18n("learn.responseUnexpected");
   // 原生侧的大小闸门：说清多大、该怎么办，而不是丢一个网络错误
   const big = /too-large:(\d+):(\d+)/.exec(raw);
   if (big) {

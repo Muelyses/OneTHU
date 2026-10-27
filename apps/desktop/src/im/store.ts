@@ -71,3 +71,6 @@ export function subscribeImConfig(fn: () => void): () => void {
 export function configSnapshot(): ImConfig | null {
   return store.snapshot();
 }
+
+/** A failed disk read/decryption does not authorize clearing daemon bindings. */
+export const imConfigReadable = () => store.readable();

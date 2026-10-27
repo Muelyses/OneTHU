@@ -56,17 +56,20 @@ function cache(snapshot: OrgRemoteSnapshot, localId?: string): Org {
   };
   cacheRemoteOrg(org); snapshots.set(id, snapshot); return org;
 }
-export async function refreshRemoteOrg(id: string): Promise<Org> {
+export async function refreshRemoteOrg(id: string, assertAccount: () => void = () => {}): Promise<Org> {
   const receiving = fullModeReceiveSession();
-  receiving.assertCurrent();
+  const check = () => { receiving.assertCurrent(); assertAccount(); };
+  check();
   const org = requireLocal(id); if (!org.collaboration) throw new Error(i18n("state.orgsync.5784fd684c09"));
   try {
-    const snapshot = await readSnapshot(org.collaboration, receiving.assertCurrent);
-    receiving.assertCurrent();
+    const snapshot = await readSnapshot(org.collaboration, check);
+    check();
     return cache(snapshot, id);
   } catch (e) {
     // Leaving full mode pauses this read; it must not overwrite the cached organization with an error.
-    if (receiving.isCurrent()) markOrgRemote(id, {...org.collaboration, status: "error", error: errorText(e), accessLevel: undefined});
+    let current = false;
+    try { check(); current = true; } catch { /* Do not mutate another account's cache. */ }
+    if (current) markOrgRemote(id, {...org.collaboration, status: "error", error: errorText(e), accessLevel: undefined});
     throw e;
   }
 }
@@ -78,14 +81,17 @@ export async function joinRemoteOrg(ref: OrgRemoteRef): Promise<string> {
   const previous = orgSnapshot().orgs.find(o => o.collaboration?.projectId === ref.projectId);
   return cache(snapshot, previous?.id).id;
 }
-async function requireSnapshot(id: string, access: number, pendingAllowed = false): Promise<OrgRemoteSnapshot> {
-  const org = await refreshRemoteOrg(id); const snapshot = snapshots.get(id)!;
+type OrgWriteGuard = { check(): void; beforeWrite(): Promise<void> };
+async function requireSnapshot(id: string, access: number, pendingAllowed = false, guard?: OrgWriteGuard): Promise<OrgRemoteSnapshot> {
+  guard?.check();
+  const org = await refreshRemoteOrg(id, guard?.check); const snapshot = snapshots.get(id)!;
+  await guard?.beforeWrite();
   if ((org.collaboration?.accessLevel ?? 0) < access) throw new Error(access >= 50 ? i18n("state.orgsync.ownerOnly") : i18n("state.orgsync.cannotEdit"));
   if ((snapshot.admin.value.pending || snapshot.admin.value.permissionsVerified !== 1) && !pendingAllowed) throw new Error(i18n("state.orgsync.47b018369530"));
   return snapshot;
 }
-async function writeAdmin(snapshot: OrgRemoteSnapshot, value: OrgRemoteAdmin): Promise<void> {
-  const api = await gitlabOrganizationApi();
+async function writeAdmin(snapshot: OrgRemoteSnapshot, value: OrgRemoteAdmin, guard?: OrgWriteGuard): Promise<void> {
+  const api = await gitlabOrganizationApi(guard?.beforeWrite);
   try { await api.updateFile(snapshot.ref.projectId, snapshot.ref.adminBranch, ADMIN_FILE, JSON.stringify(value, null, 2), snapshot.admin.revision); }
   catch (e) {
     const current = await api.file(snapshot.ref.projectId, snapshot.ref.adminBranch, ADMIN_FILE).catch(() => null);
@@ -164,23 +170,23 @@ async function initializeOrgCollaboration(id: string): Promise<void> {
   }
 }
 
-export async function updateRemoteOrg(id: string, before: Pick<OrgRemoteAdmin, "name"|"brief"|"joinUrl">, patch: Pick<OrgRemoteAdmin, "name"|"brief"|"joinUrl">): Promise<void> {
-  const snapshot = await requireSnapshot(id, 50);
+export async function updateRemoteOrg(id: string, before: Pick<OrgRemoteAdmin, "name"|"brief"|"joinUrl">, patch: Pick<OrgRemoteAdmin, "name"|"brief"|"joinUrl">, guard?: OrgWriteGuard): Promise<void> {
+  const snapshot = await requireSnapshot(id, 50, false, guard);
   if (["name", "brief", "joinUrl"].some(k => snapshot.admin.value[k as keyof typeof before] !== before[k as keyof typeof before])) throw new OrgConflictError();
-  await writeAdmin(snapshot, {...snapshot.admin.value, ...patch}); await refreshRemoteOrg(id);
+  await writeAdmin(snapshot, {...snapshot.admin.value, ...patch}, guard); await refreshRemoteOrg(id, guard?.check);
 }
-export async function saveRemoteContent(id: string, collection: "projects"|"announcements", before: OrgProject | OrgAnnouncement | undefined, after: OrgProject | OrgAnnouncement | undefined): Promise<void> {
-  const snapshot = await requireSnapshot(id, 30, true);
+export async function saveRemoteContent(id: string, collection: "projects"|"announcements", before: OrgProject | OrgAnnouncement | undefined, after: OrgProject | OrgAnnouncement | undefined, guard?: OrgWriteGuard): Promise<void> {
+  const snapshot = await requireSnapshot(id, 30, true, guard);
   const content = snapshot.content.value;
   const items = replaceSharedItem<OrgProject | OrgAnnouncement>(content[collection], before, after);
-  const next = {...content, [collection]: items}; const api = await gitlabOrganizationApi();
+  const next = {...content, [collection]: items}; const api = await gitlabOrganizationApi(guard?.beforeWrite);
   try { await api.updateFile(snapshot.ref.projectId, snapshot.ref.contentBranch, CONTENT_FILE, JSON.stringify(next, null, 2), snapshot.content.revision); }
   catch (e) {
     const current = await api.file(snapshot.ref.projectId, snapshot.ref.contentBranch, CONTENT_FILE).catch(() => null);
     if (current && current.last_commit_id !== snapshot.content.revision) throw new OrgConflictError();
     throw e;
   }
-  await refreshRemoteOrg(id);
+  await refreshRemoteOrg(id, guard?.check);
 }
 export async function resolveOrgUser(username: string, email: string): Promise<OrgRemoteBinding> {
   const clean = username.trim().replace(/^@/, "");

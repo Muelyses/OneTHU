@@ -74,4 +74,18 @@ await test('current cloud payload validates epoch and allowed origins before mer
   assert.deepEqual(h.cookies,['sid=current']);
   await assert.rejects(h.acceptPayload({epoch:3,token},4),changed);
 });
+
+await test('cancellation releases a pending native read and forwards a real Rust timeout',async()=>{
+  const hold=deferred(),h=fixture({hold}),controller=new AbortController();
+  const pending=h.nativeFetch('https://learn.tsinghua.edu.cn/',{signal:controller.signal,timeoutMs:25});
+  while(!h.calls.some(c=>c.command==='http_native'))await new Promise(r=>setTimeout(r,0));
+  assert.equal(h.calls.find(c=>c.command==='http_native').args.input.timeout_ms,25);
+  controller.abort();await assert.rejects(pending,e=>e.name==='AbortError');
+  h.switchAccount();hold.resolve();
+});
+await test('an already cancelled native request sends no IPC',async()=>{
+  const h=fixture(),controller=new AbortController();controller.abort();
+  await assert.rejects(h.nativeFetch('https://learn.tsinghua.edu.cn/',{signal:controller.signal}),e=>e.name==='AbortError');assert.equal(h.calls.length,0);
+});
+
 console.log(`${count} native session epoch checks passed (mock IPC; no network)`);

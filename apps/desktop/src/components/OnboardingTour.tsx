@@ -1,3 +1,4 @@
+import { CliServerSettings } from "./CliServerSettings.js";
 import { msg as i18nMsg, t as i18n, useLocale as useUiLocale, setLocale } from "../i18n/index.js";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Btn, Modal, Text, SettingsList, SettingsRow, Switch } from "@onethu/gui";
@@ -16,7 +17,6 @@ import { EXTRA_LESSONS, lessonsForMode, type Lesson, type TourTarget } from "../
 import { beginPracticePanels, closePracticePanels, endPracticePanels, openLessonTarget } from "../lib/onboardingNavigation.js";
 import { OptionalConnections } from "./SimpleSettings.js";
 import { TOUR_CARD_SCOPE, defineOnboardingScopes } from "./OnboardingTourScope.js";
-import { mcpServerEnabled, setMcpServer } from "../state/userext.js";
 
 const KEY="onethu.onboarded.flow4";
 const REPLAY="onethu.onboarding.replay";
@@ -46,7 +46,6 @@ export function OnboardingTour(){
  const [extra,setExtra]=useState<Lesson|null>(null);
  const [practice,setPractice]=useState<Lesson|null>(null);
  const [connect,setConnect]=useState(false);
- const [mcpOn,setMcpOn]=useState(()=>mcpServerEnabled());
  const [direction,setDirection]=useState<"next"|"back">("next");
  const body=useRef<HTMLDivElement>(null);
  const lessons=lessonsForMode(chosen);
@@ -62,7 +61,7 @@ export function OnboardingTour(){
  const finish=()=>{try{localStorage.setItem(KEY,"1");}catch{}endPracticePanels();setOpen(false);setPractice(null);};
  useOverlayBack("onboarding-tour",open&&!practice&&!privacy,finish);
  useEffect(()=>{
-  const replay=()=>{if(!closePracticePanels()){showToast(i18nMsg("components.onboardingtour.7d38695ada28"));return;}setChosen(experienceMode());setStep(-3);setChoosingLayout(false);setConsentDraft(privacyConsent());setConsentError("");setExtra(null);setPractice(null);setConnect(false);setDirection("next");setMcpOn(mcpServerEnabled());setOpen(true);};
+  const replay=()=>{if(!closePracticePanels()){showToast(i18nMsg("components.onboardingtour.7d38695ada28"));return;}setChosen(experienceMode());setStep(-3);setChoosingLayout(false);setConsentDraft(privacyConsent());setConsentError("");setExtra(null);setPractice(null);setConnect(false);setDirection("next");setOpen(true);};
   window.addEventListener(REPLAY,replay);
   return()=>window.removeEventListener(REPLAY,replay);
  },[]);
@@ -125,7 +124,7 @@ export function OnboardingTour(){
      {connect?<div className="tour-connections"><OptionalConnections/></div>:null}
      {chosen==="full"?<>
       <div className="tour-explore"><h3>{i18n("components.onboardingtour.a8ab98831f5c")}</h3><p>{i18n("components.onboardingtour.1b47dc7fdca4")}</p><div className="tour-explore-grid">{EXTRA_LESSONS.map(item=><Btn key={item.id} variant="outline" data-lesson-id={item.id} aria-label={i18n("components.onboardingtour.19f469fec604", { title: String(item.title) })} onClick={()=>{setExtra(item);setDirection("next");setConnect(false);}}>{CHAPTERS[item.id]}<span aria-hidden="true">↗</span></Btn>)}</div></div>
-      <SettingsList><SettingsRow title={i18n("components.onboardingtour.427f33ee91af")} sub={mcpOn?i18n("components.onboardingtour.09c7b2e4141f"):i18n("components.onboardingtour.3c442701f378")} control={<Switch checked={mcpOn} aria-label={i18n("components.onboardingtour.307ebc489657")} onChange={(v)=>{setMcpServer(v);setMcpOn(v);}}/>}/></SettingsList>
+      <SettingsList><CliServerSettings/></SettingsList>
      </>:null}
     </>:<>
      <div className="tour-copy-heading" key={lesson!.id}><span className="tour-eyebrow">{extra?i18n("components.onboardingtour.a8ab98831f5c"):`${String(step+1).padStart(2,"0")} / ${modeName}`}</span><h2>{lesson!.title}</h2><p>{lesson!.lead}</p></div>

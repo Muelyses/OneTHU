@@ -171,7 +171,7 @@ export interface YktNav {
   /** 课程名（列表行 courseName） */
   courseName?: string;
   /** 作业类型（列表行 kind；exam=试卷 —— 红线：试卷页同样不渲染任何提交相关入口） */
-  kind?: "homework" | "exam";
+  kind?: "homework" | "exam" | "quiz";
   /** R29：从**网络学堂课程页**进来的雨课堂作业——返回时带回该课程 id，
    *  否则详情页返回会因缺 courseId 渲染成空页（课程页合并后新增的返回路径）。 */
   fromCourseId?: string;
@@ -251,6 +251,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const active: ExplorerTab | null = useSyncExternalStore(subscribeExplorer, () => activeTab(), () => activeTab());
   const page: Page = active.page;
   const navParams: LearnNav | null = active.params;
+
+  useEffect(() => {
+    if (PREVIEW_MODE) return;
+    let stopped = false, busy = false;
+    const refresh = async () => {
+      if (busy || loginBusy.current) return;
+      busy = true;
+      const action = authActionVersion.current;
+      try {
+        const result = await clients.refreshSharedSession(() => {
+          if (!stopped && action === authActionVersion.current) { setUser(null); setTwoFactor(null); setStatus("connecting"); }
+        });
+        if (!result || stopped || action !== authActionVersion.current) return;
+        authActionVersion.current++;
+        setTwoFactor(null);
+        if (result.kind === "ready") { setUser({ username: result.username }); setStatus("ready"); setError(null); }
+        else if (result.kind === "unavailable") { setUser(result.username ? { username: result.username } : null); setStatus(result.username ? "ready" : "logged-out"); setError(result.error); }
+        else { setUser(null); setStatus("logged-out"); setError(null); }
+      } catch (error) {
+        // Leave the current page usable on a daemon outage; task settings also
+        // show the connection failure, and no local scheduler is substituted.
+        if (!stopped) setError(error);
+      } finally { busy = false; }
+    };
+    const onFocus = () => { void refresh(); };
+    window.addEventListener("focus", onFocus);
+    const timer = setInterval(onFocus, 15_000);
+    return () => { stopped = true; clearInterval(timer); window.removeEventListener("focus", onFocus); };
+  }, [setError]);
 
   useEffect(() => {
     console.log("[explorer-preview] PREVIEW_MODE=", PREVIEW_MODE, "search=", window.location.search, "DEV=", import.meta.env?.DEV);

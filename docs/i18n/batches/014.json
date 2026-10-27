@@ -1,7 +1,1009 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.freeboard.a1714f5783d4",
+      "source": "这条入口已失效，可从右键菜单移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 953,
+          "context": "say(i18n(\"components.freeboard.a1714f5783d4\"))"
+        }
+      ],
+      "translation": "This entry is no longer valid; remove it from the context menu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.a450a21ac723",
+      "source": "添加入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 248,
+          "context": "{i18n(\"components.freeboard.a450a21ac723\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1228,
+          "context": "{i18n(\"components.freeboard.a450a21ac723\")}"
+        }
+      ],
+      "translation": "Add entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.d003f87ed602",
+      "source": "自由调整大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 750,
+          "context": "label: i18n(\"components.freeboard.d003f87ed602\")"
+        }
+      ],
+      "translation": "Free resize",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.freeboard.d13523826411",
+      "source": "更换条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 743,
+          "context": "picked ? i18n(\"components.freeboard.d13523826411\") : i18n(\"components.freeboard.153d487fec51\")"
+        }
+      ],
+      "translation": "Change entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.d4b3f49cd2e4",
+      "source": "固定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 755,
+          "context": "item.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1151,
+          "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
+        }
+      ],
+      "translation": "Pin",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.daaec6369d42",
+      "source": "白板上已有这个组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1332,
+          "context": "say(i18n(\"components.freeboard.daaec6369d42\"))"
+        }
+      ],
+      "translation": "This widget is already on the board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.dbb6d640ea9f",
+      "source": "这块 OnePage 已经不存在了。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1490,
+          "context": "{i18n(\"components.freeboard.dbb6d640ea9f\")}"
+        }
+      ],
+      "translation": "This OnePage no longer exists.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.dbd17f63d721",
+      "source": "已回到阅读顺序",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 408,
+          "context": "sayRef.current(i18n(\"components.freeboard.dbd17f63d721\"))"
+        }
+      ],
+      "translation": "Back in reading order",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.e489b964ce42",
+      "source": "这个生成组件已被删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 268,
+          "context": "{i18n(\"components.freeboard.e489b964ce42\")}"
+        }
+      ],
+      "translation": "This generated widget has been deleted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.e75e8b4e5c97",
+      "source": "下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1126,
+          "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
+        }
+      ],
+      "translation": "Move down",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.e8f9281f866e",
+      "source": "已选择条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1366,
+          "context": "say(i18n(\"components.freeboard.e8f9281f866e\"))"
+        }
+      ],
+      "translation": "Selected entries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.editingHint",
+      "source": "点「编辑白板」后可调整组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 975,
+          "context": "!canEdit ? i18n(\"components.freeboard.editingHint\") : i18n(\"components.freeboard.83d2e3f15c71\")"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 993,
+          "context": "!canEdit ? i18n(\"components.freeboard.editingHint\") : stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
+        }
+      ],
+      "translation": "Tap Edit board to arrange widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.eef4bb73e8a0",
+      "source": "把这块 OnePage 钉到画布上（点击即打开）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1319,
+          "context": "description: i18n(\"components.freeboard.eef4bb73e8a0\")"
+        }
+      ],
+      "translation": "Pin this OnePage to the canvas (click to open it)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.f7b6fbf1f2f6",
+      "source": "切换不透明度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1147,
+          "context": "{i18n(\"components.freeboard.f7b6fbf1f2f6\")}"
+        }
+      ],
+      "translation": "Toggle opacity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.f853a70b1204",
+      "source": "上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1126,
+          "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
+        }
+      ],
+      "translation": "Move up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.f87eebfdca60",
+      "source": "自由摆放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 981,
+          "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1194,
+          "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
+        }
+      ],
+      "translation": "Free layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.fa35f4f53dd5",
+      "source": "这个组件已经不在组件目录里了。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 771,
+          "context": "def ? def.description : i18n(\"components.freeboard.fa35f4f53dd5\")"
+        }
+      ],
+      "translation": "This widget is no longer in the widget catalog.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.fcbe33148f3a",
+      "source": "已改为 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1351,
+          "context": "i18n(\"components.freeboard.fcbe33148f3a\") + size.w"
+        }
+      ],
+      "translation": "Changed to ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.fe067a88a36d",
+      "source": "编辑文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1135,
+          "context": "{i18n(\"components.freeboard.fe067a88a36d\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1135,
+          "context": "{i18n(\"components.freeboard.fe067a88a36d\")}"
+        }
+      ],
+      "translation": "Edit text",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.ff84465bf83c",
+      "source": "调整大小 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1163,
+          "context": "i18n(\"components.freeboard.ff84465bf83c\") + h"
+        }
+      ],
+      "translation": "Resize ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.finishEdit",
+      "source": "完成编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1189,
+          "context": "phoneEditing ? i18n(\"components.freeboard.finishEdit\") : i18n(\"components.freeboard.startEdit\")"
+        }
+      ],
+      "translation": "Done editing",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.startEdit",
+      "source": "编辑白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1189,
+          "context": "phoneEditing ? i18n(\"components.freeboard.finishEdit\") : i18n(\"components.freeboard.startEdit\")"
+        }
+      ],
+      "translation": "Edit board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.044d85b3d264",
+      "source": "附件动作未完成{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r?.error ? `：${r.error}` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 723,
+          "context": "r?.ok ? i18n(\"components.globalorb.eebaa565cacd\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"components.globalorb.044d85b3d264\", { value: String(r?.error ? `：${r.error}` : \"\") })"
+        }
+      ],
+      "translation": "Attachment action not completed{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.04cda3e1158f",
+      "source": "改高度两条路径都失败：{value} / {value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(e))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(String(e2))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 81,
+          "context": "logOrb(i18n(\"components.globalorb.04cda3e1158f\", { value: String(String(e)), value2: String(String(e2)) }))"
+        }
+      ],
+      "translation": "Both paths for changing height failed: {value} / {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.0bf8950b7ddb",
+      "source": "askOh 返回空答案：keys=[{value}] err={value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Object.keys(r ?? {}).join(\",\"))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(String(r?.error ?? \"\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 306,
+          "context": "logOrb(i18n(\"components.globalorb.0bf8950b7ddb\", { value: String(Object.keys(r ?? {}).join(\",\")), value2: String(String(r?.error ?? \"\")) }))"
+        }
+      ],
+      "translation": "askOh returned an empty answer: keys=[{value}] err={value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.1c5fc047a7ba",
+      "source": "还没有搜索记录；搜一次功能或实体就会留在这里",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 573,
+          "context": "{i18n(\"components.globalorb.1c5fc047a7ba\")}"
+        }
+      ],
+      "translation": "No search history yet; search a feature or entity once and it stays here",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.1ef3de06b32e",
+      "source": "清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 567,
+          "context": "{i18n(\"components.globalorb.1ef3de06b32e\")}"
+        }
+      ],
+      "translation": "Clear",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.213b81f4850f",
+      "source": "自动朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 544,
+          "context": "prefs.autoSpeak ? i18n(\"components.globalorb.2cf01f9ef0c9\") : i18n(\"components.globalorb.213b81f4850f\")"
+        }
+      ],
+      "translation": "Auto read aloud",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.217e86ac14d6",
+      "source": "handle up：panel_h={value}（Rust 已落盘）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(lastPanelH.current))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 500,
+          "context": "logOrb(i18n(\"components.globalorb.217e86ac14d6\", { value: String(Math.round(lastPanelH.current)) }))"
+        }
+      ],
+      "translation": "handle up: panel_h={value} (persisted by Rust)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.25f5ce57a190",
+      "source": "功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 623,
+          "context": "{i18n(\"components.globalorb.25f5ce57a190\")}"
+        }
+      ],
+      "translation": "Feature",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.2ab7bee583b2",
+      "source": "搜功能、作业、文件、设置…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 562,
+          "context": "{i18n(\"components.globalorb.2ab7bee583b2\")}"
+        }
+      ],
+      "translation": "Search features, assignments, files, settings…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.2cf01f9ef0c9",
+      "source": "自动朗读 · 开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 544,
+          "context": "prefs.autoSpeak ? i18n(\"components.globalorb.2cf01f9ef0c9\") : i18n(\"components.globalorb.213b81f4850f\")"
+        }
+      ],
+      "translation": "Auto read aloud · on",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.44ce7ae909bb",
+      "source": "搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 535,
+          "context": "label: i18n(\"components.globalorb.44ce7ae909bb\")"
+        },
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 563,
+          "context": "{i18n(\"components.globalorb.44ce7ae909bb\")}"
+        }
+      ],
+      "translation": "Search",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.globalorb.452c7b10d57a",
+      "source": "页面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 634,
+          "context": "{i18n(\"components.globalorb.452c7b10d57a\")}"
+        }
+      ],
+      "translation": "Page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.4670c2e7bb80",
+      "source": "上下拖动调整悬浮窗高度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 463,
+          "context": "{i18n(\"components.globalorb.4670c2e7bb80\")}"
+        }
+      ],
+      "translation": "Drag up and down to adjust the floating window height",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.5214e0bc5dce",
+      "source": "设置 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 643,
+          "context": "i18n(\"components.globalorb.5214e0bc5dce\") + t"
+        }
+      ],
+      "translation": "Settings · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.52ee41a798f4",
+      "source": "handle → panel_h={value}（走 set_mode 兼容路径；建议补注册 overlay_set_panel_height）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(h))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 79,
+          "context": "logOrb(i18n(\"components.globalorb.52ee41a798f4\", { value: String(Math.round(h)) }))"
+        }
+      ],
+      "translation": "handle → panel_h={value} (using the set_mode compatibility path; overlay_set_panel_height should be registered)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.878d364bd67d",
+      "source": "［附件］{summary}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "summary",
+          "expression": "String(summary)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 691,
+          "context": "text: i18n(\"components.globalorb.878d364bd67d\", { summary: String(summary) })"
+        }
+      ],
+      "translation": "[Attachment] {summary}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.8e23c7e1cfcc",
+      "source": "handle down：h0={value}（来源 {value2}）screenY0={value3}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(realH))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(winHRef.current > 0 ? \"geometry.h\" : \"innerHeight\")"
+        },
+        {
+          "name": "value3",
+          "expression": "String(Math.round(e.screenY))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 473,
+          "context": "logOrb(i18n(\"components.globalorb.8e23c7e1cfcc\", { value: String(Math.round(realH)), value2: String(winHRef.current > 0 ? \"geometry.h\" : \"innerHeight\"), value3: String(Math.round(e.screenY)) }))"
+        }
+      ],
+      "translation": "handle down: h0={value} (source {value2}) screenY0={value3}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.8f2fc5ad7ce5",
+      "source": "没搜到「{value}」？直接问小 (OH)",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "oquery.trim()"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 603,
+          "context": "{i18nRich(\"components.globalorb.8f2fc5ad7ce5\", { value: oquery.trim() })}"
+        }
+      ],
+      "translation": "Didn't find \"{value}\"? Ask OH directly",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.afd4b783536b",
+      "source": "收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 546,
+          "context": "{i18n(\"components.globalorb.afd4b783536b\")}"
+        }
+      ],
+      "translation": "Collapse",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.bb198f53046f",
+      "source": "点击输入（可直接用系统听写说话）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 709,
+          "context": "{i18n(\"components.globalorb.bb198f53046f\")}"
+        }
+      ],
+      "translation": "Click to type (you can also speak with system dictation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.c638cd4dde22",
+      "source": "（出错了：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 315,
+          "context": "text: i18n(\"components.globalorb.c638cd4dde22\", { value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "(Error: {value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.cb46971d81ea",
+      "source": "OH 悬浮球：单击打开对话，按住可拖动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 364,
+          "context": "{i18n(\"components.globalorb.cb46971d81ea\")}"
+        }
+      ],
+      "translation": "OH floating orb: single-click to open the chat; press and hold to drag",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.cc50237edca2",
+      "source": "搜索中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 591,
+          "context": "{i18n(\"components.globalorb.cc50237edca2\")}"
+        }
+      ],
+      "translation": "Searching…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.dd377fa5341b",
+      "source": "（没有拿到回复{value}；调试日志 /tmp/onethu-debug.log 有 [orb] 行）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(typeof r?.error === \"string\" ? `：${r.error}` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 310,
+          "context": "answer || i18n(\"components.globalorb.dd377fa5341b\", { value: String(typeof r?.error === \"string\" ? `：${r.error}` : \"\") })"
+        }
+      ],
+      "translation": "(No reply received{value}; see the [orb] lines in the debug log /tmp/onethu-debug.log)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.df3d58c7d84b",
+      "source": "设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 644,
+          "context": "{i18n(\"components.globalorb.df3d58c7d84b\")}"
+        }
+      ],
+      "translation": "Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.e526f04d40e1",
+      "source": "位移 > {DRAG_PX}px → 判定拖动（松手不再开面板）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "DRAG_PX",
+          "expression": "String(DRAG_PX)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 379,
+          "context": "logOrb(i18n(\"components.globalorb.e526f04d40e1\", { DRAG_PX: String(DRAG_PX) }))"
+        }
+      ],
+      "translation": "Movement > {DRAG_PX}px counts as a drag (release won't open the panel)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.eebaa565cacd",
+      "source": "已处理附件{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.path ? `：${r.path}` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 723,
+          "context": "r?.ok ? i18n(\"components.globalorb.eebaa565cacd\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"components.globalorb.044d85b3d264\", { value: String(r?.error ? `：${r.error}` : \"\") })"
+        }
+      ],
+      "translation": "Attachments processed{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.globalorb.f60ae5f5abad",
+      "source": "回到 OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/GlobalOrb.tsx",
+          "line": 542,
+          "context": "{i18n(\"components.globalorb.f60ae5f5abad\")}"
+        }
+      ],
+      "translation": "Back to OneTHU",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.0478e4ba85fb",
+      "source": "我要交宿舍电费、看校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.helpsection.0478e4ba85fb\");"
+        }
+      ],
+      "translation": "I want to pay my dorm electricity bill and check my campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.09e7cf41dd47",
+      "source": "我要交作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.helpsection.09e7cf41dd47\");"
+        }
+      ],
+      "translation": "I want to submit an assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.0a9dea0904bb",
+      "source": "我要把课表、日程同步到手机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 46,
+          "context": "return i18n(\"components.helpsection.0a9dea0904bb\");"
+        }
+      ],
+      "translation": "I want to sync my timetable and schedule to my phone",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.31689de9b7b3",
+      "source": "我要改通知、外观",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.helpsection.31689de9b7b3\");"
+        }
+      ],
+      "translation": "I want to change notifications and appearance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.5ba6014f3e9c",
+      "source": "成绩、考试、课程信息都在「信息」里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 22,
+          "context": "return i18n(\"components.helpsection.5ba6014f3e9c\");"
+        }
+      ],
+      "translation": "Grades, exams, and course info are all in \"Info\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.5dadf7093a8f",
+      "source": "白板、暂存箱与组织怎么用？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 71,
+          "context": "{i18n(\"components.helpsection.5dadf7093a8f\")}"
+        }
+      ],
+      "translation": "How do I use the Board, Stash, and Organizations?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.helpsection.7a25374f5630",
       "source": "我要改桌面小组件的内容",
@@ -392,972 +1394,6 @@
         }
       ],
       "translation": "Due today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.1156e9912bf8",
-      "source": "没有未提交的作业，享受今天吧。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 255,
-          "context": "{i18n(\"components.homewidgets.1156e9912bf8\")}"
-        }
-      ],
-      "translation": "No unsubmitted assignments. Enjoy your day!",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.115a5e14e269",
-      "source": "今天已截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 59,
-          "context": "days === 0 ? i18n(\"components.homewidgets.115a5e14e269\") : i18n(\"components.homewidgets.16612dac51bc\") + -days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        }
-      ],
-      "translation": "Deadline passed today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.119099ab1bad",
-      "source": "今日课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 539,
-          "context": "{i18n(\"components.homewidgets.119099ab1bad\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 539,
-          "context": "{i18n(\"components.homewidgets.119099ab1bad\")}"
-        }
-      ],
-      "translation": "Today's classes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.1236edf41da0",
-      "source": "未交作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 533,
-          "context": "{i18n(\"components.homewidgets.1236edf41da0\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 534,
-          "context": "{i18n(\"components.homewidgets.1236edf41da0\")}"
-        }
-      ],
-      "translation": "Unsubmitted assignments",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.1645edf73a88",
-      "source": "明天截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 61,
-          "context": "text: i18n(\"components.homewidgets.1645edf73a88\")"
-        }
-      ],
-      "translation": "Due tomorrow",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.16612dac51bc",
-      "source": "逾期 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 59,
-          "context": "i18n(\"components.homewidgets.16612dac51bc\") + -days"
-        }
-      ],
-      "translation": "Overdue ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.1a1f6f3d0815",
-      "source": "还有 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 578,
-          "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil"
-        }
-      ],
-      "translation": "Due in ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.1b2515c676f0",
-      "source": "待办作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 543,
-          "context": "nearest.title || i18n(\"components.homewidgets.1b2515c676f0\")"
-        }
-      ],
-      "translation": "Assignments to do",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.homewidgets.2073bb9744cb",
-      "source": "看本周课表",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 384,
-          "context": "{i18n(\"components.homewidgets.2073bb9744cb\")}"
-        }
-      ],
-      "translation": "View this week's timetable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.414869e94ef0",
-      "source": "数据加载后可用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 163,
-          "context": "disabled ? i18n(\"components.homewidgets.414869e94ef0\") : undefined"
-        }
-      ],
-      "translation": "Available after data loads",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.4a61ef7cac46",
-      "source": "去待办看看",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 256,
-          "context": "{i18n(\"components.homewidgets.4a61ef7cac46\")}"
-        }
-      ],
-      "translation": "Check your Tasks",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.4ce3054e7c4d",
-      "source": " 天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 59,
-          "context": "i18n(\"components.homewidgets.16612dac51bc\") + -days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 463,
-          "context": "i18n(\"components.homewidgets.c9f6e2ad23fd\") + days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 467,
-          "context": "i18n(\"components.homewidgets.b4768eecdbfd\") + days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 578,
-          "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        }
-      ],
-      "translation": " days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.56209f0a5989",
-      "source": " 签到",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 360,
-          "context": "hm(r.start) + i18n(\"components.homewidgets.56209f0a5989\")"
-        }
-      ],
-      "translation": " check-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.60367daaba0b",
-      "source": "未开始 · ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 462,
-          "context": "i18n(\"components.homewidgets.60367daaba0b\") + days"
-        }
-      ],
-      "translation": "Not started · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.60db1afb4022",
-      "source": "课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 630,
-          "context": "data?.courses.find((c) => c.id === courseId)?.name ?? i18n(\"components.homewidgets.60db1afb4022\")"
-        }
-      ],
-      "translation": "Courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.6699d0be5ff8",
-      "source": "校内通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 422,
-          "context": "n.source || i18n(\"components.homewidgets.6699d0be5ff8\")"
-        }
-      ],
-      "translation": "Campus notices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.6dbfc7966582",
-      "source": "三日内截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 538,
-          "context": "{i18n(\"components.homewidgets.6dbfc7966582\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 538,
-          "context": "{i18n(\"components.homewidgets.6dbfc7966582\")}"
-        }
-      ],
-      "translation": "Due within 3 days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.7979e047afe2",
-      "source": "校园卡（加载中）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 441,
-          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
-        }
-      ],
-      "translation": "Campus card (loading)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.79bfedfa5fcb",
-      "source": " 天后截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 62,
-          "context": "days + i18n(\"components.homewidgets.79bfedfa5fcb\")"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 63,
-          "context": "days + i18n(\"components.homewidgets.79bfedfa5fcb\")"
-        }
-      ],
-      "translation": " days to deadline",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.7bd9d53b62f0",
-      "source": "座位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 367,
-          "context": "r.kind === \"seat\" ? i18n(\"components.homewidgets.7bd9d53b62f0\") : i18n(\"components.homewidgets.e4d40b4d6759\")"
-        }
-      ],
-      "translation": "Seat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.849f9c17224f",
-      "source": "已完成 {externalProgress} 题",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "externalProgress",
-          "expression": "String(h.externalProgress)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 297,
-          "context": "{i18n(\"components.homewidgets.849f9c17224f\", { externalProgress: String(h.externalProgress) })}"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 297,
-          "context": "{i18nRich(\"components.homewidgets.849f9c17224f\", { externalProgress: h.externalProgress })}"
-        }
-      ],
-      "translation": "{externalProgress} problems completed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.8e88f8b0acf1",
-      "source": "未知截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 55,
-          "context": "text: i18n(\"components.homewidgets.8e88f8b0acf1\")"
-        }
-      ],
-      "translation": "Unknown due date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.954daea3eaaa",
-      "source": "校历 · 星期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 577,
-          "context": "i18n(\"components.homewidgets.954daea3eaaa\") + WEEKDAYS[n.date.getDay()]"
-        }
-      ],
-      "translation": "Academic calendar · weekday",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.98d8baebd69d",
-      "source": "去网络学堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 323,
-          "context": "{i18n(\"components.homewidgets.98d8baebd69d\")}"
-        }
-      ],
-      "translation": "Open Web Learning",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.9b0b6c84ccb6",
-      "source": "今天开始",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 461,
-          "context": "text: i18n(\"components.homewidgets.9b0b6c84ccb6\")"
-        }
-      ],
-      "translation": "Starts today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.a0d4cfb9759e",
-      "source": "重要事项 · ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 597,
-          "context": "i18n(\"components.homewidgets.a0d4cfb9759e\") + (d.begin ?? \"\").slice(5, 16)"
-        }
-      ],
-      "translation": "Important · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.aff97ddc4f4d",
-      "source": " 天后",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 462,
-          "context": "i18n(\"components.homewidgets.60367daaba0b\") + days + i18n(\"components.homewidgets.aff97ddc4f4d\")"
-        }
-      ],
-      "translation": " days from now",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.b4768eecdbfd",
-      "source": "进行中 · 剩 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 467,
-          "context": "i18n(\"components.homewidgets.b4768eecdbfd\") + days"
-        }
-      ],
-      "translation": "In progress · ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.bc37a6110a07",
-      "source": "已提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 57,
-          "context": "text: i18n(\"components.homewidgets.bc37a6110a07\")"
-        }
-      ],
-      "translation": "Submitted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.c0c6bb8b8618",
-      "source": "校园卡余额",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 440,
-          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.caf1f095b108\")"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 441,
-          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
-        }
-      ],
-      "translation": "Campus card balance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.c9f6e2ad23fd",
-      "source": "未开始 · 还有 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 463,
-          "context": "i18n(\"components.homewidgets.c9f6e2ad23fd\") + days"
-        }
-      ],
-      "translation": "Not started · in ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.caf1f095b108",
-      "source": "校园卡",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 440,
-          "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.caf1f095b108\")"
-        }
-      ],
-      "translation": "Campus card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.d26ef0190d6c",
-      "source": "考试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 284,
-          "context": "{i18n(\"components.homewidgets.d26ef0190d6c\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 284,
-          "context": "{i18n(\"components.homewidgets.d26ef0190d6c\")}"
-        }
-      ],
-      "translation": "Exams",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.d42baf1647c8",
-      "source": "已批改",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 56,
-          "context": "text: i18n(\"components.homewidgets.d42baf1647c8\")"
-        }
-      ],
-      "translation": "Graded",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.d5f5a7a01073",
-      "source": "今天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 578,
-          "context": "n.daysUntil === 0 ? i18n(\"components.homewidgets.d5f5a7a01073\") : i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
-        }
-      ],
-      "translation": "Today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.dba6c45f9f3a",
-      "source": "其他平台作业同步中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 530,
-          "context": "{i18n(\"components.homewidgets.dba6c45f9f3a\")}"
-        }
-      ],
-      "translation": "Syncing assignments from other platforms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.e272d62dae3f",
-      "source": "{value} 截止",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "h.deadline.slice(11, 16)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 278,
-          "context": "{i18nRich(\"components.homewidgets.e272d62dae3f\", { value: h.deadline.slice(11, 16) })}"
-        }
-      ],
-      "translation": "Due {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.e4d40b4d6759",
-      "source": "研讨间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 367,
-          "context": "r.kind === \"seat\" ? i18n(\"components.homewidgets.7bd9d53b62f0\") : i18n(\"components.homewidgets.e4d40b4d6759\")"
-        }
-      ],
-      "translation": "Seminar room",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.f7b18ee399fc",
-      "source": "旁听课堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 285,
-          "context": "{i18n(\"components.homewidgets.f7b18ee399fc\")}"
-        }
-      ],
-      "translation": "Audit classes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.f8308b0b2728",
-      "source": "旁听",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 285,
-          "context": "{i18n(\"components.homewidgets.f8308b0b2728\")}"
-        }
-      ],
-      "translation": "Audit",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homewidgets.fa22f0f0b501",
-      "source": "今天结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeWidgets.tsx",
-          "line": 466,
-          "context": "text: i18n(\"components.homewidgets.fa22f0f0b501\")"
-        }
-      ],
-      "translation": "Ends today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.07b65092ac19",
-      "source": "就要截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 28,
-          "context": "small: i18n(\"components.homeworkcarousel.07b65092ac19\")"
-        }
-      ],
-      "translation": "Due soon",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.11ac26dfc826",
-      "source": "确定要忽略《{title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，可在「全部作业 → 已忽略」恢复。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "title",
-          "expression": "String(h.title)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 341,
-          "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
-        }
-      ],
-      "translation": "Ignore \"{title}\"?\n\nOnce ignored, it won't appear in the assignments area or schedule reminders. You can restore it under \"All assignments → Ignored\".",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.homeworkcarousel.13c68d134847",
-      "source": "已逾期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 26,
-          "context": "big: i18n(\"components.homeworkcarousel.13c68d134847\")"
-        }
-      ],
-      "translation": "Overdue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.4881997d6f3a",
-      "source": "还剩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 29,
-          "context": "small: i18n(\"components.homeworkcarousel.4881997d6f3a\")"
-        }
-      ],
-      "translation": "Due in ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.4bdb0fcd89b8",
-      "source": "作业都交完了，痛快去玩吧。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 177,
-          "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
-        }
-      ],
-      "translation": "All assignments are submitted. Go enjoy yourself!",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.4ce3054e7c4d",
-      "source": " 天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 29,
-          "context": "days + i18n(\"components.homeworkcarousel.4ce3054e7c4d\")"
-        }
-      ],
-      "translation": " days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.759af5356c1e",
-      "source": "[HAPTIC] 预烘焙不可用，降级路径={mode}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "mode",
-          "expression": "String(r.mode)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 132,
-          "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
-        }
-      ],
-      "translation": "[HAPTIC] Pre-baked haptics unavailable; fallback path={mode}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.7849c0828e15",
-      "source": "外部作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 41,
-          "context": "labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
-        }
-      ],
-      "translation": "External assignments",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.homeworkcarousel.8cc765f4b8b9",
-      "source": "收藏作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 349,
-          "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
-        }
-      ],
-      "translation": "Starred assignments",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.a80f2d59cd5f",
-      "source": "交了 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 42,
-          "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
-        }
-      ],
-      "translation": "Submitted ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.aa39cac2b409",
-      "source": "网络学堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 41,
-          "context": "h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
-        }
-      ],
-      "translation": "Web Learning",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.homeworkcarousel.cac076fbec2f",
-      "source": "尽快处理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 26,
-          "context": "small: i18n(\"components.homeworkcarousel.cac076fbec2f\")"
-        }
-      ],
-      "translation": "Handle soon",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.d4b1b25d27b2",
-      "source": "查看全部作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 179,
-          "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
-        }
-      ],
-      "translation": "View all assignments",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.da7ecec544ad",
-      "source": "逾期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 43,
-          "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
-        }
-      ],
-      "translation": "Overdue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.homeworkcarousel.e9d65d05f085",
-      "source": "忽略这条作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 336,
-          "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
-        }
-      ],
-      "translation": "Ignore this assignment",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -40,6 +40,7 @@ import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 import { helper as infoHelper } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
+import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
@@ -99,14 +100,14 @@ async function loadReal(): Promise<CampusData> {
     // 返回 404（PAGE-ERR CAMPUS-SCHED「Unexpected response status code: 404 (index)」），
     // 被 catch 吞成空数组：CampusData.schedule 恒为 []，于是首页「今日课程」永远
     // 「今天没有课」、桌面小组件没有课，而且日志里一个字都不留（2026-10-26 手机实测）。
-    // 换到已验证可用的 core 窗口链路，并按日程页同款并入二级课表（失败不退一级）。
+    // 二级课表（实验课）并入需要学期 firstDay：优先吃已落盘的校历缓存，冷启动才回落网络；
+    // 合并二级失败只丢二级，绝不连带把一级课表变成 []。
     (async () => {
+      const cached = cacheGet<CalendarData>("calendar")?.data ?? null;
+      const calendar = cached?.firstDay ? cached : await cacheFetch("calendar", () => learn.getCalendarData()).catch(() => cached);
       const primary = await info.getSchedule(from, to);
-      // 二级课表（实验课）并入：需要学期 firstDay；只吃已落盘的校历缓存，
-      // 不在这里多发一次请求（冷启动没有校历就先给一级，下一轮缓存就绪再并）。
-      const firstDay = cacheGet<CalendarData>("calendar")?.data?.firstDay;
-      if (!firstDay) return primary;
-      return appendSecondarySchedule(primary, firstDay, from, to).catch(() => primary);
+      if (!calendar?.firstDay) return primary;
+      return appendSecondarySchedule(primary, calendar.firstDay, from, to).catch(() => primary);
     })().catch((err) => {
       logPageError("CAMPUS-SCHED", err);
       return [] as ScheduleEntry[];
@@ -125,6 +126,42 @@ async function loadReal(): Promise<CampusData> {
 }
 
 export type DataState = "loading" | "error" | "ready";
+
+/** Home courses share the timetable's primary + secondary source. Learn's
+ * availability and its bulk campus cache do not determine whether today has class. */
+export function useTodayCourseData() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
+  const { status } = useApp();
+  const calendar = useCalendar();
+  const firstDay = calendar.data?.firstDay;
+  const day = fmtDate(new Date()), key = `todaycourses:${day}:${firstDay ?? "pending"}`;
+  const seed = preview ? cacheGet<CampusData>("campus")?.data.schedule ?? null : cacheGet<ScheduleEntry[]>(key)?.data ?? null;
+  const [data, setData] = useState<ScheduleEntry[] | null>(seed);
+  const [state, setState] = useState<DataState>(seed ? "ready" : "loading");
+  const [error, setError] = useState<string | null>(null);
+  const load = useCallback(async () => {
+    if (preview || !firstDay) return;
+    setState("loading");setError(null);
+    try {
+      const rows = await cacheFetch(key, async () => {
+        const primary = await info.getSchedule(day, day);
+        return appendSecondarySchedule(primary, firstDay, day, day);
+      });
+      setData(rows);setState("ready");
+    } catch (err) {
+      logPageError("TODAY-COURSES", err);
+      setError(explainNetworkError(err));setState("error");
+    }
+  }, [preview, key, day, firstDay, status]);
+  useEffect(() => {
+    if (status !== "ready" || preview) return;
+    if (firstDay) void load();
+    else if (calendar.state === "error") {
+      setError(calendar.error ?? i18n("schedule.secondary.invalidSemester"));setState("error");
+    }
+  }, [status, preview, firstDay, calendar.state, calendar.error, load]);
+  return { data, state, error, reload: firstDay ? load : calendar.reload };
+}
 
 const CAMPUS_KEY = "campus";
 const CAMPUS_TTL = 3 * 60 * 1000;

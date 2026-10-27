@@ -45,6 +45,7 @@ import * as neth from "./neth.js";
 import * as schoolCalendar from "./calendar.js";
 import { parseLibrarySession } from "./librarySession.js";
 import { parseCRSchedule } from "./crSchedule.js";
+import { mergeInfoCookieBody } from "./cookies.js";
 import { fetchZhjwxkPage, type ZhjwxkSession } from "../zhjwxk/client.js";
 import type {
   AssessmentForm,
@@ -86,6 +87,22 @@ import type {
 import * as sports from "./sports.js";
 import * as kj from "./kongjian.js";
 import type { ValidReceiptTitle } from "./sports.js";
+
+export interface LibRoomSessionOptions {
+  /** CLI reads may establish SSO, but must leave initial email binding to the app. */
+  readOnlyInitialization?: boolean;
+}
+
+/** Booking URLs originate in the school form, never an arbitrary caller URL. */
+function kongjianBookingUrl(raw: string, base = `${kj.KJ_PREFIX}/`): string {
+  let url: URL;
+  try { url = new URL(raw, base); } catch { throw new Error("公共空间预约地址无效"); }
+  if (!["http:", "https:"].includes(url.protocol) || url.hostname !== "myhome.tsinghua.edu.cn"
+    || url.port || url.username || url.password || url.hash || url.pathname !== "/kongjian/kj_yuyue2.aspx") {
+    throw new Error("公共空间预约仅支持学校预约确认页");
+  }
+  return url.toString();
+}
 
 function stripJsonp(text: string): string {
   const s = text.indexOf("(");
@@ -512,28 +529,23 @@ export class InfoClient {
     return (await this.getUserInfo().catch(() => null)) !== null;
   }
 
-  /** wengine-vpn/cookie dance（thu-info-lib getCsrfToken + tauriHttp 特判的合成）：
-   *  每次都打端点（per-host wengine ticket 需要常刷）；
-   *  响应体即 info 域完整 cookie 串，全量并入 jar 的 webvpn 桶与 info 桶
-   *  （info 已改直连，直连请求读 info 桶）。 */
+  /** Refresh Info cookies in its logical and encoded application scopes. */
   async #wengineCookieDance(): Promise<void> {
-    const res = await this.#http.request(urls.GET_COOKIE_URL()).catch(() => null);
-    if (!res) return;
-    const bodyText = await res.text().catch(() => "");
-    // 单管线：info 走包装域，cookie 全并 webvpn 桶（直连 info 桶已退役）
-    const targets = ["https://webvpn.tsinghua.edu.cn/"];
-    for (const pair of bodyText.split(/;|\n/)) {
-      const t = pair.trim();
-      if (/^[A-Za-z0-9_.-]+=/.test(t)) {
-        for (const d of targets) {
-          try {
-            this.#http.jar.setRaw(new URL(d), t + "; Path=/");
-          } catch {
-            /* 容忍个别坏值 */
-          }
-        }
-      }
-    }
+    const recover = (error: unknown): null => {
+      if ((error as { code?: string })?.code === "AUTH_SESSION_CHANGED") throw error;
+      return null;
+    };
+    const res = await this.#http.request(urls.GET_COOKIE_URL()).catch(recover);
+    if (!res?.ok) return;
+    const bodyText = await res.text().catch(recover);
+    if (bodyText === null) return;
+    const guarded = res as Response & { assertNativeSession?: () => Promise<void> };
+    const rawEpoch = res.headers.get("x-onethu-cookie-epoch");
+    const epoch = rawEpoch === null ? undefined : Number(rawEpoch);
+    await mergeInfoCookieBody(this.#http, bodyText, {
+      assertCurrent: () => guarded.assertNativeSession?.(),
+      nativeEpoch: Number.isSafeInteger(epoch) ? epoch : undefined,
+    });
   }
 
   /** 个人信息（demo basics.getUserInfo 金标准：yyfw 漫游 + 正则；grjbxx 仅兜底） */
@@ -953,6 +965,7 @@ export class InfoClient {
     const read = (): string | undefined =>
       this.#http.jar
         .getCookies(new URL(`${urls.INFO_PREFIX}/`))
+        .sort((a, b) => b.path.length - a.path.length)
         .find((c) => c.name === "XSRF-TOKEN")?.value;
     let token = read();
     if (!token) {
@@ -2011,11 +2024,11 @@ export class InfoClient {
   /**
    * exthw（TUOJ 统一认证）前置：账密直登 id，建立**直连** id 会话（lib roam("id")
    * 正门，凭据由 CampusSession 经 #idCredentials 注入，零用户输入）。
-   * 只建立 id 会话、**不兑付服务票据**——调用方随后自行请求目标服务表单，CAS 会
-   * 用新会话重新发票。返回 true = id 直连会话已建立；无内存凭据或直登失败返回 false；
+   * 默认只建立 id 会话；consumeServiceTicket 用于云盘等需要兑付本次回调的服务。
+   * 返回 true = 认证完成（启用兑付时也已访问回调）；无内存凭据或直登失败返回 false；
    * 2FA 由底层抛 AuthRequiredError（调用方自行转可操作文案）。
    */
-  async ensureDirectIdLogin(formUrl: string): Promise<boolean> {
+  async ensureDirectIdLogin(formUrl: string, options: { consumeServiceTicket?: boolean } = {}): Promise<boolean> {
     const creds = this.#idCredentials?.();
     if (!creds?.username || !creds?.password) {
       this.lastDebug = `id-login skip（无内存凭据） ${formUrl.slice(0, 120)}`;
@@ -2027,7 +2040,9 @@ export class InfoClient {
       diag += out.diag + " | ";
       if (out.ticketUrl) {
         this.lastDebug = diag.replace(/\s+/g, " ").slice(0, 400);
-        return true;
+        // Service SSO can require consuming this exact callback; a fresh CAS
+        // request need not reuse the just-completed credential exchange.
+        return options.consumeServiceTicket ? this.#consumeIdTicketUrl(out.ticketUrl, formUrl) : true;
       }
       if (out.fatal) break;
     }
@@ -2563,6 +2578,7 @@ export class InfoClient {
     sectionId: number,
     dateChoice: 0 | 1,
     userId: string,
+    beforeWrite?: () => Promise<void>,
   ): Promise<{ status?: number; msg?: string }> {
     return this.#withRenew(async () => {
       await this.#ensureLibrary();
@@ -2571,6 +2587,7 @@ export class InfoClient {
         const token = await this.#libraryAccessToken();
         // userid 用座位系统自报的权威值（token 与它配对校验；应用登录名未必等同）
         const uid = InfoClient.libUserid || userId;
+        await beforeWrite?.();
         const text = await this.#http.text(urls.LIBRARY_BOOK_SEAT(seat.id), {
           ...this.#campusInit(),
           method: "POST",
@@ -2657,14 +2674,15 @@ export class InfoClient {
   }
 
   /** 取消预约（library.ts cancelBooking：POST profile/books/<id>，_method=delete） */
-  async cancelLibBooking(recordId: string, userId: string): Promise<void> {
+  async cancelLibBooking(recordId: string, userId: string, beforeWrite?: () => Promise<void>): Promise<void> {
     return this.#withRenew(async () => {
       await this.#ensureLibrary();
       const token = await this.#libraryAccessToken();
       // R10：userid 与 token 配对校验——同订座，用座位系统自报权威值
       const uid = InfoClient.libUserid || userId;
-      const postCancel = () =>
-        Promise.race([
+      const postCancel = async () => {
+        await beforeWrite?.();
+        return Promise.race([
           this.#http.text(`${urls.LIBRARY_CANCEL_BOOKING()}${encodeURIComponent(recordId)}`, {
             ...this.#campusInit(),
             method: "POST",
@@ -2682,6 +2700,7 @@ export class InfoClient {
             setTimeout(() => rej(new Error("__cancel_body_timeout__")), 20_000),
           ),
         ]);
+      };
       const parseCancel = (text: string): { status?: number; msg?: string; message?: string } => {
         try {
           return JSON.parse(text) as { status?: number; msg?: string; message?: string };
@@ -2697,10 +2716,9 @@ export class InfoClient {
         // 正文挂死 ≠ 取消失败：服务端大概率已处理。复核记录再下结论——
         // 盲目报失败会诱导重试，白白烧掉每馆每日 1 次的取消额度
         this.libRecordsCacheClear();
-        const recs = await this.getLibBookRecords().catch(() => []);
-        const gone = !recs.some((r) => r.delId === recordId || r.id === recordId);
-        if (gone) return;
-        throw new Error("取消请求超时：服务端状态未知，预约记录里仍有此单，请稍后重试");
+        const recs = await this.getLibBookRecords().catch(() => null);
+        if (recs !== null && !recs.some((r) => r.delId === recordId || r.id === recordId)) return;
+        throw new Error("取消请求超时：服务端状态未知，请到预约记录核对后再操作");
       }
       // token 被上次成功操作轮换过（缓存值陈旧）→ 服务端回「请刷新页面后重新操作」；
       // 此错意味着首次必然未取消成功，作废重取后重试一次
@@ -2708,6 +2726,7 @@ export class InfoClient {
         InfoClient.libToken = "";
         InfoClient.libTokenTs = 0;
         const token2 = await this.#libraryAccessToken();
+        await beforeWrite?.();
         const text2 = await this.#http.text(`${urls.LIBRARY_CANCEL_BOOKING()}${encodeURIComponent(recordId)}`, {
           ...this.#campusInit(),
           method: "POST",
@@ -2817,7 +2836,7 @@ export class InfoClient {
    *    直登），票据兑付即建立 cab 会话（service 为 WebVPN 包装的 cab 回调）；
    * ④ ic-web/auth/userInfo 核实 pid === userId 并缓存 accNo。
    */
-  async #ensureLibRoom(userId: string): Promise<void> {
+  async #ensureLibRoom(userId: string, options: LibRoomSessionOptions = {}): Promise<void> {
     // 规范学号：用户名登录时 #libRoomPid 已由上轮探针回填（登录名≠学号），TTL 键以它为准
     const canonical = (): string => this.#libRoomPid ?? userId;
     // 10 分钟 TTL + 跨实例单飞（#libraryAccessToken 同款；单用户应用，缓存含 userId）。
@@ -2860,6 +2879,9 @@ export class InfoClient {
     }
     let alive = await this.#libRoomAlive(userId);
     if (!alive.ok && /无 pid|无 accNo/.test(alive.why)) {
+      if (options.readOnlyInitialization) {
+        throw new Error("LIBROOM_INITIALIZATION_REQUIRED: 请先在 OneTHU 的研讨间页面完成首次账户初始化，再使用 CLI 查询。");
+      }
       // 无感激活（用户语义：研讨间应与图书馆一样零操作）：新生原站账号未
       // 初始化时，应用内自动绑官方邮箱（学号@mails.tsinghua.edu.cn，与原站
       // 手动流程同接口 ic-web/account/update），随后复检——成功则全程无引导。
@@ -2891,20 +2913,20 @@ export class InfoClient {
 
   /** 研讨间请求包装：先 #ensureLibRoom；AuthRequiredError 时重建会话重试一次
    *  （查询幂等；预约写操作的 resvMember 在 accNo 确认后才组装，重放安全）。 */
-  async #withLibRoom<T>(userId: string, op: () => Promise<T>): Promise<T> {
-    await this.#ensureLibRoom(userId);
+  async #withLibRoom<T>(userId: string, op: () => Promise<T>, options: LibRoomSessionOptions = {}): Promise<T> {
+    await this.#ensureLibRoom(userId, options);
     try {
       return await op();
     } catch (e) {
       if (!(e instanceof AuthRequiredError)) throw e;
       this.#libRoomAccNo = null;
-      await this.#ensureLibRoom(userId);
+      await this.#ensureLibRoom(userId, options);
       return await op();
     }
   }
 
   /** 房型/房间列表（library.ts getLibraryRoomBookingInfoList 字段映射） */
-  async getLibRoomInfoList(userId: string): Promise<LibRoomInfo[]> {
+  async getLibRoomInfoList(userId: string, options: LibRoomSessionOptions = {}): Promise<LibRoomInfo[]> {
     return this.#withLibRoom(userId, async () => {
       const data = await this.#cabFetch<Array<Record<string, unknown>>>(urls.LIBROOM_ROOM_INFO());
       return (data ?? []).map((item) => ({
@@ -2916,14 +2938,14 @@ export class InfoClient {
           minReserveTime: Number(room.minResvTime ?? 0),
         })),
       }));
-    });
+    }, options);
   }
 
   /** 可约资源（library.ts getLibraryRoomBookingResourceList；date=yyyyMMdd）。
    *  实录（09-07 wire 层）：ic-web/reserve 只认紧凑 resvDates=20260907——
    *  传 2026-09-07 会回「系统繁忙，请稍后重试」/HTML 错误页（dock 小OH 首例）。
    *  在此归一化：两种形态进、紧凑出，调用方无需各自关心。 */
-  async getLibRoomResourceList(userId: string, date: string, kindId: number): Promise<LibRoomRes[]> {
+  async getLibRoomResourceList(userId: string, date: string, kindId: number, options: LibRoomSessionOptions = {}): Promise<LibRoomRes[]> {
     return this.#withLibRoom(userId, async () => {
       const compact = date.replace(/-/g, "");
       const data = await this.#cabFetch<Array<Record<string, unknown>>>(
@@ -2966,11 +2988,11 @@ export class InfoClient {
             })),
         } satisfies LibRoomRes;
       });
-    });
+    }, options);
   }
 
   /** 成员模糊搜索（library.ts fuzzySearchLibraryId；id 为 accNo，非学号） */
-  async fuzzySearchLibRoomMember(userId: string, keyword: string): Promise<LibFuzzySearchResult[]> {
+  async fuzzySearchLibRoomMember(userId: string, keyword: string, options: LibRoomSessionOptions = {}): Promise<LibFuzzySearchResult[]> {
     return this.#withLibRoom(userId, async () => {
       const data = await this.#cabFetch<Array<Record<string, unknown>>>(
         urls.LIBROOM_FUZZY_SEARCH() + encodeURIComponent(keyword),
@@ -2980,7 +3002,7 @@ export class InfoClient {
         label: String(r.logonName ?? ""),
         department: String(r.deptName ?? ""),
       }));
-    });
+    }, options);
   }
 
   /** 提交预约（library.ts bookLibraryRoom；start/end = "YYYY-MM-DD HH:mm"，
@@ -2991,8 +3013,10 @@ export class InfoClient {
     start: string,
     end: string,
     memberList: number[],
+    beforeWrite?: () => Promise<void>,
   ): Promise<void> {
     return this.#withLibRoom(userId, async () => {
+      await beforeWrite?.();
       await this.#cabFetch(urls.LIBROOM_ACTION(), {
         sysKind: 1,
         appAccNo: this.#libRoomAccNo ?? -1,
@@ -3013,7 +3037,7 @@ export class InfoClient {
   }
 
   /** 我的预约（library.ts getLibraryRoomBookingRecord；begin=今天 end=+6 天） */
-  async getLibRoomRecords(userId: string): Promise<LibRoomBookRecord[]> {
+  async getLibRoomRecords(userId: string, options: LibRoomSessionOptions = {}): Promise<LibRoomBookRecord[]> {
     return this.#withLibRoom(userId, async () => {
       const begin = new Date();
       const end = new Date(begin.getTime() + 6 * 86_400_000);
@@ -3040,14 +3064,17 @@ export class InfoClient {
           })),
         } satisfies LibRoomBookRecord;
       });
-    });
+    }, options);
   }
 
   /** 取消预约（library.ts cancelLibraryRoomBooking；POST {uuid}）。
    *  图书馆教训移植：取消报错≠没取消——响应丢失/服务端已落账时状态未知，
    *  复核我的预约：uuid 已不在 = 其实已取消 → 按成功返回，不吓用户。 */
-  async cancelLibRoomBooking(userId: string, uuid: string): Promise<void> {
+  async cancelLibRoomBooking(userId: string, uuid: string, beforeWrite?: () => Promise<void>): Promise<void> {
     return this.#withLibRoom(userId, async () => {
+      // Keep guard rejection outside the response-reconciliation catch: an
+      // unsubmitted request must never be reported as a completed cancellation.
+      await beforeWrite?.();
       try {
         await this.#cabFetch(urls.LIBROOM_CANCEL(), { uuid });
       } catch (e) {
@@ -4151,10 +4178,12 @@ export class InfoClient {
   async kongjianBook(
     bookUrl: string,
     info: { name: string; sid: string; tel: string; other: string },
+    beforeWrite?: () => Promise<void>,
   ): Promise<string> {
+    const source = kongjianBookingUrl(bookUrl);
     return this.#withRenew(async () => {
     const page = await this.#dormPage(
-      () => this.#http.text(bookUrl),
+      () => this.#http.text(source),
       (p) => !kj.hasKongjianLogin(p),
       "公共空间预约确认页",
     );
@@ -4177,8 +4206,8 @@ export class InfoClient {
     const okBtn = /<input[^>]*type="submit"[^>]*name="([^"]*btnOK[^"]*)"[^>]*value="([^"]*)"/.exec(page)
       ?? /<input[^>]*name="([^"]*btnOK[^"]*)"[^>]*type="submit"[^>]*value="([^"]*)"/.exec(page);
     if (okBtn) body.set(okBtn[1]!, okBtn[2]!);
-    const action = form.action ?? bookUrl;
-    const target = action.startsWith("http") ? action : `${kj.KJ_PREFIX}/${action.replace(/^\.\//, "")}`;
+    const target = kongjianBookingUrl(form.action || source, source);
+    await beforeWrite?.();
     const resp = await this.#http.request(target, {
       method: "POST",
       body,
@@ -4207,7 +4236,7 @@ export class InfoClient {
   }
 
   /** 公共空间：取消预约（我的预约页 __doPostBack 目标） */
-  async kongjianCancel(cancelTarget: string): Promise<void> {
+  async kongjianCancel(cancelTarget: string, beforeWrite?: () => Promise<void>): Promise<void> {
     return this.#withRenew(async () => {
     const page = await this.#dormPage(
       () => this.#http.text(kj.KJ_MY()),
@@ -4222,6 +4251,7 @@ export class InfoClient {
       if (k === "__EVENTTARGET" || k === "__EVENTARGUMENT") continue;
       body.set(k, v);
     }
+    await beforeWrite?.();
     await this.#http.request(kj.KJ_MY(), {
       method: "POST",
       body,

@@ -88,6 +88,10 @@ export function timeLeft(deadline: string): { text: string; overdue: boolean } {
 export function homeworkChip(h: Homework): { text: string; cls: string } {
   if (h.graded) return { text: i18n("pages.learn.shared.d42baf1647c8"), cls: "chip-blue" };
   if (h.submitted) return { text: i18n("pages.learn.shared.bc37a6110a07"), cls: "chip-green" };
+  // TUOJ 部分作答：状态直接写成「进行中 · x/y」（而不是只给 DDL 倒计时 + 另一个进度 chip）
+  if (h.externalProgress && (h.source === "tuoj" || h.source === "tuojClassic")) {
+    return { text: i18n("pages.learn.shared.inProgress") + " · " + h.externalProgress, cls: "chip-amber" };
+  }
   const { text, overdue } = timeLeft(h.deadline);
   if (overdue) return { text: text || i18n("pages.learn.shared.681ed99063ed"), cls: "chip-red" };
   const dl = parseLearnTime(h.deadline);
@@ -449,6 +453,7 @@ export function HomeworkRow({
         <div className="row-title">
           {h.source ? <span className="src-badge" title={h.externalProgress ? i18n("pages.learn.shared.416183bc4268", { externalProgress: String(h.externalProgress) }) : undefined}>{extHwSourceName(h.source)}</span> : null}
           {h.kind === "exam" ? <span className="tag-exam" title={i18n("pages.learn.shared.d26ef0190d6c")}>{i18n("pages.learn.shared.d26ef0190d6c")}</span> : null}
+          {h.kind === "quiz" ? <span className="tag-quiz" title={i18n("pages.learn.shared.quiz")}>{i18n("pages.learn.shared.quiz")}</span> : null}
           {h.audited ? <span className="tag-audit" title={i18n("pages.learn.shared.f7b18ee399fc")}>{i18n("pages.learn.shared.f8308b0b2728")}</span> : null}
           {h.title}
         </div>
@@ -459,7 +464,7 @@ export function HomeworkRow({
         {score ? `${chip.text} · ${score}` : chip.text}
       </span>
       {/* R23（霖需求）：部分作答的外部作业（进行中）在截止 chip 右侧标注题级进度 */}
-      {h.externalProgress && !h.submitted ? (
+      {h.externalProgress && !h.submitted && h.source !== "tuoj" && h.source !== "tuojClassic" ? (
         <span className="chip chip-gray" title={i18n("pages.learn.shared.849f9c17224f", { externalProgress: String(h.externalProgress) })}>{i18nRich("pages.learn.shared.849f9c17224f", { externalProgress: h.externalProgress })}</span>
       ) : null}
       {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）。R10 15.3：外部作业

@@ -31,8 +31,8 @@ export function openLessonTarget(target: TourTarget): void {
     case "vault": openTab("vault"); break;
     case "organization": openTab("contacts", { section: "orgs" } as never); break;
     case "plugins": openSettings("plugins"); break;
-    case "appearance": requestSettingsTab("外观与布局"); openSettings("settings"); break;
-    case "data": requestSettingsTab("数据与同步"); openSettings("settings"); break;
+    case "appearance": requestSettingsTab("外观"); openSettings("settings"); break;
+    case "data": requestSettingsTab("账号"); openSettings("settings"); break;
     case "learn": openTab("learn"); break;
     case "xiaoda": openTab("xiaoda"); break;
     case "practical": openTab("homepage"); showPracticalFeatures(); break;

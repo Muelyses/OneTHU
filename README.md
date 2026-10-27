@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11.3 · Revolution**
+**0.11.4-fix-1 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -14,9 +14,13 @@
 
 OneTHU 是非官方的清华校园应用，覆盖 macOS、Windows 与 Android。0.11 使用 OneGUI 统一交互，主题、壁纸与布局均可调整，提供极简、实用、完整三种模式；搜索与 OH 胶囊贯穿三种模式，完整模式进一步开放自由白板、暂存分享、组织、插件、OneTHU Harness 与清小搭。
 
-## 0.11.3 修复更新
+## 0.11.4-fix-1 修复
 
-本次更新改善学校登录与会话恢复，复用已有设备身份，并在登录界面提供更新公告、手动检查和下载安装入口。极简、实用和完整模式均可在登录受阻时获取修复版。macOS、Windows 与 Android 同步更新，详见 [修复说明](docs/release-0.11.3.md)。
+修复 Windows 登录与后台启动、首页一级和二级课程、平板设置滚动及手机卡片高度。保留 0.11.4 的现有功能，三端同步更新。 [更新说明](docs/release-0.11.4-fix-1.md)。
+
+## 0.11.4 更新
+
+加入独立 OneTHU CLI、SDK 与桌面常驻后台，共享登录和任务；OH 接入雨课堂、好友、组织、清小搭技能和暂存箱。修复通知附件命名、云盘自动连接与 IM 会话隔离，合入玻璃与界面优化。macOS、Windows 与 Android 同步更新，详见 [更新说明](docs/release-0.11.4.md)。
 
 ## 真实界面，模拟数据
 
@@ -80,6 +84,7 @@ pnpm dev
 浏览器预览不等同于原生宿主。原生构建需 Rust 与 Tauri 平台依赖，Android 另需 JDK / SDK / NDK。主力开发分支为 dev3。
 
 - [开发者中心与构建](docs/developers.md)
+- [OneTHU CLI、SDK 与常驻助理](docs/onethu-cli.md)：独立登录、课程归档、定时检查和 IM 通知；MCP 可供其他智能体使用。安装与验收边界见指南。
 - [全部贡献者与主要贡献者](docs/contributors.md)
 - [插件开发](docs/plugin-development.md) · [API](docs/api-surface.md) · [OneTHU Harness](https://github.com/smartThise/OneTHU-Harness)
 - [架构](docs/architecture.md) · [OneGUI](docs/design-language.md) · [全部文档与历史状态](docs/documentation-catalog.md)

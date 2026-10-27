@@ -10,11 +10,11 @@ import { Btn } from "@onethu/gui";
  */
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { WEEKDAYS } from "../lib/dateText.js";
-import { Card, Empty, SkeletonRows } from "../components/Layout.js";
+import { Card, Empty, ErrorNote, SkeletonRows } from "../components/Layout.js";
 import { IconCard, IconChevron } from "../components/Icons.js";
 import { useApp } from "../state/context.js";
 import type { LearnNav, Page } from "../state/app.js";
-import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
+import { useCampusData, useCard, useTodayCourseData, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
 import { openHomeworkRow } from "../lib/homeworkEntry.js";
@@ -293,7 +293,7 @@ export function HomeworkRows({
             </span>
             {/* R23（霖需求）：雨课堂等外部作业部分作答 → 进行中（未交），在截止 chip
                 右侧标注「已完成 x/y 题」；整卷已交不显示（有 已提交/已批改 表达） */}
-            {h.externalProgress && !h.submitted ? (
+            {h.externalProgress && !h.submitted && h.source !== "tuoj" && h.source !== "tuojClassic" ? (
               <span className="chip chip-gray" title={i18n("components.homewidgets.849f9c17224f", { externalProgress: String(h.externalProgress) })}>{i18nRich("components.homewidgets.849f9c17224f", { externalProgress: h.externalProgress })}</span>
             ) : null}
             <IconChevron className="row-caret" width={14} height={14} />
@@ -373,14 +373,14 @@ export function ResvRows({ list, navigate }: { list: ResvListT; navigate: Nav })
 }
 
 /** 今日课程卡体 */
-export function ClassRows({ events, navigate }: { events: ScheduleEntry[]; navigate: Nav }) {
+export function ClassRows({ events, navigate, emptyText }: { events: ScheduleEntry[]; navigate: Nav; emptyText?: string }) {
   const uiLocale = useUiLocale();
 
   return (
     <Card className="list">
       {events.length === 0 ? (
         <Empty
-          text={i18n("components.homewidgets.0ba4abe941a2")}
+          text={emptyText ?? i18n("components.homewidgets.0ba4abe941a2")}
           action={<Btn variant="ghost" onClick={() => navigate("schedule")}>{i18n("components.homewidgets.2073bb9744cb")}</Btn>}
         />
       ) : (
@@ -664,13 +664,17 @@ export function TodayClassesWidget({ upcoming = false }: { upcoming?: boolean } 
   const uiLocale = useUiLocale();
 
   const { navigate } = useApp();
-  const { data } = useCampusData();
-  const now = new Date();
+  const { data, state, error, reload } = useTodayCourseData();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60000);
+    return () => window.clearInterval(timer);
+  }, []);
   const wd = now.getDay() === 0 ? 7 : now.getDay();
   const today = ymd(now);
   const events = useMemo<ScheduleEntry[]>(
     () =>
-      (data?.schedule ?? [])
+      (data ?? [])
         .filter((s) => (s.date ? s.date === today : s.dayOfWeek === wd))
         .filter(s => !upcoming || (hhmmMin(s.endTime ?? "") ?? ((sectionStartMin(s.endSection ?? s.startSection ?? 1) ?? 0) + 45)) > now.getHours()*60+now.getMinutes())
         .sort((a, b) => {
@@ -680,7 +684,10 @@ export function TodayClassesWidget({ upcoming = false }: { upcoming?: boolean } 
         }),
     [uiLocale, data, today, wd, upcoming, now.getHours(), now.getMinutes()],
   );
-  return <ClassRows events={events} navigate={navigate} />;
+  if (!data?.length && state === "loading") return <SkeletonRows rows={3} />;
+  if (!data?.length && state === "error") return <ErrorNote text={error ?? i18n("components.exthw.yktcontentlist.dc91444c4449")} onRetry={() => void reload()} />;
+  const hadClasses = (data ?? []).some(s => s.date ? s.date === today : s.dayOfWeek === wd);
+  return <ClassRows events={events} navigate={navigate} emptyText={upcoming && hadClasses ? i18n("components.livetiles.d1adf68fb7c1") : undefined} />;
 }
 
 /**

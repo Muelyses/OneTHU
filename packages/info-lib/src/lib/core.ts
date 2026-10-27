@@ -23,7 +23,7 @@ import {
 } from "../constants/strings";
 import * as cheerio from "cheerio";
 import {InfoHelper} from "../index";
-import {clearCookies, getRedirectUrl, platformFetchWith, stringify, uFetch} from "../utils/network";
+import {clearCookies, getRedirectUrl, platformFetchWith, ResponseStatusError, stringify, uFetch} from "../utils/network";
 import {IdAuthError, LibError, LoginError, LoginPreparationError, UrlError} from "../utils/error";
 import {sm2} from "sm-crypto";
 
@@ -210,6 +210,41 @@ function isFinishedIdEntry(html: string, scheme: "i_user" | "username"): boolean
     }
     return text.includes("登录成功。正在重定向到") && !!cheerio.load(html)("a[href]").length;
 }
+
+/** Whether a page can drive idLoginResponse instead of being a gateway detour.
+ *  A live WebVPN session makes `/login?oauth_login=true` answer with the portal
+ *  (no credential form), which must not be reported as a fatal unexpected page. */
+function isUsableLoginEntry(html: string, scheme: "i_user" | "username"): boolean {
+    if (isFinishedIdEntry(html, scheme) || isTwoFactorPage(html)) return true;
+    const $ = cheerio.load(html);
+    return !!($("#sm2publicKey").text().trim() || $("#sm2publicKey").attr("value")?.trim()
+        || $("input[type='password'], input[name='i_pass'], input[name='password']").length);
+}
+
+/** A live WebVPN gateway answers the OAuth entry with its own portal/guide page.
+ *  Only that page justifies a gateway reset; unrelated failures keep their
+ *  existing classification and never trigger extra authentication traffic. */
+function isWebVpnGatewayPage(html: string): boolean {
+    return html.includes("__vpn_") || /wengine|webvpn|wrdvpn|show_vpn/i.test(html);
+}
+
+/** A still-authenticated WebVPN gateway answers the OAuth entry with its portal,
+ *  so a saved password could never re-authenticate. End that gateway session and
+ *  retry once; the public ID form remains reachable without WebVPN if the gateway
+ *  still detours. Never log response bodies, cookies or session URLs here. */
+const recoverLoginEntry = async (entryHtml: string): Promise<string> => {
+    if (isUsableLoginEntry(entryHtml, "i_user")) return entryHtml;
+    if (!isWebVpnGatewayPage(entryHtml)) return entryHtml;
+    try {
+        await uFetch(LOGOUT_URL);
+    } catch {
+        // Best effort: a failed logout must not mask the OAuth retry below.
+    }
+    const retried = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
+    if (isUsableLoginEntry(retried, "i_user")) return retried;
+    const direct = await uFetch(ID_BASE_URL);
+    return isUsableLoginEntry(direct, "i_user") ? direct : retried;
+};
 
 /** Submit at most one recognized ID confirmation form. A returned password form is
  * usable input for idLoginResponse, not a public-key failure. Transport errors
@@ -410,6 +445,7 @@ export const login = async (
                     }
                     entryHtml = await uFetch(idUrl);
                 }
+                entryHtml = await recoverLoginEntry(entryHtml);
                 let response = await idLoginResponse(helper, entryHtml, ID_LOGIN_URL, "i_user");
                 if (isTwoFactorPage(response)) {
                     response = await twoFactorAuth(helper);
@@ -733,6 +769,51 @@ export const roamingWrapperWithMocks = async <R>(
     helper.mocked()
         ? Promise.resolve(fallback)
         : roamingWrapper(helper, policy, payload, operation);
+
+/** A mutation gets one attempt. An explicit HTTP 401 at the original endpoint
+ * means the server rejected it; that case may recover auth and
+ * try once more. Network/timeout/5xx/parse failures leave the outcome unknown.
+ * Keep the read wrapper's existing recovery policy independent of this path. */
+export const roamingWriteWrapper = async <R>(
+    helper: InfoHelper,
+    policy: RoamingPolicy | undefined,
+    payload: string,
+    operation: (param?: string) => Promise<R>,
+): Promise<R> => {
+    if (helper.userId === "" || helper.password === "") {
+        const error = new LoginError("Please login.");
+        helper.loginErrorHook && helper.loginErrorHook(error);
+        throw error;
+    }
+    const owner = helper.userId;
+    const attempt = async (param?: string): Promise<R> => {
+        const sameOwner = () => {
+            if (helper.userId !== owner) throw Object.assign(new Error("Account changed during the write operation."), {code: "AUTH_SESSION_CHANGED"});
+        };
+        sameOwner();
+        const result = await operation(param);
+        sameOwner();
+        return result;
+    };
+    try {
+        return await attempt();
+    } catch (error) {
+        if (!(error instanceof ResponseStatusError) || error.status !== 401 || !error.directResponse) throw error;
+        // There is deliberately no catch around this recovery or second write:
+        // a failed response must never fall into another implicit replay tier.
+        if (policy) return attempt(await roam(helper, policy, payload));
+        if (await verifyAndReLogin(helper)) return attempt();
+        throw error;
+    }
+};
+
+export const roamingWriteWrapperWithMocks = async <R>(
+    helper: InfoHelper,
+    policy: RoamingPolicy | undefined,
+    payload: string,
+    operation: (param?: string) => Promise<R>,
+    fallback: R,
+): Promise<R> => helper.mocked() ? Promise.resolve(fallback) : roamingWriteWrapper(helper, policy, payload, operation);
 
 export const forgetDevice = async (helper: InfoHelper): Promise<void> => {
     await roam(helper, "id_website", "");

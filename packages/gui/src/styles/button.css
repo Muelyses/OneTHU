@@ -56,6 +56,9 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
+  /* 状态层跟随元素形状：corner-shape 不被伪元素继承，不写这行时
+     容器若被作用域改成 squircle，悬停层会退回圆角、与本体错位。 */
+  corner-shape: inherit;
   background: transparent;
   transition: background-color var(--og-dur-1) var(--og-ease-standard);
   pointer-events: none;
@@ -98,7 +101,9 @@
 }
 
 .og-btn--outline {
-  background: var(--og-surface-1);
+  /* 材质轴读取：中性皮肤 = surface-1（实色），玻璃皮肤 = 半透明材质。
+     直接写 --og-surface-1 会让玻璃界面上出现一块实心白板。 */
+  background: var(--og-fill-surface);
   border-color: var(--og-c-btn-line);
 }
 

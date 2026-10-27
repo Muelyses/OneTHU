@@ -65,7 +65,7 @@ export interface VaultSharePayload {
 /** 已注册的云盘适配器（清华云盘；未注册 = 本地 inline 模式）。 */
 export interface VaultCloudAdapter {
   /** 把清单 JSON 上传到独立分享文件夹；返回引用。 */
-  upload(payload: VaultSharePayload): Promise<VaultCloudRef>;
+  upload(payload: VaultSharePayload, beforeWrite?: () => Promise<void>): Promise<VaultCloudRef>;
   /** 读取口令指向的清单 JSON；过期/撤销抛错。 */
   resolve(ref: VaultCloudRef): Promise<VaultSharePayload>;
   /** 撤销分享文件夹（口令过期/撤销后的清理）。 */
@@ -307,10 +307,12 @@ function applyShareMeta(payload: VaultSharePayload, meta?: ShareMeta): VaultShar
 }
 
 /** 生成口令：必须连接清华云盘——上传清单，口令只带分享凭据的短码。 */
-export async function mintShareCode(box: VaultBox, from?: string, meta?: ShareMeta): Promise<{ code: string; payload: VaultSharePayload }> {
+export async function mintShareCode(box: VaultBox, from?: string, meta?: ShareMeta, beforeWrite?: () => Promise<void>): Promise<{ code: string; payload: VaultSharePayload }> {
   if (!adapter) throw new Error(i18n("state.vaultshare.e1b89010df35"));
   const payload = applyShareMeta(payloadFromVault(box, from, true), meta);
-  const cloud = await adapter.upload(payload);
+  await beforeWrite?.();
+  const cloud = await adapter.upload(payload, beforeWrite);
+  await beforeWrite?.();
   const final = { ...payload, items: undefined, cloud };
   if (!final.cloud?.shareUrl) throw new Error(i18n("state.vaultshare.6e106dfb0757"));
   const code = shortCodeForLink(final.cloud.shareUrl);
@@ -358,7 +360,7 @@ export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; pa
 }
 
 /** 解析后导入：旧入口默认替换当前箱；直接交换传 new，完整保留已有箱子。 */
-export async function importShareCodeAsCurrent(code: string, target: "current" | "new" = "current"): Promise<{ ok: boolean; imported?: number; reason?: string }> {
+export async function importShareCodeAsCurrent(code: string, target: "current" | "new" = "current", beforeCommit?: () => Promise<void>): Promise<{ ok: boolean; imported?: number; reason?: string }> {
   const receiving = fullModeReceiveSession();
   if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   const dec = await decodeShareAsync(code);
@@ -391,6 +393,8 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
     }
   }
   const items = payload.items ?? [];
+  await beforeCommit?.();
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   for(const item of items)if(item.file?.cloudPath&&dec.payload?.cloud?.shareUrl){item.file.shareUrl=dec.payload.cloud.shareUrl;item.file.shareKeyRepoId=dec.payload.cloud.keyRepoId;}
   const box = target === "new" ? createVault(payload.name || "收到的暂存箱") : vaultSnapshot().boxes.find((b) => b.id === vaultSnapshot().activeId);
   if (!box) return { ok: false, reason: i18n("state.vaultshare.a473c3b43384") };

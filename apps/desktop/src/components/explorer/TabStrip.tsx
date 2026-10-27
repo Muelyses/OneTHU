@@ -53,6 +53,7 @@ import {
 } from "../Icons.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { useTabLayoutMode } from "../../state/tabLayout.js";
+import { prefersReducedMotion } from "../../lib/motion.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
 import { haptic } from "../../lib/haptics.js";
 import { openContextMenu, type MenuItem } from "./ContextMenu.js";
@@ -73,6 +74,10 @@ export function useExplorerTabs(): { tabs: ExplorerTab[]; activeId: string } {
 type TipState = { kind: "copy" | "tab" | "gear"; tabId?: string; rect: DOMRect };
 
 const HOVER_TIP_MS = 150; /* 用户实测原生 title 出得慢——自绘接管后 150ms 即现 */
+/** 标签条 FLIP：新增/删除/重排时，其他标签 220ms 滑到新位；新标签 180ms 淡入。 */
+const TAB_FLIP_MS = 220;
+const TAB_NEW_MS = 180;
+const TAB_FLIP_EASE = "cubic-bezier(0.2, 0, 0, 1)"; // MD3 emphasized（与仓库其他 WAAPI 一致）
 
 function TabstripTip({ tip }: { tip: TipState }): ReactNode {
   const uiLocale = useUiLocale();
@@ -300,6 +305,15 @@ function bandLanes(band: HTMLElement): Lane[] {
 function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: boolean, onGroupDrop: (d: GroupDrop) => void) {
   const [dragId, setDragId] = useState<string | null>(null);
   const suppressClick = useRef(false);
+  /** 拖拽提交时会先保留临时 transform 直到 cleanupVisual；此时量到的 rect 带位移，
+   *  不能作为下一次 FLIP 的基线。transformsDirty 期间不采样，cleanup 后 bump layoutSeq
+   *  触发一次「干净布局」采样（不播动画），保证交换过的标签后续关闭时不会跳位。 */
+  const transformsDirty = useRef(false);
+  const [layoutSeq, setLayoutSeq] = useState(0);
+  const settleAfterDrop = (): void => {
+    transformsDirty.current = false;
+    setLayoutSeq((n) => n + 1);
+  };
   const dropRef = useRef(onGroupDrop);
   dropRef.current = onGroupDrop;
 
@@ -480,11 +494,13 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
         clearDwell();
         if (targetId) {
           const at = restIds.indexOf(targetId) + 1;
+          transformsDirty.current = true;
           flushSync(() => {
             moveTabsBlock(dragIds, at);
             setDragId(null);
           });
           cleanupVisual();
+          settleAfterDrop();
           dropRef.current({ dragId: dragIds[0] ?? "", targetId, targetWsId });
           return;
         }
@@ -497,12 +513,14 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
         if (flat.length === 0) at = fallback;
         else if (k * 2 <= flat.length) at = restIds.indexOf(flat[0]!);
         else at = restIds.indexOf(flat[flat.length - 1]!) + 1;
+        transformsDirty.current = true;
         flushSync(() => {
           setTabsWorkspace(dragIds, null);
           moveTabsBlock(dragIds, at);
           setDragId(null);
         });
         cleanupVisual();
+        settleAfterDrop();
         return;
       }
 
@@ -517,11 +535,13 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
       dragEl2.style.transition = `transform ${SHIFT_MS}ms ${EASE}`;
       dragEl2.style.transform = tAlong(slot - aStart(fr));
       window.setTimeout(() => {
+        transformsDirty.current = true;
         flushSync(() => {
           moveTabsBlock(dragIds, at);
           setDragId(null);
         });
         cleanupVisual();
+        settleAfterDrop();
       }, SHIFT_MS);
       void lastDA;
     };
@@ -575,7 +595,7 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
       e.preventDefault();
     }
   };
-  return { dragId, onPointerDown, onClickCapture, begin: startDrag, resolveUnit };
+  return { dragId, onPointerDown, onClickCapture, begin: startDrag, resolveUnit, transformsDirty, layoutSeq };
 }
 
 /** 现场建工作区：颜色 / 名字 / logo（松手即建，成员 = 被拖标签 + 停留标签）。导出给 TabDrawer 手机端复用 */
@@ -1053,6 +1073,54 @@ export function TabStrip(): ReactNode {
       if (tipTimer.current !== null) window.clearTimeout(tipTimer.current);
     };
   }, [clearTip]);
+  /* 标签布局签名：新增/关闭/换工作区/折叠工作区都会改变其他标签的位置。 */
+  const groupKey = groupTabs(tabs)
+    .map((g) => `${g.key}:${g.ws ? (g.ws.collapsed ? "c" : "o") : "-"}:${g.tabs.map((t) => t.id).join(",")}`)
+    .join("|");
+
+  /* 新增 / 关闭 / 重排标签时给**其他标签**补一段位移（FLIP）：浏览器式手感——
+     新标签出现或旧标签消失时，旁边的标签从旧位置平滑滑到新位置，而不是网格瞬间重排。
+     - 记录每轮渲染后的矩形，下一轮对比；只动位置变了的标签；
+     - 拖拽期间不记录（rect 里带着拖拽 transform，会污染终点），松手后再补动画；
+     - 新标签淡入，首次挂载不播（避免整排标签在启动时一起动）。 */
+  const flipRects = useRef<Map<string, DOMRect>>(new Map());
+  const layoutSeqRef = useRef(drag.layoutSeq);
+  useLayoutEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    if (drag.dragId) return; // 拖拽中不采样（见上）
+    // 拖拽提交后的临时 transform 还没清：先不采样，等 cleanup 后的 layoutSeq 轮次
+    if (drag.transformsDirty.current) return;
+    const els = Array.from(strip.querySelectorAll<HTMLElement>(".ex-tab"));
+    const reduce = prefersReducedMotion();
+    const firstPass = flipRects.current.size === 0;
+    const dropJustSettled = drag.layoutSeq !== layoutSeqRef.current;
+    const next = new Map<string, DOMRect>();
+    for (const el of els) {
+      const id = el.getAttribute("data-tab-id");
+      if (!id) continue;
+      const rect = el.getBoundingClientRect();
+      next.set(id, rect);
+      if (reduce || firstPass || dropJustSettled || typeof el.animate !== "function") continue;
+      const prev = flipRects.current.get(id);
+      if (!prev) {
+        el.animate(
+          [{ opacity: 0.4, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
+          { duration: TAB_NEW_MS, easing: TAB_FLIP_EASE, fill: "backwards" },
+        );
+        continue;
+      }
+      const dx = prev.left - rect.left;
+      const dy = prev.top - rect.top;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+      el.animate(
+        [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+        { duration: TAB_FLIP_MS, easing: TAB_FLIP_EASE },
+      );
+    }
+    flipRects.current = next;
+    layoutSeqRef.current = drag.layoutSeq;
+  }, [groupKey, drag.dragId, drag.layoutSeq]);
   /* 激活标签（新开 / 复用聚焦都会改 activeId）自动滚入视野 */
   useLayoutEffect(() => {
     const strip = stripRef.current;

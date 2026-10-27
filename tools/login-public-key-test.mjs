@@ -465,4 +465,49 @@ await check("full login keeps 2FA hooks, uses one OAuth entry and completes auth
   assert.deepEqual(actions, ["FIND_APPROACHES", "SEND_CODE", "VERITY_TOTP_CODE"]);
   assert.equal(successes, 1);
 });
+await check("a live WebVPN gateway detour cannot block re-authentication", async () => {
+  clearOutstandingLogin();
+  const calls = [];
+  const PORTAL = '<main>WebVPN 门户</main>';
+  const LOGOUT = "https://webvpn.tsinghua.edu.cn/logout";
+  const OAUTH = "https://webvpn.tsinghua.edu.cn/login?oauth_login=true";
+  setPlatformFetch(async (url, init) => {
+    calls.push({ url, ...init });
+    if (url === OAUTH) return calls.filter(c => c.url === OAUTH).length === 1 ? reply(PORTAL, "https://webvpn.tsinghua.edu.cn/") : reply(KEY, url);
+    if (url === LOGOUT) return reply("logged out", url);
+    if (url === ID_CHECK) return reply(SUCCESS, url);
+    if (url.endsWith("/fixture-callback")) return reply("portal", "https://webvpn.tsinghua.edu.cn/");
+    if (url.includes("/do/off/ui/auth/login/form/")) return reply(SUCCESS, url);
+    if (url.includes("/lb-auth/lbredirect?")) return reply("info page", url);
+    throw new Error("Unexpected fixture route");
+  });
+  const h = { ...helper(), beforeLoginAttemptHook: async () => {}, afterLoginSuccessHook: () => {} };
+  await login(h, "123456", "fixture-only");
+  assert.equal(calls.filter(c => c.url === LOGOUT).length, 1, "gateway session ends before the OAuth retry");
+  assert.equal(calls.filter(c => c.url === OAUTH).length, 2, "entry retried exactly once");
+  assert.equal(calls.filter(c => c.url === ID_CHECK).length, 1, "credentials submitted once after recovery");
+  assert.ok(calls.findIndex(c => c.url === LOGOUT) > calls.findIndex(c => c.url === OAUTH), "logout follows the detour");
+});
+await check("the public ID form is used when the gateway still detours", async () => {
+  clearOutstandingLogin();
+  const calls = [];
+  const PORTAL = '<main>WebVPN 门户</main>';
+  const OAUTH = "https://webvpn.tsinghua.edu.cn/login?oauth_login=true";
+  const ID_FORM = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/";
+  setPlatformFetch(async (url, init) => {
+    calls.push({ url, ...init });
+    if (url === OAUTH) return reply(PORTAL, "https://webvpn.tsinghua.edu.cn/");
+    if (url === "https://webvpn.tsinghua.edu.cn/logout") return reply("logged out", url);
+    if (url === ID_FORM) return reply(KEY, url);
+    if (url === ID_CHECK) return reply(SUCCESS, url);
+    if (url.endsWith("/fixture-callback")) return reply("portal", "https://webvpn.tsinghua.edu.cn/");
+    if (url.includes("/do/off/ui/auth/login/form/")) return reply(SUCCESS, url);
+    if (url.includes("/lb-auth/lbredirect?")) return reply("info page", url);
+    throw new Error("Unexpected fixture route");
+  });
+  const h = { ...helper(), beforeLoginAttemptHook: async () => {}, afterLoginSuccessHook: () => {} };
+  await login(h, "123456", "fixture-only");
+  assert.equal(calls.filter(c => c.url === ID_FORM).length, 1, "direct ID form reached without WebVPN");
+  assert.equal(calls.filter(c => c.url === ID_CHECK).length, 1);
+});
 console.log(`${count} login public-key regressions passed (offline).`);

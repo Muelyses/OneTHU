@@ -204,7 +204,7 @@ console.log("[6] fetchContents：全部内容（不只作业）");
   const CID = 777;
   const FUTURE = Date.now() + 86400000; // 作业只保留「未来 N 天」窗口内的条目
   const COURSES = { errcode: 0, data: { list: [{ classroom_id: CID, name: "测试课", role: 5 }] } };
-  // 一条学习日志里混着：作业 / 试卷 / 课件 / 资料 / 视频 / 公告 / 投票 / 未知类型（12）
+  // 一条学习日志里混着：作业 / 考试 / 课件 / 资料 / 视频 / 公告 / 投票 / 未知类型（12）
   const LOGS = {
     errcode: 0,
     data: {
@@ -237,7 +237,7 @@ console.log("[6] fetchContents：全部内容（不只作业）");
   );
   eq(
     contents.map((c) => c.kindText),
-    ["作业", "试卷", "课件", "资料", "视频", "公告", "投票", "其他（类型 12）"],
+    ["作业", "考试", "课件", "资料", "视频", "公告", "投票", "其他（类型 12）"],
     "已确认类型给中文名，未知类型保留原始类型号",
   );
   eq(contents[7].rawType, 12, "未知类型 rawType 原样保留");

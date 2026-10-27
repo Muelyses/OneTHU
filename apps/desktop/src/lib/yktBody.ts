@@ -135,20 +135,57 @@ function safeRender(render: LatexRender, tex: string, displayMode: boolean): str
   }
 }
 
-/** 文本段里的 $…$ / $$…$$ 替换。定界约定（防误伤）：
- *  - $$…$$：显示模式；未配对则两个 $ 都按字面继续扫；
- *  - $…$：行内；开/关定界符**内侧不能是空白**（「价格 $5 与 $6」不误判），\$ 转义不闭合；
- *  - 渲染失败 / 未配对：该 $ 按字面保留，从下一字符继续（绝不吃内容）。 */
+/** 文本段里的 $…$ / $$…$$ / \[…\] / \(…\) 替换。定界约定（防误伤）：
+ *  - $$…$$、\[…\]：显示模式；未配对按字面继续扫；
+ *  - $…$、\(…\)：行内；$ 的开/关定界符**内侧不能是空白**（「价格 $5 与 $6」不误判），
+ *    \$ 转义不闭合；
+ *  - 雨课堂部分题目用 `\[ … \]` 包裹独立公式块（用户 2026-10-25 反馈），此前只认 $，
+ *    于是整段 TeX 原样当正文显示；两套定界都走同一渲染器；
+ *  - 渲染失败 / 未配对：定界符按字面保留，从下一字符继续（绝不吃内容）。 */
 function renderTextSegment(seg: string, render: LatexRender): string {
-  if (!seg.includes("$")) return seg;
+  if (!seg.includes("$") && !seg.includes("\\[") && !seg.includes("\\(")) return seg;
   let out = "";
   let i = 0;
   const len = seg.length;
   while (i < len) {
-    const start = seg.indexOf("$", i);
+    const dollar = seg.indexOf("$", i);
+    const bracketOpen = seg.indexOf("\\[", i);
+    const parenOpen = seg.indexOf("\\(", i);
+    const candidates = [dollar, bracketOpen, parenOpen].filter((n) => n >= 0);
+    const start = candidates.length ? Math.min(...candidates) : -1;
     if (start < 0) {
       out += seg.slice(i);
       break;
+    }
+    // 显示模式 \[…\]（雨课堂少数题干用这套定界）
+    if (start === bracketOpen) {
+      const end = seg.indexOf("\\]", start + 2);
+      if (end > start + 2) {
+        const rendered = safeRender(render, seg.slice(start + 2, end), true);
+        if (rendered !== null) {
+          out += seg.slice(i, start) + rendered;
+          i = end + 2;
+          continue;
+        }
+      }
+      out += seg.slice(i, start + 2);
+      i = start + 2;
+      continue;
+    }
+    // 行内 \(…\)（与 \[…\] 同批支持，避免同一份题干混用时漏渲染）
+    if (start === parenOpen) {
+      const end = seg.indexOf("\\)", start + 2);
+      if (end > start + 2) {
+        const rendered = safeRender(render, seg.slice(start + 2, end), false);
+        if (rendered !== null) {
+          out += seg.slice(i, start) + rendered;
+          i = end + 2;
+          continue;
+        }
+      }
+      out += seg.slice(i, start + 2);
+      i = start + 2;
+      continue;
     }
     // 显示模式 $$…$$
     if (seg.charCodeAt(start + 1) === 36 /* $ */) {
@@ -196,7 +233,7 @@ function renderTextSegment(seg: string, render: LatexRender): string {
 
 /** 全文 LaTeX 替换（只动文本节点，不碰标签与属性）；render 缺省恒 null = 纯原文直通 */
 export function renderLatexInHtml(html: string, render: LatexRender): string {
-  if (!html.includes("$")) return html;
+  if (!html.includes("$") && !html.includes("\\[") && !html.includes("\\(")) return html;
   return mapNodes(html, (t) => renderTextSegment(t, render), (t) => t);
 }
 
@@ -444,6 +481,13 @@ export interface YktDocTheme {
   link: string;
   /** 占位框底色（--surface-3） */
   fallbackBg: string;
+  /**
+   * 玻璃/透明材质模式：祖先底色是半透明填充时由组件层置 true。
+   * 此时**不复制**那层半透明色、也不补不透明暗纸面，画布保持透明，
+   * 让父层玻璃只出现一次（否则公式块背后会叠出第二层玻璃）。
+   * 缺省 false = 历史行为（实色纸面主题）。
+   */
+  flush?: boolean;
 }
 
 /** 历史浅色定稿（buildYktProblemDoc 未传 theme 时的缺省，观感与旧版逐字节一致） */
@@ -529,9 +573,11 @@ export function yktDocIsDark(t: YktDocTheme): boolean {
 /** 文档内样式：按主题配色拼装（浅色定稿 = DEFAULT_YKT_DOC_THEME 的输出） */
 export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
   const dark = yktDocIsDark(t);
-  // 暗底自检兜底：底色没解析出来（transparent）→ 强制中性暗纸面（对齐上游 night 档）；
-  // 文字是暗色（解析失败回退 #222 之类）→ 强制亮墨，暗底上不可见字比白底更伤
-  const bg = dark && (!t.bg || t.bg === "transparent") ? "#16181d" : t.bg;
+  // flush = 玻璃材质：画布必须保持透明，玻璃只在父层画一次。这里不能再把
+  // transparent 补成 #16181d（那是给"独立暗色纸面"用的兜底），否则公式块会多出
+  // 一层不透明/半透明底——正是用户看到的「公式背后重复背景」。
+  const flush = t.flush === true;
+  const bg = flush ? "transparent" : dark && (!t.bg || t.bg === "transparent") ? "#16181d" : t.bg;
   const text = dark && (cssColorLuminance(t.text) ?? 1) < 0.35 ? "#e8ebf2" : t.text;
   return [
     "html,body{margin:0;padding:0}",
@@ -539,8 +585,11 @@ export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
     // light 的 srcdoc 画布会刷白——暗色主题下「题干白底」的 R20-B3 fix ② 根因
     `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
     `color:${text};background:${bg};overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
-    // color-scheme 跟档：画布默认色 / 滚动条 / 表单控件随暗底（画布兜底第二道）
-    dark ? "html{color-scheme:dark}" : "",
+    // color-scheme 跟档：画布默认色 / 滚动条 / 表单控件随暗底（画布兜底第二道）。
+    // flush 时钉 light：Chromium 在 dark color-scheme 下会铺一层不透明暗画布底，
+    // 玻璃就透不出来了；透明画布 + 父层材质才是"只叠一次"的唯一形态。
+    dark && !flush ? "html{color-scheme:dark}" : "",
+    flush ? "html{color-scheme:light}" : "",
     "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
     "img{max-width:100%;height:auto;border-radius:4px}",
     `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${t.border};padding:4px 8px;font-size:12px}`,

@@ -103,7 +103,6 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   z-index: 1000;
   display: flex;
   justify-content: flex-end;
-  animation: m-fade var(--dur-2, 0.2s) var(--ease-out, ease) both;
 }
 .settings-mask.is-closing { animation: m-fade-out var(--dur-2, 0.2s) ease both; }
 .settings-panel {
@@ -111,7 +110,6 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  animation: m-slide-right var(--dur-3, 0.3s) var(--ease-ios, ease) both;
 }
 .settings-panel.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
 @media (min-width: 841px) {
@@ -155,6 +153,8 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   overscroll-behavior: contain;
 }
 .explorer-settings-body { padding: 14px 16px 24px; }
+.explorer-settings-body.workbench-simple-settings { overflow-y: auto; min-height: 0; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+.workbench-simple-settings > .simple-settings { padding: var(--og-space-4); padding-bottom: calc(var(--og-space-6) + var(--og-safe-bottom, 0px)); }
 /* 用户截屏「挤挤挤」防御：浮层里的插件卡动作行/状态行不许逐字竖排 */
 .explorer-settings-body .plg-state { white-space: nowrap; }
 .explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
@@ -283,10 +283,13 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   z-index: 0;
   pointer-events: none;
 }
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before {
+/* 反差纱只在「主题与壁纸明暗相反」时出现：
+   亮主题 + 暗壁纸提白；暗主题 + 亮壁纸压黑；
+   暗主题 + 暗壁纸 / 亮主题 + 亮壁纸不铺纱（此前只按壁纸明暗判，导致暗主题铺白纱）。 */
+html:root:not([data-scheme="dark"]) .explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before {
   background: rgba(255, 255, 255, 0.34);
 }
-.explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
+html:root[data-scheme="dark"] .explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
   background: rgba(0, 0, 0, 0.36);
 }
 

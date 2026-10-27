@@ -388,7 +388,9 @@ html:root .sphere-ball {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
-html:root .sphere:hover .sphere-ball { background: var(--og-surface-4); border-color: var(--og-line-2); }
+/* Workbench service buttons own their hover surface; do not paint a second
+   layer on their icons (§8.5). Keep the legacy treatment only for old spheres. */
+html:root .sphere:not(.hs-dock-sphere):hover .sphere-ball { background: var(--og-surface-4); border-color: var(--og-line-2); }
 html:root .sphere-name { font-size: var(--og-text-label); font-weight: var(--og-weight-medium); color: var(--og-content-2); }
 html:root .chrome-clock-time {
   font-family: var(--og-font-ui);
@@ -424,6 +426,13 @@ html:root :is(.ohx-hit, .ohx-chip) { border-radius: var(--og-radius-md); border:
 html:root :is(.ohx-hit, .ohx-chip):hover { background: var(--og-hover); }
 html:root .ohx-input { color: var(--og-content-1); font-size: var(--og-text-body); }
 html:root .ohx-capsule-ph { color: var(--og-content-2); font-size: var(--og-text-label); }
+/* The capsule owns an atomic foreground/background pair: its text follows the
+   composer surface tokens in every scheme and is excluded from the contrast
+   lock (data-tx="keep"), which otherwise re-inks it during a palette swap. */
+html:root .ex-bbar-center .ohx-capsule { color: var(--og-content-2); }
+html:root .ex-bbar-center .ohx-capsule :is(.ohx-capsule-ph, .harness-mark) { color: var(--og-content-2); }
+html:root .ex-bbar-center .ohx-capsule:is(.is-open, .is-hold) { color: var(--og-content-1); }
+html:root .ex-bbar-center .ohx-capsule:is(.is-open, .is-hold) .ohx-input { color: var(--og-content-1); }
 
 /* Legacy form chrome shares the same visible boundary as Input/Select. */
 html:root :is(.input, .field input, .field select, .field textarea):not(.og-input-el) {
@@ -505,9 +514,6 @@ html:root .ex-ctxmenu-item:hover { background: var(--og-hover); }
 html:root .ex-ctxmenu-item.is-danger { color: var(--og-error); }
 html:root .ohx-capsule:focus-within { box-shadow: var(--og-ring); border-color: var(--og-line-3); }
 
-/* A wallpaper is unbounded content; the clock needs a stable reading surface. */
-html:root .explorer-shell[data-wallpaper-lum] .chrome-clock {
-  background: var(--og-menu-fill);
-  border-radius: var(--og-radius-lg);
-  box-shadow: 0 0 0 var(--og-space-2) var(--og-menu-fill);
-}
+/* Clock material belongs to the enclosing .free-item, just like other widgets
+   (§8.5). Its body stays transparent even with wallpaper; textContrast still
+   samples the wallpaper plus that single material surface for readable text. */

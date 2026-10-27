@@ -168,4 +168,27 @@ await test('all mounted hooks share one configuration subscription', async () =>
   const cleanups = f.effects.map((effect) => effect()); await flush();
   assert.equal(f.configListeners.size, 1); cleanups.forEach((cleanup) => cleanup?.()); assert.equal(f.configListeners.size, 1);
 });
+await test('CLI send guard runs after credential loading and blocks revoked calls before SMTP', async () => {
+  const gate = deferred(); let allowed = true, checked = 0;
+  const f = fixture({ load: () => gate.promise });
+  const pending = f.api.sendMail('to@example.invalid', '', 'fixture', 'fixture', async () => { checked++; if (!allowed) throw Error('CLI_DISABLED'); });
+  const rejected = assert.rejects(pending, /CLI_DISABLED/);
+  await flush(); allowed = false; gate.resolve(); await rejected;
+  assert.equal(checked, 1); assert.equal(f.count('mail_send'), 0);
+});
+await test('mail credentials changing during the asynchronous guard block SMTP', async () => {
+  const guard = deferred(), entered = deferred();
+  const f = fixture();
+  const pending = f.api.sendMail('to@example.invalid', '', 'fixture', 'fixture', async () => { entered.resolve(); await guard.promise; });
+  const rejected = assert.rejects(pending, /账号已改变/);
+  await entered.promise; f.setConfig(B); guard.resolve(); await rejected;
+  assert.equal(f.count('mail_send'), 0);
+});
+await test('CLI read never marks mail seen; a later explicit UI read still does', async () => {
+  const f = fixture({ invoke: async cmd => cmd === 'mail_read' ? body('fixture') : undefined });
+  await f.api.readMail('INBOX', 1, { markSeen: false });
+  assert.equal(f.count('mail_mark_seen'), 0);
+  await f.api.readMail('INBOX', 1); await flush();
+  assert.equal(f.count('mail_read'), 1); assert.equal(f.count('mail_mark_seen'), 1);
+});
 console.log(`\nMailbox state: ${passed} isolated cases passed; no network or real mailbox used.`);

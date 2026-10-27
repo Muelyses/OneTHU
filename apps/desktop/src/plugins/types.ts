@@ -13,6 +13,14 @@ import { t as i18n } from "../i18n/index.js";
 /** 权限标识（manifest.permissions 声明，安装时用户逐项确认） */
 export type PluginPermission =
   | "user:read" // 基本信息 + 会话状态
+  | "contacts:read" // OneTHU 好友与收到的名片
+  | "org:read" // 组织目录、成员、项目、公告及资源引用
+  | "org:write" // 组织资料、项目与公告编辑
+  | "xiaoda:read" // 清小搭智能体、技能广场和已安装技能
+  | "xiaoda:manage" // 导入并启停清小搭技能
+  | "xiaoda:chat" // 向清小搭智能体发送问题并创建会话
+  | "vault:read" // 暂存箱摘要与内容
+  | "vault:write" // 暂存箱增删改及显式分享/接收
   | "info:read" // 成绩/考试/新闻/校历/空教室/缴费等只读查询
   | "card:read" // 校园卡余额与流水（只读）
   | "dorm:read" // 宿舍电费/卫生分（只读）
@@ -54,6 +62,14 @@ export type PluginPermission =
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
   { id: "user:read", get label() { return i18n("plugins.types.db8046b7bb4f"); }, get desc() { return i18n("plugins.types.dd2d1636c619"); } },
+  { id: "contacts:read", get label() { return i18n("permissions.contacts.label"); }, get desc() { return i18n("permissions.contacts.desc"); } },
+  { id: "org:read", get label() { return i18n("permissions.org.label"); }, get desc() { return i18n("permissions.org.desc"); } },
+  { id: "org:write", get label() { return i18n("permissions.orgWrite.label"); }, get desc() { return i18n("permissions.orgWrite.desc"); } },
+  { id: "xiaoda:read", get label() { return i18n("permissions.xiaoda.label"); }, get desc() { return i18n("permissions.xiaoda.desc"); } },
+  { id: "xiaoda:manage", get label() { return i18n("permissions.xiaodaManage.label"); }, get desc() { return i18n("permissions.xiaodaManage.desc"); } },
+  { id: "xiaoda:chat", get label() { return i18n("permissions.xiaodaChat.label"); }, get desc() { return i18n("permissions.xiaodaChat.desc"); } },
+  { id: "vault:read", get label() { return i18n("permissions.vault.label"); }, get desc() { return i18n("permissions.vault.desc"); } },
+  { id: "vault:write", get label() { return i18n("permissions.vaultWrite.label"); }, get desc() { return i18n("permissions.vaultWrite.desc"); } },
   { id: "info:read", get label() { return i18n("plugins.types.92acc8140843"); }, get desc() { return i18n("plugins.types.e98935ae658f"); } },
   { id: "learn:read", get label() { return i18n("plugins.types.cf01361e883f"); }, get desc() { return i18n("plugins.types.d7ca0f2e28a2"); } },
   { id: "learn:write", get label() { return i18n("plugins.types.112f4f9c033a"); }, get desc() { return i18n("plugins.types.eeb2d48d3eaa"); } },
@@ -210,6 +226,83 @@ export interface OnethuApi {
   user: {
     /** 基本信息（姓名/学号/院系/邮箱） */
     info(): Promise<import("@onethu/core").BasicUserInfo>;
+  };
+  contacts: {
+    /** List saved OneTHU friends, optionally filter by name/note. Excludes organization cards by default. */
+    list(query?: string, kind?: "personal" | "organization" | "all"): Promise<unknown>;
+    /** Read an actual contact id from list, without shared-channel credentials or card images. */
+    get(id: string): Promise<unknown>;
+  };
+  organizations: {
+    /** List the current OneTHU organization index. Detailed remote membership is verified by get. */
+    list(query?: string): Promise<unknown>;
+    /** Read members, projects, announcements and cloud/GitLab resource ids. Verifies live membership for remote organizations. */
+    get(id: string): Promise<unknown>;
+    /** Create a local organization index and owner record. Shared collaboration is enabled explicitly in the organization page. Requires confirmation. */
+    create(name: string, brief?: string): Promise<unknown>;
+    /** Edit organization name/description with live owner authorization and revision checks for shared organizations. Requires confirmation. */
+    update(id: string, patch: { name?: string; brief?: string }): Promise<unknown>;
+    /** Create/update an organization project. id comes from get when editing; remote edits verify membership and use revision checks. Requires confirmation. */
+    saveProject(id: string, name: string, description: string, status: "planned" | "active" | "done", owner: string, projectId?: string): Promise<unknown>;
+    /** Remove one organization project entry; preserves linked repositories and files. Requires confirmation. */
+    removeProject(id: string, projectId: string): Promise<unknown>;
+    /** Create/update an organization announcement. announcementId comes from get when editing. Requires confirmation. */
+    saveAnnouncement(id: string, title: string, body: string, pinned?: boolean, announcementId?: string): Promise<unknown>;
+    /** Remove one organization announcement. Requires confirmation. */
+    removeAnnouncement(id: string, announcementId: string): Promise<unknown>;
+  };
+  xiaoda: {
+    /** Read current Qingxiaoda account availability and name without returning its token. */
+    status(): Promise<unknown>;
+    /** List Qingxiaoda built-in agents after authenticating the current account. */
+    agents(): Promise<unknown>;
+    /** Read Qingxiaoda model choices and account credit balance. */
+    models(): Promise<unknown>;
+    balance(): Promise<unknown>;
+    /** List this account's Qingxiaoda conversations with official pagination. */
+    conversations(page?: number): Promise<unknown>;
+    /** Read the full messages of a real conversation id from conversations. */
+    conversation(id: string): Promise<unknown>;
+    /** Browse/search the Qingxiaoda skill plaza. page starts at 1; response includes school pagination metadata. */
+    skills(query?: string, page?: number): Promise<unknown>;
+    /** Read skill plaza details using the actual id from skills. */
+    skill(id: string): Promise<unknown>;
+    /** List all locally installed skills, including disabled and external-agent-only skills with requirements. */
+    installed(): Promise<unknown>;
+    /** Download and inspect a skill into the private local skill library; enable it separately after checking compatibility. Requires confirmation. */
+    importSkill(id: string): Promise<unknown>;
+    /** Enable/disable an installed skill. Unsupported runtimes remain unavailable. Requires confirmation. */
+    enableSkill(id: string, enabled: boolean): Promise<unknown>;
+    /** Remove one installed skill from this account's private library. Requires confirmation. */
+    removeSkill(id: string): Promise<unknown>;
+    /** Send a question to an actual Qingxiaoda agent from agents, creating a separate conversation. Requires explicit consent and confirmation. */
+    ask(agentId: string, question: string): Promise<unknown>;
+  };
+  vault: {
+    /** List OneTHU temporary boxes without their share codes. */
+    list(): Promise<unknown>;
+    /** Read a box's text, titles and file/atom references; excludes credentials, payload internals and local staged paths. */
+    items(id: string): Promise<unknown>;
+    /** Read one selected item including safe text/payload metadata. References can be followed with school/cloud tools. */
+    item(id: string, itemId: string): Promise<unknown>;
+    /** Read a known stored UTF-8 text file in explicit character ranges, with totalChars/nextOffset/complete. Binary formats require the file preview. */
+    readText(id: string, itemId: string, offset?: number, maxChars?: number): Promise<unknown>;
+    /** Create a named temporary box. Requires confirmation. */
+    create(name: string): Promise<unknown>;
+    /** Rename a real box from list. Requires confirmation. */
+    rename(id: string, name: string): Promise<unknown>;
+    /** Store text in a real box. Requires confirmation. */
+    addText(id: string, title: string, text: string): Promise<unknown>;
+    /** Store a real registered atom reference (kind/key), using its actual title. Requires confirmation. */
+    addAtom(id: string, kind: string, key: string): Promise<unknown>;
+    /** Store a verified cloud file reference after checking the actual parent directory. Requires cloud read permission and confirmation. */
+    addFile(id: string, repoId: string, path: string): Promise<unknown>;
+    /** Remove one selected stored item; preserves the source object and files. Requires confirmation. */
+    removeItem(id: string, itemId: string): Promise<unknown>;
+    /** Generate/reuse an online short sharing code for a box. Requires vault/cloud write permission and confirmation. */
+    share(id: string): Promise<unknown>;
+    /** Receive a vault sharing code into a new box. Never replaces the active box or accepts unrelated contact/org invites. Requires confirmation. */
+    importCode(code: string): Promise<unknown>;
   };
   info: {
     /** 课表（YYYY-MM-DD 起/止） */
@@ -756,6 +849,22 @@ export interface OnethuApi {
     setFollowSystem(on: boolean): Promise<void>;
     /** 设置日/夜两档主题（null=基础令牌） */
     setDayNight(dayId: string | null, nightId: string | null): Promise<void>;
+  };
+  yuketang: {
+    /** 雨课堂 / Rain Classroom 登录配置状态与扫码入口，不返回 Cookie。 */
+    status(): Promise<unknown>;
+    /** 雨课堂全部课程，含课堂 id、名称、教师；供后续内容查询定位。 */
+    courses(): Promise<unknown>;
+    /** 雨课堂 / Rain Classroom 全部可获取内容目录：课件、视频、作业、试卷、公告等；可按课堂筛选。 */
+    contents(classroomId?: string): Promise<unknown>;
+    /** 雨课堂作业与截止／提交状态：保留既往作业，未来截止默认30天以内，days 可扩展到3660。 */
+    homework(classroomId?: string, days?: number): Promise<unknown>;
+    /** 雨课堂作业题目与已有作答详情；参数取自 homework/contents，不提交作业。 */
+    homeworkDetail(classroomId: string, leafTypeId: string): Promise<unknown>;
+    /** 雨课堂课件／视频／图文详情；参数取自 contents。 */
+    leafDetail(classroomId: string, leafId: string): Promise<unknown>;
+    /** 雨课堂公告正文；noticeIds 取自 contents 的 noticeIdCandidates 或 noticeId。 */
+    noticeDetail(classroomId: string, noticeIds: string[]): Promise<unknown>;
   };
   exthw: {
     /** 外部作业源快照：各源作业条目/错误/自动登录状态/上次刷新时间 */

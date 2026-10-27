@@ -1,7 +1,877 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.49b95727fe16",
+      "source": "删除此占用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1422,
+          "context": "{i18n(\"pages.zhjwxk.courses.49b95727fe16\")}"
+        }
+      ],
+      "translation": "Delete this block",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.49e9e6d0c944",
+      "source": "培养方案加载中（实时模式：随核心数据一并秒取）…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 845,
+          "context": "{i18n(\"pages.zhjwxk.courses.49e9e6d0c944\")}"
+        }
+      ],
+      "translation": "Loading degree plan (real-time mode: fetched instantly along with core data)…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4a640209de60",
+      "source": " · 第{zy}志愿",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "zy",
+          "expression": "String(u.zy)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1409,
+          "context": "u.zy ? i18n(\"pages.zhjwxk.courses.4a640209de60\", { zy: String(u.zy) }) : \"\""
+        }
+      ],
+      "translation": " · Preference #{zy}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4aa68593661e",
+      "source": "限选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"elective\", i18n(\"pages.zhjwxk.courses.4aa68593661e\")]"
+        }
+      ],
+      "translation": "Restricted elective",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4ae716384a8e",
+      "source": "数据不完整：已加载 {length} 门{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "listRows.length"
+        },
+        {
+          "name": "value",
+          "expression": "wb.searchTotalPages > 0 ? i18n(\"pages.zhjwxk.courses.56a7b5abaea4\", { searchTotalPages: String(wb.searchTotalPages), value: String(wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\") }) : i18n(\"pages.zhjwxk.courses.9896d1a50a30\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 808,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.4ae716384a8e\", { length: listRows.length, value: wb.searchTotalPages > 0 ? i18n(\"pages.zhjwxk.courses.56a7b5abaea4\", { searchTotalPages: String(wb.searchTotalPages), value: String(wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\") }) : i18n(\"pages.zhjwxk.courses.9896d1a50a30\") })}"
+        }
+      ],
+      "translation": "Incomplete data: {length} courses loaded{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4b1d2df912f5",
+      "source": "任 {v}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "v",
+          "expression": "String(v)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1026,
+          "context": "parts.push(i18n(\"pages.zhjwxk.courses.4b1d2df912f5\", { v: String(v) }))"
+        }
+      ],
+      "translation": "Free elective {v}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4c0f5dc662f8",
+      "source": "容量 {capacity}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "capacity",
+          "expression": "String(r.c.capacity)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1037,
+          "context": "r.c.capacity ? i18n(\"pages.zhjwxk.courses.4c0f5dc662f8\", { capacity: String(r.c.capacity) }) : \"\""
+        }
+      ],
+      "translation": "Capacity {capacity}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4d4f91afcd66",
+      "source": "候补 第{myPos}名",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "myPos",
+          "expression": "String(r.cand.myPos)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1130,
+          "context": "r.cand?.myPos ? i18n(\"pages.zhjwxk.courses.4d4f91afcd66\", { myPos: String(r.cand.myPos) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
+        }
+      ],
+      "translation": "Waitlist #{myPos}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.4e2b44f1e949",
+      "source": "点击搜索 {code}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "code",
+          "expression": "String(p.code)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 890,
+          "context": "{i18n(\"pages.zhjwxk.courses.4e2b44f1e949\", { code: String(p.code) })}"
+        }
+      ],
+      "translation": "Tap to search {code}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.519d719dc036",
+      "source": "排队第{myPos}名 / 共{queueTotal}人",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "myPos",
+          "expression": "String(r.cand.myPos)"
+        },
+        {
+          "name": "queueTotal",
+          "expression": "String(r.cand.queueTotal)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1111,
+          "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.519d719dc036\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.def2a886248f\")"
+        }
+      ],
+      "translation": "Queued #{myPos} / {queueTotal} in total",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.51da637dced9",
+      "source": "不限制冲突",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 775,
+          "context": "{i18n(\"pages.zhjwxk.courses.51da637dced9\")}"
+        }
+      ],
+      "translation": "Allow conflicts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5261eed6794b",
+      "source": "仅无冲突",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 775,
+          "context": "{i18n(\"pages.zhjwxk.courses.5261eed6794b\")}"
+        }
+      ],
+      "translation": "Only conflict-free",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.530701767bec",
+      "source": "我的候补（{length}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(wb.candidates.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1586,
+          "context": "{i18n(\"pages.zhjwxk.courses.530701767bec\", { length: String(wb.candidates.length) })}"
+        }
+      ],
+      "translation": "My waitlist ({length})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5329e3f0ee46",
+      "source": "保存草稿",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1539,
+          "context": "{i18n(\"pages.zhjwxk.courses.5329e3f0ee46\")}"
+        }
+      ],
+      "translation": "Save draft",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.537352400c49",
+      "source": "可选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"available\", i18n(\"pages.zhjwxk.courses.537352400c49\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1130,
+          "context": "r.available ? i18n(\"pages.zhjwxk.courses.537352400c49\") : i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\")"
+        }
+      ],
+      "translation": "Selectable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.54b72e846d49",
+      "source": "添加到课表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1456,
+          "context": "{i18n(\"pages.zhjwxk.courses.54b72e846d49\")}"
+        }
+      ],
+      "translation": "Add to timetable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.55e82546e619",
+      "source": "给分 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.score).slice(0, 8)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 328,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.55e82546e619\", { value: String(r.score).slice(0, 8) })}"
+        }
+      ],
+      "translation": "Grading {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.56a7b5abaea4",
+      "source": "，教务共 {searchTotalPages} 页{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "searchTotalPages",
+          "expression": "String(wb.searchTotalPages)"
+        },
+        {
+          "name": "value",
+          "expression": "String(wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 808,
+          "context": "wb.searchTotalPages > 0 ? i18n(\"pages.zhjwxk.courses.56a7b5abaea4\", { searchTotalPages: String(wb.searchTotalPages), value: String(wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\") }) : i18n(\"pages.zhjwxk.courses.9896d1a50a30\")"
+        }
+      ],
+      "translation": ", {searchTotalPages} pages on the academic system{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.572388f3b096",
+      "source": "周五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1358,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1420,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1441,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        }
+      ],
+      "translation": "Fri",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.57273d4232a7",
+      "source": "排队{qQueue}人",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "qQueue",
+          "expression": "String(qd.qQueue)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1224,
+          "context": "label: i18n(\"pages.zhjwxk.courses.57273d4232a7\", { qQueue: String(qd.qQueue) })"
+        }
+      ],
+      "translation": "{qQueue} in queue",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5739e3851d0e",
+      "source": "点评加载失败（网络原因），稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 319,
+          "context": "{i18n(\"pages.zhjwxk.courses.5739e3851d0e\")}"
+        }
+      ],
+      "translation": "Failed to load reviews (network issue). Try again later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.576d81bb0631",
+      "source": "导入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1543,
+          "context": "{i18n(\"pages.zhjwxk.courses.576d81bb0631\")}"
+        }
+      ],
+      "translation": "Import",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.579d5468a97a",
+      "source": "导入失败: {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1493,
+          "context": "wb.setToast(i18n(\"pages.zhjwxk.courses.579d5468a97a\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Import failed: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.59294a8dd125",
+      "source": "暂存车预览（暂存车{length}门{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(wb.stageCart.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(wb.stageCart.length ? \"：\" + wb.stageCart.map((x) => x.code).join(\"、\") : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1339,
+          "context": "mode === \"stage\" ? i18n(\"pages.zhjwxk.courses.59294a8dd125\", { length: String(wb.stageCart.length), value: String(wb.stageCart.length ? \"：\" + wb.stageCart.map((x) => x.code).join(\"、\") : \"\") }) : i18n(\"pages.zhjwxk.courses.6cfbf1f20072\", { value: String(wb.savedDrafts[wb.previewDraftIdx]?.name ?? \"\") })"
+        }
+      ],
+      "translation": "Staged courses preview ({length} courses staged{value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.59f317cfa0db",
+      "source": "培养方案",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"plan\", i18n(\"pages.zhjwxk.courses.59f317cfa0db\")]"
+        }
+      ],
+      "translation": "Degree plan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5b1ff08354a0",
+      "source": "「{name}」（{code}_{value}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(r.name)"
+        },
+        {
+          "name": "code",
+          "expression": "String(r.c.code)"
+        },
+        {
+          "name": "value",
+          "expression": "String(r.c.seq || \"0\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1107,
+          "context": "confirmDanger(i18nMsg(\"pages.zhjwxk.courses.5b1ff08354a0\", { name: String(r.name), code: String(r.c.code), value: String(r.c.seq || \"0\") }), DROP_CONFIRM)"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1323,
+          "context": "confirmDanger(i18nMsg(\"pages.zhjwxk.courses.5b1ff08354a0\", { name: String(name), code: String(code), value: String(seq || \"0\") }), DROP_CONFIRM)"
+        }
+      ],
+      "translation": "\"{name}\" ({code}_{value})\nDropping is a real course-drop operation and takes effect immediately; a slot freed during the add/drop phase may be snatched up instantly by others.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5bbcf9e26267",
+      "source": "这门课在 THU选课社区还没有点评",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 311,
+          "context": "{i18n(\"pages.zhjwxk.courses.5bbcf9e26267\")}"
+        }
+      ],
+      "translation": "This course has no reviews on THUxk yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5c1672e6a3bf",
+      "source": "共 {length} 门，{coveredCr}/{totalCr} 学分已覆盖",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "coverage.length"
+        },
+        {
+          "name": "coveredCr",
+          "expression": "coveredCr"
+        },
+        {
+          "name": "totalCr",
+          "expression": "totalCr"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1164,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.5c1672e6a3bf\", { length: coverage.length, coveredCr: coveredCr, totalCr: totalCr })}"
+        }
+      ],
+      "translation": "{length} courses in total; {coveredCr}/{totalCr} credits covered",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5c55a67935af",
+      "source": "全部",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"all\", i18n(\"pages.zhjwxk.courses.5c55a67935af\")]"
+        }
+      ],
+      "translation": "All",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5ca6cb21cd29",
+      "source": "竞争适中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1065,
+          "context": "vc.level === \"medium\" ? i18n(\"pages.zhjwxk.courses.5ca6cb21cd29\") : vc.level === \"hard\" ? i18n(\"pages.zhjwxk.courses.135fef5e1db6\") : \"\""
+        }
+      ],
+      "translation": "Moderately competitive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5dbc7a39b365",
+      "source": " · 自定义占用{length}项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(wb.manualEvents.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1431,
+          "context": "wb.manualEvents.length ? i18n(\"pages.zhjwxk.courses.5dbc7a39b365\", { length: String(wb.manualEvents.length) }) : \"\""
+        }
+      ],
+      "translation": " · {length} custom blocks",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.5def9905e85f",
+      "source": "必修",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"required\", i18n(\"pages.zhjwxk.courses.5def9905e85f\")]"
+        }
+      ],
+      "translation": "Required",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.610b3a3bb0aa",
+      "source": "不限周次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 777,
+          "context": "{i18n(\"pages.zhjwxk.courses.610b3a3bb0aa\")}"
+        }
+      ],
+      "translation": "Any week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.6135d4159e89",
+      "source": "移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1394,
+          "context": "b.cand ? i18n(\"pages.zhjwxk.courses.9ea04b6a9425\") : i18n(\"pages.zhjwxk.courses.6135d4159e89\")"
+        }
+      ],
+      "translation": "Remove",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.6266b6f08df5",
+      "source": "当前已选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1339,
+          "context": "mode === \"selected\" ? i18n(\"pages.zhjwxk.courses.6266b6f08df5\") : mode === \"stage\" ? i18n(\"pages.zhjwxk.courses.59294a8dd125\", { length: String(wb.stageCart.length), value: String(wb.stageCart.length ? \"：\" + wb.stageCart.map((x) => x.code).join(\"、\") : \"\") }) : i18n(\"pages.zhjwxk.courses.6cfbf1f20072\", { value: String(wb.savedDrafts[wb.previewDraftIdx]?.name ?? \"\") })"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1345,
+          "context": "{i18n(\"pages.zhjwxk.courses.6266b6f08df5\")}"
+        }
+      ],
+      "translation": "Currently selected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.628a729f6d7c",
+      "source": "余量",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 942,
+          "context": "wb.phase ? i18n(\"pages.zhjwxk.courses.628a729f6d7c\") : i18n(\"pages.zhjwxk.courses.628a729f6d7c\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 942,
+          "context": "wb.phase ? i18n(\"pages.zhjwxk.courses.628a729f6d7c\") : i18n(\"pages.zhjwxk.courses.628a729f6d7c\")"
+        }
+      ],
+      "translation": "Openings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.62fe195d6158",
+      "source": "★≥4.5 好评",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 781,
+          "context": "{i18n(\"pages.zhjwxk.courses.62fe195d6158\")}"
+        }
+      ],
+      "translation": "★≥4.5 well-rated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.639c677f0c52",
+      "source": "退选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1107,
+          "context": "{i18n(\"pages.zhjwxk.courses.639c677f0c52\")}"
+        }
+      ],
+      "translation": "Drop",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.64af28c77281",
+      "source": "候选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1130,
+          "context": "r.cand?.myPos ? i18n(\"pages.zhjwxk.courses.4d4f91afcd66\", { myPos: String(r.cand.myPos) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1220,
+          "context": "cand.myPos ? i18n(\"pages.zhjwxk.courses.1a01e52411e2\", { myPos: String(cand.myPos), queueTotal: String(cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1590,
+          "context": "c.myPos ? i18n(\"pages.zhjwxk.courses.c0587f566be1\", { myPos: String(c.myPos), queueTotal: String(c.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
+        }
+      ],
+      "translation": "Candidate",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.6503ee4eb9dd",
+      "source": "·{seq}班",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "seq",
+          "expression": "String(r.c.seq)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 973,
+          "context": "r.c.seq && r.c.seq !== \"0\" ? i18n(\"pages.zhjwxk.courses.6503ee4eb9dd\", { seq: String(r.c.seq) }) : \"\""
+        }
+      ],
+      "translation": "·Section {seq}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.65fb020bd6ee",
+      "source": "刷新队列",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 445,
+          "context": "{i18n(\"pages.zhjwxk.courses.65fb020bd6ee\")}"
+        }
+      ],
+      "translation": "Refresh queue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.69a6f2c141f6",
+      "source": "。开放选课通知：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 756,
+          "context": "{i18n(\"pages.zhjwxk.courses.69a6f2c141f6\")}"
+        }
+      ],
+      "translation": ". Course selection opening notice: ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.6a79b6b079b0",
+      "source": "志愿数据 {value} 同步 · 下次 {value2}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "new Date(wb.volLastSync).toLocaleTimeString(\"zh-CN\", { hour: \"2-digit\", minute: \"2-digit\" })"
+        },
+        {
+          "name": "value2",
+          "expression": "nextVolCheckpoint().toLocaleTimeString(\"zh-CN\", { hour: \"2-digit\", minute: \"2-digit\" })"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1505,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.6a79b6b079b0\", { value: new Date(wb.volLastSync).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }), value2: nextVolCheckpoint().toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }) })}"
+        }
+      ],
+      "translation": "Preference data {value} sync · next {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.6ad41e5d286b",
+      "source": "课程说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1006,
+          "context": "{i18n(\"pages.zhjwxk.courses.6ad41e5d286b\")}"
+        }
+      ],
+      "translation": "Course description",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.6adf7277bdd2",
       "source": "点评≥5条",
@@ -661,807 +1531,6 @@
         }
       ],
       "translation": "Leave waitlist",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.9ebe36f8cf23",
-      "source": "确认提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1562,
-          "context": "{i18n(\"pages.zhjwxk.courses.9ebe36f8cf23\")}"
-        }
-      ],
-      "translation": "Confirm submission",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.9eefcbca074f",
-      "source": "社区评分 低→高",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 782,
-          "context": "{i18n(\"pages.zhjwxk.courses.9eefcbca074f\")}"
-        }
-      ],
-      "translation": "Community rating: low → high",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.9fd1ea01249e",
-      "source": "存当前选课",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1540,
-          "context": "{i18n(\"pages.zhjwxk.courses.9fd1ea01249e\")}"
-        }
-      ],
-      "translation": "Save current selection",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a0876e50b428",
-      "source": "通识课组: 不限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 785,
-          "context": "{i18n(\"pages.zhjwxk.courses.a0876e50b428\")}"
-        }
-      ],
-      "translation": "General education group: Any",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a1065b209234",
-      "source": " · 排队{qQueue}人",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "qQueue",
-          "expression": "String(q.qQueue)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1056,
-          "context": "q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\""
-        }
-      ],
-      "translation": " · {qQueue} in queue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a2658663724d",
-      "source": "草稿名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1540,
-          "context": "globalThis.prompt?.(i18n(\"pages.zhjwxk.courses.a2658663724d\"), i18n(\"pages.zhjwxk.courses.bbb5405f0e01\"))"
-        }
-      ],
-      "translation": "Draft name",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a42029434c65",
-      "source": "已满足",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 898,
-          "context": "p.coveredBy || i18n(\"pages.zhjwxk.courses.a42029434c65\")"
-        }
-      ],
-      "translation": "Satisfied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a7d043c48d9b",
-      "source": "北大研究生",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 758,
-          "context": "{i18n(\"pages.zhjwxk.courses.a7d043c48d9b\")}"
-        }
-      ],
-      "translation": "PKU graduate",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.a8c7d1760ed1",
-      "source": "粘贴导出的课表数据…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1547,
-          "context": "{i18n(\"pages.zhjwxk.courses.a8c7d1760ed1\")}"
-        }
-      ],
-      "translation": "Paste exported timetable data…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.aa21e6887117",
-      "source": "已选{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(r.zy ? i18n(\"pages.zhjwxk.courses.2ea763bbee3e\", { zy: String(r.zy) }) : \"\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1130,
-          "context": "r.selected ? i18n(\"pages.zhjwxk.courses.aa21e6887117\", { value: String(r.zy ? i18n(\"pages.zhjwxk.courses.2ea763bbee3e\", { zy: String(r.zy) }) : \"\") }) : r.isCandidate ? (r.cand?.myPos ? i18n(\"pages.zhjwxk.courses.4d4f91afcd66\", { myPos: String(r.cand.myPos) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")) : state === \"full\" ? i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\") : r.available ? i18n(\"pages.zhjwxk.courses.537352400c49\") : i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\")"
-        }
-      ],
-      "translation": "Selected {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.aa7f2e6b23d5",
-      "source": "暂无课程简介信息（该课缺教师号，无法拉取）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 251,
-          "context": "{i18n(\"pages.zhjwxk.courses.aa7f2e6b23d5\")}"
-        }
-      ],
-      "translation": "No course introduction available (this course lacks a teacher ID and cannot be fetched)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ab9ba6d10394",
-      "source": "无数据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 187,
-          "context": "p.prob < 0 ? i18n(\"pages.zhjwxk.courses.ab9ba6d10394\") : `${p.percentLabel} · ${p.ratioLabel}`"
-        }
-      ],
-      "translation": "No data",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.zhjwxk.courses.aba7797394c4",
-      "source": "占用保存在本地，画在时间轴上（支持任意钟点段），便于与课程重叠对照。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1455,
-          "context": "{i18n(\"pages.zhjwxk.courses.aba7797394c4\")}"
-        }
-      ],
-      "translation": "Blocks are saved locally and drawn on the timeline (any time range supported), making it easy to compare overlaps with courses.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ac86b7d1284b",
-      "source": "正在实时查询教务系统（搜索/翻页各 1 个往返，即搜即得）…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 796,
-          "context": "{i18n(\"pages.zhjwxk.courses.ac86b7d1284b\")}"
-        }
-      ],
-      "translation": "Querying the academic system in real time (1 round trip per search/page jump, instant results)…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ae4b6316156e",
-      "source": "本科余量: 不限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 788,
-          "context": "{i18n(\"pages.zhjwxk.courses.ae4b6316156e\")}"
-        }
-      ],
-      "translation": "Undergrad openings: Any",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.afb7bec1c0e2",
-      "source": "优先{pri}/{out}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "pri",
-          "expression": "String(pri)"
-        },
-        {
-          "name": "out",
-          "expression": "String(out)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 140,
-          "context": "out = i18n(\"pages.zhjwxk.courses.afb7bec1c0e2\", { pri: String(pri), out: String(out) })"
-        }
-      ],
-      "translation": "Priority {pri}/{out}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.b17cb44f0c38",
-      "source": "选课文字说明搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 791,
-          "context": "{i18n(\"pages.zhjwxk.courses.b17cb44f0c38\")}"
-        }
-      ],
-      "translation": "Course selection notice text search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.b2af275db60a",
-      "source": "{z}志愿",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "z",
-          "expression": "z"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1119,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.b2af275db60a\", { z: z })}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1526,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.b2af275db60a\", { z: z })}"
-        }
-      ],
-      "translation": "Preference {z}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.b584dd846f9a",
-      "source": "我的队列",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 770,
-          "context": "[\"queue\", i18n(\"pages.zhjwxk.courses.b584dd846f9a\")]"
-        }
-      ],
-      "translation": "My queue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.b8784c8dd563",
-      "source": "重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 805,
-          "context": "{i18n(\"pages.zhjwxk.courses.b8784c8dd563\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 852,
-          "context": "{i18n(\"pages.zhjwxk.courses.b8784c8dd563\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1502,
-          "context": "{i18n(\"pages.zhjwxk.courses.b8784c8dd563\")}"
-        }
-      ],
-      "translation": "Retry",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ba23721689b0",
-      "source": "预选模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 437,
-          "context": "wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\")"
-        }
-      ],
-      "translation": "Pre-selection mode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ba401db1483e",
-      "source": "点评数 多→少",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 782,
-          "context": "{i18n(\"pages.zhjwxk.courses.ba401db1483e\")}"
-        }
-      ],
-      "translation": "Review count: high → low",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.bbb5405f0e01",
-      "source": "我的课表",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1540,
-          "context": "globalThis.prompt?.(i18n(\"pages.zhjwxk.courses.a2658663724d\"), i18n(\"pages.zhjwxk.courses.bbb5405f0e01\"))"
-        }
-      ],
-      "translation": "My timetable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c0587f566be1",
-      "source": "第{myPos}位/{queueTotal}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "myPos",
-          "expression": "String(c.myPos)"
-        },
-        {
-          "name": "queueTotal",
-          "expression": "String(c.queueTotal)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1590,
-          "context": "c.myPos ? i18n(\"pages.zhjwxk.courses.c0587f566be1\", { myPos: String(c.myPos), queueTotal: String(c.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
-        }
-      ],
-      "translation": "#{myPos}/{queueTotal}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c0aa76aebce6",
-      "source": "占用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1214,
-          "context": "label: i18n(\"pages.zhjwxk.courses.c0aa76aebce6\")"
-        }
-      ],
-      "translation": "Blocks",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c398134d7d1f",
-      "source": "星期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1440,
-          "context": "{i18n(\"pages.zhjwxk.courses.c398134d7d1f\")}"
-        }
-      ],
-      "translation": "Weekday",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c42dc6f6316f",
-      "source": "暂存课表（{length}）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(wb.stageCart.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1496,
-          "context": "{i18n(\"pages.zhjwxk.courses.c42dc6f6316f\", { length: String(wb.stageCart.length) })}"
-        }
-      ],
-      "translation": "Staged timetable ({length})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c430f4c12eaa",
-      "source": "周一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1358,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1420,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1441,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        }
-      ],
-      "translation": "Mon",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c4c21f2c783f",
-      "source": "＋ 添加占用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1433,
-          "context": "{i18n(\"pages.zhjwxk.courses.c4c21f2c783f\")}"
-        }
-      ],
-      "translation": "＋ Add block",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c518420d2110",
-      "source": "课程查找",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 511,
-          "context": "[\"find\", i18n(\"pages.zhjwxk.courses.c518420d2110\")]"
-        }
-      ],
-      "translation": "Course finder",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c6b20f53de3e",
-      "source": "选课系统",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 436,
-          "context": "wb.semester ?? i18n(\"pages.zhjwxk.courses.c6b20f53de3e\")"
-        }
-      ],
-      "translation": "Course selection system",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c799be2fc953",
-      "source": "课程特色: 不限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 786,
-          "context": "{i18n(\"pages.zhjwxk.courses.c799be2fc953\")}"
-        }
-      ],
-      "translation": "Course feature: Any",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c7acb7331269",
-      "source": "必 {v}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "v",
-          "expression": "String(v)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1024,
-          "context": "parts.push(i18n(\"pages.zhjwxk.courses.c7acb7331269\", { v: String(v) }))"
-        }
-      ],
-      "translation": "Required {v}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c7b24e7997e9",
-      "source": "结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1450,
-          "context": "{i18n(\"pages.zhjwxk.courses.c7b24e7997e9\")}"
-        }
-      ],
-      "translation": "End",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c853fddad79f",
-      "source": "清空暂存车 {length} 门 + 自定义占用 {length2} 项？",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(wb.stageCart.length)"
-        },
-        {
-          "name": "length2",
-          "expression": "String(wb.manualEvents.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1542,
-          "context": "confirmOk(i18nMsg(\"pages.zhjwxk.courses.c853fddad79f\", { length: String(wb.stageCart.length), length2: String(wb.manualEvents.length) }))"
-        }
-      ],
-      "translation": "Clear staged courses ({length} courses) and {length2} custom blocks?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c97657457226",
-      "source": "我的培养方案",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1152,
-          "context": "{i18n(\"pages.zhjwxk.courses.c97657457226\")}"
-        }
-      ],
-      "translation": "My degree plan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.c9b9ae7a6144",
-      "source": "上一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 817,
-          "context": "{i18n(\"pages.zhjwxk.courses.c9b9ae7a6144\")}"
-        }
-      ],
-      "translation": "Previous page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.cc4aef94b28b",
-      "source": "已浏览 {length} 门（实时）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(wb.searchRows.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 439,
-          "context": "[\n          wb.semester ?? i18n(\"pages.zhjwxk.courses.c6b20f53de3e\"),\n          wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\"),\n          i18n(\"pages.zhjwxk.courses.960b5a9f210e\", { length: String(wb.selected.length), selCredits: String(selCredits) }),\n          i18n(\"pages.zhjwxk.courses.cc4aef94b28b\", { length: String(wb.searchRows.length) }),\n        ]"
-        }
-      ],
-      "translation": "{length} courses browsed (real-time)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.cc5250e00330",
-      "source": "✎ 去写点评",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 315,
-          "context": "{i18n(\"pages.zhjwxk.courses.cc5250e00330\")}"
-        }
-      ],
-      "translation": "✎ Write a review",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ccd11f27c335",
-      "source": "查看课程页 ↗",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 314,
-          "context": "{i18n(\"pages.zhjwxk.courses.ccd11f27c335\")}"
-        }
-      ],
-      "translation": "View course page ↗",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.cd80acb3d16b",
-      "source": "限 {v}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "v",
-          "expression": "String(v)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1025,
-          "context": "parts.push(i18n(\"pages.zhjwxk.courses.cd80acb3d16b\", { v: String(v) }))"
-        }
-      ],
-      "translation": "Restricted elective {v}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.ce1aa25eb717",
-      "source": "THU选课社区",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 317,
-          "context": "{i18n(\"pages.zhjwxk.courses.ce1aa25eb717\")}"
-        }
-      ],
-      "translation": "THUxk",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.cf2dd5254476",
-      "source": "{g}级",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "g",
-          "expression": "g"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 787,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.cf2dd5254476\", { g: g })}"
-        }
-      ],
-      "translation": "Class of {g}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.d0b3c2123cf2",
-      "source": "从暂存区移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1520,
-          "context": "{i18n(\"pages.zhjwxk.courses.d0b3c2123cf2\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1520,
-          "context": "{i18n(\"pages.zhjwxk.courses.d0b3c2123cf2\")}"
-        }
-      ],
-      "translation": "Remove from staging area",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 /**
- * tauri beforeDev/BuildCommand 的跨平台前置（替代 POSIX-only 的 find/truncate 管道）：
- * 仅 macOS 需要——清理 Rust target 里的 AppleDouble 垃圾（._*.toml 让 cargo 序列化报错）；
- * Windows/Linux 直接 no-op 返回 0，保证三端 CI 腿都能跑。
+ * tauri beforeDev/BuildCommand 的跨平台前置：桌面构建独立 CLI/Node 资源，
+ * 移动端跳过该资源；macOS 同时清理 Rust target 的 AppleDouble 文件。
  */
 import { readdirSync, unlinkSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+// Runtime packaging is independent of the platform-specific AppleDouble sweep.
+// The child explicitly skips Android/iOS so desktop Node never enters an APK.
+execFileSync(process.execPath, [fileURLToPath(new URL('./build-cli-runtime.mjs', import.meta.url))], { stdio: 'inherit' });
 
 if (process.platform !== "darwin") process.exit(0);
 // tauri beforeCommand 的 cwd = apps/desktop（前端目录）；手动也可能在 src-tauri 跑——两处都试

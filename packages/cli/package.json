@@ -1,0 +1,29 @@
+{
+  "name": "@onethu/cli",
+  "version": "0.11.4-fix-1",
+  "description": "Independent OneTHU campus assistant, CLI and MCP service",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "bin": {
+    "onethu": "./bin/onethu.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "scripts",
+    "README.md",
+    "README.en.md",
+    "dist",
+    "LICENSES"
+  ],
+  "scripts": {
+    "start": "node ./bin/onethu.mjs",
+    "onethu": "node ./bin/onethu.mjs",
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "node --check bin/onethu.mjs && node --check src/client.mjs && node --check src/cli.mjs && node --check src/mcp.mjs && node --check src/export.mjs && node --check src/standalone.mjs && node --check src/daemon.mjs && node --check src/login.mjs",
+    "build": "node scripts/build.mjs"
+  }
+}

@@ -60,6 +60,19 @@ export class WechatChannel implements ChannelAdapter {
     await sendMessage(this.baseUrl, this.token, buildTextMessage(orig.sender, text, this.ctx.get(orig.sender)));
   }
 
+  async notify(recipient: string, text: string, idempotencyKey: string, beforeWrite: () => Promise<void>, signal: AbortSignal): Promise<void> {
+    const context = this.ctx.get(recipient);
+    if (!this.running || !this.token || Date.now() < this.suspendUntil) throw new Error("TASK_NOTIFICATION_CHANNEL_UNAVAILABLE");
+    if (!context) throw new Error("TASK_WECHAT_RECENT_MESSAGE_REQUIRED");
+    const message = buildTextMessage(recipient, text, context);
+    message.client_id = `onethu-task:${idempotencyKey.slice(-48)}`;
+    await beforeWrite();
+    if (signal.aborted) throw new Error("TASK_CANCELLED");
+    await sendMessage(this.baseUrl, this.token, message, signal);
+  }
+
+  notificationContext(recipient: string): string | undefined { return this.ctx.get(recipient); }
+
   private async loop(onInbound: (msg: InboundMessage) => void): Promise<void> {
     while (this.running) {
       if (Date.now() < this.suspendUntil) {
@@ -97,7 +110,10 @@ export class WechatChannel implements ChannelAdapter {
     const text = extractText(m);
     const hasMedia = (m.item_list ?? []).some((it) => it.type === 2 || it.type === 4 || it.type === 5);
     if (!from || (!text && !hasMedia)) return;
-    if (m.context_token) this.ctx.set(from, m.context_token);
+    if (m.context_token) {
+      this.ctx.set(from, m.context_token);
+      void import("./sharedTaskNotifications.js").then(module => module.rememberSharedWechatContext(from, m.context_token!)).catch(() => undefined);
+    }
     const attachments = extractAttachments(m).map((a) => ({
       kind: a.kind,
       name: a.name,

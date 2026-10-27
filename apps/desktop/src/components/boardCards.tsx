@@ -57,7 +57,7 @@ import { SemesterSelectionPage } from "../pages/learn/SemesterSelectionPage.js";
 import { SearchPage } from "../pages/learn/SearchPage.js";
 import { ZhjwxkCoursesPage } from "../pages/zhjwxk/Courses.js";
 import { useCampusData, useLearnData, useTodayReservations } from "../state/data.js";
-import { AgendaWidget, ClassRows, HomeworkRows, NewsRows, NoticeRows, ResvRows, SECTION_OF, TodayOverviewWidget, hm, useSubsNewsFeed } from "./HomeWidgets.js";
+import { AgendaWidget, TodayClassesWidget, ClassRows, HomeworkRows, NewsRows, NoticeRows, ResvRows, SECTION_OF, TodayOverviewWidget, hm, useSubsNewsFeed } from "./HomeWidgets.js";
 import { minText, pickNextClass, ymd } from "./HomeWidgets.js";
 import { FileRow, HomeworkRow, NoticeRow } from "../pages/learn/shared.js";
 import {
@@ -570,27 +570,7 @@ function HomeworkCard(): ReactNode {
 }
 
 function ClassesCard(): ReactNode {
-  const uiLocale = useUiLocale();
-
-  const { navigate } = useApp();
-  const { data } = useCampusData();
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const t = window.setInterval(() => setNow(new Date()), 60000);
-    return () => window.clearInterval(t);
-  }, []);
-  const todayEvents = useMemo(() => {
-    const wd = now.getDay() === 0 ? 7 : now.getDay();
-    const today = ymd(now);
-    return (data?.schedule ?? [])
-      .filter((s2) => (s2.date ? s2.date === today : s2.dayOfWeek === wd))
-      .sort((a, b) => {
-        const ta = a.startTime ?? SECTION_OF[a.startSection ?? 1] ?? "99:99";
-        const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
-        return ta.localeCompare(tb);
-      });
-  }, [uiLocale, data, now]);
-  return <ClassRows events={todayEvents} navigate={navigate} />;
+  return <TodayClassesWidget />;
 }
 
 function NoticesCard(): ReactNode {

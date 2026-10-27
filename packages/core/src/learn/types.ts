@@ -64,7 +64,7 @@ export interface Homework {
   /** 外部作业作答进度（如 "5/5"；仅外部作业，用于来源徽标 tooltip） */
   externalProgress?: string;
   /** 外部作业类型：考试 / 普通作业（仅外部作业，透出自 ExternalHomework.kind） */
-  kind?: "homework" | "exam";
+  kind?: "homework" | "exam" | "quiz";
   /** 外部作业所属课堂是否旁听（仅外部作业，透出自 ExternalHomework.audited） */
   audited?: boolean;
   /** 外部考试得分 / 卷面满分（仅已提交且已出分的考试；R20-B3 起已批改雨课堂作业同口径：
@@ -89,9 +89,15 @@ export interface LearnAttachment {
   size?: string;
 }
 
+export interface LearnRoleAttachment extends LearnAttachment {
+  role: "teacher" | "answer" | "submission" | "grade";
+}
+
 /** 作业详情页（/f/wlxt/kczy/zy/student/viewCj HTML）解析结果。
  *  附件四类与 thu-learn-lib parseHomeworkAtUrl 对应（div.list.fujian.clearfix 顺序）。 */
 export interface HomeworkPageDetail {
+  /** All visible attachments; legacy single slots below retain their first entry. */
+  attachments?: LearnRoleAttachment[];
   /** 页面作业说明（c55 div，一般与 JSON msg 一致；优先用 JSON msg） */
   description?: string;
   /** 上次提交的正文内容（boxbox 结构，learn-lib submittedContent 同源；提交面板预填用） */
@@ -113,6 +119,7 @@ export interface HomeworkPageDetail {
 
 /** 通知详情页（beforeViewXs HTML）解析结果 */
 export interface NotificationPageDetail {
+  attachments?: LearnAttachment[];
   attachment?: LearnAttachment;
 }
 

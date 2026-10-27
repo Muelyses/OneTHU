@@ -1,5 +1,9 @@
 //! OneTHU 桌面壳 —— 网络层走 Rust（reqwest），前端零 CORS 限制。
 
+mod cli_download;
+mod cli_daemon;
+mod cli_session;
+
 use serde::{Deserialize, Serialize};
 
 /// 桌面端通知实现（macOS/Windows）。Android 走 onethu-mobile 插件的 Kotlin 侧，
@@ -16,6 +20,7 @@ mod privacy_consent;
 mod memory_mirror;
 mod im_media;
 mod downloads;
+mod attachment_response;
 mod harness_embed;
 mod overlay_win;
 #[cfg(desktop)]
@@ -1051,26 +1056,12 @@ pub(crate) async fn fetch_attachment(
     if bytes.is_empty() {
         return Err("下载失败：文件内容为空（mobile 同款 bytesWritten==0 校验）".into());
     }
-    let name = content_disposition
+    let resolved = content_disposition
         .as_deref()
         .and_then(parse_cd_filename)
         .filter(|n| !n.trim().is_empty())
         .unwrap_or_else(|| fallback_name.to_string());
-    let name_is_html = {
-        let lower = name.to_ascii_lowercase();
-        lower.ends_with(".html") || lower.ends_with(".htm")
-    };
-    if !name_is_html {
-        let head = String::from_utf8_lossy(&bytes[..bytes.len().min(4096)]);
-        let head = head.trim_start_matches('\u{feff}').trim_start();
-        let looks_html = head.starts_with("<!DOCTYPE")
-            || head.starts_with("<!doctype")
-            || head.starts_with("<html");
-        let login_redirect = bytes.len() < 4096 && head.contains("location.href");
-        if content_type.starts_with("text/html") || looks_html || login_redirect {
-            return Err("会话已失效，需要重新登录".into());
-        }
-    }
+    let name = attachment_response::filename(&resolved, &content_type, &bytes).map_err(str::to_owned)?;
     Ok((name, bytes.to_vec()))
 }
 
@@ -4568,6 +4559,9 @@ let builder = tauri::Builder::default();
             im_media::im_write_text_file,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,dynamic_color,
             open_external,onethu_open_path,nfc_available,nfc_read_tag,nfc_share_text,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,open_cloud_token_window,cloud_webvpn_profile,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
+            cli_download::cli_download_learn_resource, cli_download::cli_access_sync, cli_download::cli_download_cancel,
+            cli_daemon::cli_daemon_ensure, cli_daemon::cli_daemon_request,
+            cli_session::cli_session_cookies_export, cli_session::cli_session_cookies_import,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

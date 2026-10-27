@@ -1,7 +1,6 @@
 import { msg as i18nMsg, resolveMessage, type UiText } from "../i18n/index.js";
 import { getLocale as getUiLocale } from "../i18n/index.js";
 import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
-import { Input } from "@onethu/gui";
 /**
  * 「软件更新」分区（设置 → 关于，2026-10-12 合并版）。
  *
@@ -25,7 +24,7 @@ import {
   checkForUpdate, downloadUpdate, installDownloaded, platformKey,
   PLATFORM_LABEL, SOURCE_LABEL, updateSourceLabel, updateFallbackText, updateFailureText, type UpdateCheckResult, type UpdateProgress, type UpdateSource,
 } from "../lib/updater.js";
-import { Btn, Progress, Select, Stack } from "@onethu/gui";
+import { AccordionItem, Btn, Grow, Inline, Input, Progress, Select, Stack } from "@onethu/gui";
 
 /** Deferred nested values keep app labels live while external reasons stay verbatim. */
 interface UpdateNotice { text: UiText; params?: Record<string, UiText> }
@@ -67,6 +66,8 @@ export function SoftwareUpdateSection({ customManifestUrl, initialResult, autoCh
   const initialReview = useRef<UpdateCheckResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [customUrl, setCustomUrl] = useState("");
+  /* 自定义更新源默认收起；与其它折叠菜单同一组件，展开态才显示输入行。 */
+  const [customOpen, setCustomOpen] = useState(false);
   const checkController = useRef<AbortController | null>(null);
   const checkSequence = useRef(0);
   const [checkingSource, setCheckingSource] = useState<UpdateSource | null>(null);
@@ -308,15 +309,23 @@ export function SoftwareUpdateSection({ customManifestUrl, initialResult, autoCh
         <div className="setting-desc">{i18n("components.softwareupdatesection.b7d7aca618eb")}</div>
       ) : null}
 
-      <details>
-        <summary className="setting-desc" style={{ cursor: "pointer" }}>{i18n("components.softwareupdatesection.7e21bf73a0ef")}</summary>
-        <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 200 }}>{<Input placeholder={i18n("components.softwareupdatesection.b71ae82b4fba")} value={customUrl} onChange={(value) => setCustomUrl(value)} />}</div>
-          <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>{i18n("components.softwareupdatesection.abae77ee2a3f")}</Btn>
-          <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>{i18n("components.softwareupdatesection.4370d1b15447")}</Btn>
-        </div>
-        <div className="setting-desc" style={{ marginTop: 4 }}>{i18nRich("components.softwareupdatesection.87c4f699e972", { github: SOURCE_LABEL.github, cloud: SOURCE_LABEL.cloud })}</div>
-      </details>
+      <AccordionItem
+        id="custom-source"
+        title={i18n("components.softwareupdatesection.7e21bf73a0ef")}
+        open={customOpen}
+        onToggle={() => setCustomOpen((value) => !value)}
+      >
+        <Stack gap={2}>
+          <Inline gap={2} wrap>
+            <Grow>
+              <Input placeholder={i18n("components.softwareupdatesection.b71ae82b4fba")} value={customUrl} onChange={(value) => setCustomUrl(value)} />
+            </Grow>
+            <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>{i18n("components.softwareupdatesection.abae77ee2a3f")}</Btn>
+            <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>{i18n("components.softwareupdatesection.4370d1b15447")}</Btn>
+          </Inline>
+          <div className="setting-desc">{i18nRich("components.softwareupdatesection.87c4f699e972", { github: SOURCE_LABEL.github, cloud: SOURCE_LABEL.cloud })}</div>
+        </Stack>
+      </AccordionItem>
     </Stack>    
     </div>
   );

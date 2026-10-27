@@ -39,6 +39,11 @@ export async function runCancellable<T>(options: {
   if (signal?.aborted) interrupt();
   try {
     return await pending;
+  } catch (error) {
+    // A host RPC timeout ends the caller's wait, not the actual worker. Cancel
+    // this run's ticket so it cannot keep occupying the shared conversation.
+    await options.interrupt().catch(() => undefined);
+    throw error;
   } finally {
     signal?.removeEventListener("abort", interrupt);
   }

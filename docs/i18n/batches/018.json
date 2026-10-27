@@ -1,7 +1,1020 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "826d1edae740868ce616ac8b71aa7aead819fca707b324969bc4b63140acd4db",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.namecardsection.9196d03dd121",
+      "source": "创建组织后，这里会出现它的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 307,
+          "context": "{i18n(\"components.namecardsection.9196d03dd121\")}"
+        }
+      ],
+      "translation": "Once you create an organization, its card will appear here",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9491ade2781f",
+      "source": "文件：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 703,
+          "context": "i18n(\"components.namecardsection.9491ade2781f\") + m.text"
+        }
+      ],
+      "translation": "Files:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.97f4308501ff",
+      "source": "复制失败，请手动复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 670,
+          "context": "showToast(i18nMsg(\"components.namecardsection.97f4308501ff\"))"
+        }
+      ],
+      "translation": "Copy failed, please copy manually",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.98a4e5fe3ab0",
+      "source": "名片已放进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 187,
+          "context": "showToast(i18nMsg(\"components.namecardsection.98a4e5fe3ab0\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 650,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.98a4e5fe3ab0\") : r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        }
+      ],
+      "translation": "Card added to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9e3899a169a0",
+      "source": "名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 626,
+          "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
+        }
+      ],
+      "translation": "Card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9e7804614304",
+      "source": "暂存箱里已经有这张名片了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 188,
+          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 650,
+          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        }
+      ],
+      "translation": "This card is already in your Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9fc6a0e68737",
+      "source": "已加入通讯录：{ok} 张",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 414,
+          "context": "showToast(i18nMsg(\"components.namecardsection.9fc6a0e68737\", { ok: String(ok) }))"
+        }
+      ],
+      "translation": "{ok} added to Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a12513e5d0fd",
+      "source": "{name} · 名片",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(shown.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 626,
+          "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
+        }
+      ],
+      "translation": "{name} · Card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a24929811487",
+      "source": "共享云盘创建失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 426,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a24929811487\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to create shared cloud drive: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a3c0025dd64c",
+      "source": "已恢复默认纸卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 234,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a3c0025dd64c\"))"
+        }
+      ],
+      "translation": "Restored the default paper card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a3dd578bcf36",
+      "source": "「{name}」上传失败：{reason}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(f.name)"
+        },
+        {
+          "name": "reason",
+          "expression": "String(r.reason)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 448,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a3dd578bcf36\", { name: String(f.name), reason: String(r.reason) }))"
+        }
+      ],
+      "translation": "Failed to upload “{name}”: {reason}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a619ae87fda9",
+      "source": "取消星标：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 474,
+          "context": "starred.has(c.id) ? i18n(\"components.namecardsection.a619ae87fda9\") : i18n(\"components.namecardsection.70d929b3b1f6\")"
+        }
+      ],
+      "translation": "Unstar:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a8b8730c9611",
+      "source": "正在生成…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 250,
+          "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
+        }
+      ],
+      "translation": "Generating…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a938ed15b3e5",
+      "source": "头像已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 177,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a938ed15b3e5\"))"
+        }
+      ],
+      "translation": "Avatar updated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a9f6d3616710",
+      "source": "对方给的名片口令粘进来，或识别分享二维码；暂存箱里已有的名片也能一次收进来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 588,
+          "context": "{i18n(\"components.namecardsection.a9f6d3616710\")}"
+        }
+      ],
+      "translation": "Paste a card share code you received, or scan a shared QR code. Cards already in your Stash can be imported in one go too.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 300,
+          "context": "{i18n(\"components.namecardsection.b1bd19b13336\")}"
+        }
+      ],
+      "translation": "Organization cards",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b41cbf11b07d",
+      "source": "在「我的」里管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 616,
+          "context": "{i18n(\"components.namecardsection.b41cbf11b07d\")}"
+        }
+      ],
+      "translation": "Manage in Me",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b4d203dea5b9",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 516,
+          "context": "label: i18n(\"components.namecardsection.b4d203dea5b9\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 638,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        }
+      ],
+      "translation": "Organization",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.b52ea6d355c2",
+      "source": "加入方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 641,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
+        }
+      ],
+      "translation": "Join method",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b8fde21bc2ca",
+      "source": "组织邀请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 85,
+          "context": "(c.card as OrgCard).brief || i18n(\"components.namecardsection.b8fde21bc2ca\")"
+        }
+      ],
+      "translation": "Organization invites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b9b1480dd6ec",
+      "source": "好友",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 515,
+          "context": "label: i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 638,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        }
+      ],
+      "translation": "Friends",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.ba40014ff496",
+      "source": "类型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 638,
+          "context": "k: i18n(\"components.namecardsection.ba40014ff496\")"
+        }
+      ],
+      "translation": "Type",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.bc398485aa6a",
+      "source": "留言已写入共享云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 437,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
+        }
+      ],
+      "translation": "Message written to the shared cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.bc6b27e11f11",
+      "source": "自定义卡面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 245,
+          "context": "personal.cover ? i18n(\"components.namecardsection.8af2bc38c6a7\") : i18n(\"components.namecardsection.bc6b27e11f11\")"
+        }
+      ],
+      "translation": "Custom card design",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c5c9b9b48b9c",
+      "source": "加入方式已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 669,
+          "context": "showToast(i18nMsg(\"components.namecardsection.c5c9b9b48b9c\"))"
+        }
+      ],
+      "translation": "Join method copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c747909af9bf",
+      "source": "只支持图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 173,
+          "context": "new Error(i18n(\"components.namecardsection.c747909af9bf\"))"
+        }
+      ],
+      "translation": "Images only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c779c2d1fbe9",
+      "source": "文件选择失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 452,
+          "context": "showToast(i18nMsg(\"components.namecardsection.c779c2d1fbe9\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to select file: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.cf09399631a7",
+      "source": "清华云盘邮箱（已自动识别，可修改）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 159,
+          "context": "label: i18nMsg(\"components.namecardsection.cf09399631a7\")"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive email (auto-detected, editable)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.d35e72f2cbcf",
+      "source": "个人简介（≤120 字，碰一碰要短）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 163,
+          "context": "label: i18nMsg(\"components.namecardsection.d35e72f2cbcf\")"
+        }
+      ],
+      "translation": "Bio (≤120 characters, kept short for Tap to share)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.d62e64a05006",
+      "source": "清空筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 579,
+          "context": "{i18n(\"components.namecardsection.d62e64a05006\")}"
+        }
+      ],
+      "translation": "Clear filters",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.d71efdfa0d21",
+      "source": "个人名片口令已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 212,
+          "context": "showToast(i18nMsg(\"components.namecardsection.d71efdfa0d21\"))"
+        }
+      ],
+      "translation": "Personal card share code copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.d909fbc0d1e8",
+      "source": "传文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 713,
+          "context": "{i18n(\"components.namecardsection.d909fbc0d1e8\")}"
+        }
+      ],
+      "translation": "Send files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.daa435b57879",
+      "source": "清华云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 274,
+          "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 609,
+          "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.daede9881787",
+      "source": "备注",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 639,
+          "context": "k: i18n(\"components.namecardsection.daede9881787\")"
+        }
+      ],
+      "translation": "Note",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.dff9e5a876ae",
+      "source": "星标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 519,
+          "context": "{i18n(\"components.namecardsection.dff9e5a876ae\")}"
+        }
+      ],
+      "translation": "Starred",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e1bb8719dfa4",
+      "source": "收起通道",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 664,
+          "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
+        }
+      ],
+      "translation": "Collapse channels",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e5aeb36dd793",
+      "source": "头像设置失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 179,
+          "context": "showToast(i18nMsg(\"components.namecardsection.e5aeb36dd793\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to set avatar: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e84dedddc8c4",
+      "source": "打开{name}的组织主页",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(o.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 316,
+          "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 542,
+          "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
+        }
+      ],
+      "translation": "Open {name}’s organization page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.ed7ece7d61a0",
+      "source": "社交媒体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 155,
+          "context": "label: i18nMsg(\"components.namecardsection.ed7ece7d61a0\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 272,
+          "context": "k: i18n(\"components.namecardsection.ed7ece7d61a0\")"
+        }
+      ],
+      "translation": "Social media",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.f272a8187531",
+      "source": "留言只留在本机：{reason}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "reason",
+          "expression": "String(r.reason)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 437,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
+        }
+      ],
+      "translation": "Message kept on this device only: {reason}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f2af14b00970",
+      "source": "换个关键词或切回「全部」；星标好友会排在卡片夹最前面。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 572,
+          "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
+        }
+      ],
+      "translation": "Try a different keyword or switch back to “All”. Starred friends appear first in the card holder.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f3c602ccaabb",
+      "source": "搜索好友或组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 507,
+          "context": "{i18n(\"components.namecardsection.f3c602ccaabb\")}"
+        }
+      ],
+      "translation": "Search friends or organizations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f8802d448332",
+      "source": "碰一碰 / 分享口令都用这一张",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 267,
+          "context": "{i18n(\"components.namecardsection.f8802d448332\")}"
+        }
+      ],
+      "translation": "This card is used for both Tap to share and share codes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.faf7ec668417",
+      "source": "在通讯录的「我的组织」中创建组织即可。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 308,
+          "context": "{i18n(\"components.namecardsection.faf7ec668417\")}"
+        }
+      ],
+      "translation": "Create an organization under “My organizations” in Contacts.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.fb17c85750c7",
+      "source": "换头像",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 244,
+          "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 614,
+          "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
+        }
+      ],
+      "translation": "Change avatar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.fb1cbf2a96f7",
+      "source": "已把 {ok} 个文件放进共享云盘",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 450,
+          "context": "showToast(i18nMsg(\"components.namecardsection.fb1cbf2a96f7\", { ok: String(ok) }))"
+        }
+      ],
+      "translation": "Added {ok} files to the shared cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.161e7274c791",
+      "source": "逐项检查授权、提醒排程与真实投递",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 213,
+          "context": "{i18n(\"components.notifysettingssection.161e7274c791\")}"
+        }
+      ],
+      "translation": "Check permissions, reminder scheduling, and actual delivery one by one",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.175f2b8dd07a",
+      "source": "{pluginId}（{length} 条）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "pluginId",
+          "expression": "String(g.pluginId)"
+        },
+        {
+          "name": "length",
+          "expression": "String(g.ids.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 239,
+          "context": "(g) => i18n(\"components.notifysettingssection.175f2b8dd07a\", { pluginId: String(g.pluginId), length: String(g.ids.length) })"
+        }
+      ],
+      "translation": "{pluginId} ({length})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.1e9f2561b7cf",
+      "source": "通过",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 297,
+          "context": "st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
+        }
+      ],
+      "translation": "Pass",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.20684a2b9005",
+      "source": "已更新（排程 {scheduled} 条 / 撤销 {cancelled} 条）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "scheduled",
+          "expression": "String(r.scheduled)"
+        },
+        {
+          "name": "cancelled",
+          "expression": "String(r.cancelled)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 78,
+          "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.20684a2b9005\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
+        }
+      ],
+      "translation": "Updated ({scheduled} scheduled / {cancelled} cancelled)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.2caa51eaf305",
+      "source": "不通过",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 297,
+          "context": "st.status === \"fail\" ? i18n(\"components.notifysettingssection.2caa51eaf305\") : st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
+        }
+      ],
+      "translation": "Fail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.2d0bc5924351",
+      "source": " …共 {length} 条",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(plan.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 270,
+          "context": "plan.length > 3 ? i18n(\"components.notifysettingssection.2d0bc5924351\", { length: String(plan.length) }) : \"\""
+        }
+      ],
+      "translation": " …{length} in total",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.35211f5bd0b3",
+      "source": "未能打开系统设置，请手动前往本应用的通知设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 223,
+          "context": "setMsg(i18n(\"components.notifysettingssection.35211f5bd0b3\"))"
+        }
+      ],
+      "translation": "Couldn’t open System Settings; please go to this app’s notification settings manually",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.3a1abf3422d2",
+      "source": "检测中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 205,
+          "context": "status === null\n            ? i18n(\"components.notifysettingssection.3a1abf3422d2\")\n            : hint.level === \"error\"\n              ? <Text slot=\"label\" tone=\"error\">{hint.text}</Text>\n              : hint.text"
+        }
+      ],
+      "translation": "Checking…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.notifysettingssection.3df7b5791ab9",
+      "source": "作业 DDL 提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 168,
+          "context": "{i18n(\"components.notifysettingssection.3df7b5791ab9\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 170,
+          "context": "{i18n(\"components.notifysettingssection.3df7b5791ab9\")}"
+        }
+      ],
+      "translation": "Assignment deadline reminders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.3ebea03d50ba",
+      "source": "当天有课、有日程或有截止时才发。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 175,
+          "context": "{i18n(\"components.notifysettingssection.3ebea03d50ba\")}"
+        }
+      ],
+      "translation": "Only sent on days with classes, schedule items, or deadlines.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.notifysettingssection.40ff6300f981",
       "source": "诊断",
@@ -413,956 +1426,6 @@
         }
       ],
       "translation": "Upcoming reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.e402488b7e96",
-      "source": "　以上通知由插件自行管理，不受总开关影响。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 240,
-          "context": "{i18n(\"components.notifysettingssection.e402488b7e96\")}"
-        }
-      ],
-      "translation": " The notifications above are managed by the plugin itself and are not affected by the master switch.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.e8b6b0ba7d86",
-      "source": "通知权限未开启，请在系统设置中打开",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 108,
-          "context": "st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")"
-        }
-      ],
-      "translation": "Notification permission is off; please enable it in System Settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.f56c6c82203b",
-      "source": "提示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 297,
-          "context": "st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
-        }
-      ],
-      "translation": "Tip",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.f6ecd7571f77",
-      "source": "课程与日程提前量",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 155,
-          "context": "{i18n(\"components.notifysettingssection.f6ecd7571f77\")}"
-        }
-      ],
-      "translation": "Class & schedule lead time",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.fb11aa6f2982",
-      "source": "检查中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 214,
-          "context": "busy ? i18n(\"components.notifysettingssection.fb11aa6f2982\") : i18n(\"components.notifysettingssection.40ff6300f981\")"
-        }
-      ],
-      "translation": "Checking…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.fe593e7c8ef9",
-      "source": "每日早报",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 174,
-          "context": "{i18n(\"components.notifysettingssection.fe593e7c8ef9\")}"
-        }
-      ],
-      "translation": "Daily briefing",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.ff1625eb34eb",
-      "source": "已重排（排程 {scheduled} 条 / 撤销 {cancelled} 条）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "scheduled",
-          "expression": "String(r.scheduled)"
-        },
-        {
-          "name": "cancelled",
-          "expression": "String(r.cancelled)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 281,
-          "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.ff1625eb34eb\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
-        }
-      ],
-      "translation": "Rescheduled ({scheduled} scheduled / {cancelled} cancelled)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.23f0474b0502",
-      "source": "学校 MadModel（免费）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 76,
-          "context": "label: i18n(\"components.ohmodelsourcecard.23f0474b0502\")"
-        }
-      ],
-      "translation": "School MadModel (free)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.ohmodelsourcecard.279475c2940d",
-      "source": "已配置 API Key；地址与模型在下方「小 OH · 自己的 API」里调整。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 84,
-          "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
-        }
-      ],
-      "translation": "API key configured; adjust the endpoint and model under “Little OH · Your own API” below.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.2a0bbb86011e",
-      "source": "有效期未知（以服务端为准）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 24,
-          "context": "return i18n(\"components.ohmodelsourcecard.2a0bbb86011e\");"
-        }
-      ],
-      "translation": "Validity unknown (subject to the server)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.2c8fd279faba",
-      "source": "学校登录状态已更新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 48,
-          "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.2c8fd279faba\"))"
-        }
-      ],
-      "translation": "School sign-in status updated",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.35843c4cc623",
-      "source": "续签中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 67,
-          "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
-        }
-      ],
-      "translation": "Renewing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.54e8c9587c83",
-      "source": "当前：自己的 API · {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 63,
-          "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
-        }
-      ],
-      "translation": "Current: your own API · {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.621e4cb3a245",
-      "source": "改用学校 MadModel",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 69,
-          "context": "{i18n(\"components.ohmodelsourcecard.621e4cb3a245\")}"
-        }
-      ],
-      "translation": "Switch to school MadModel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.68ec985f4e52",
-      "source": "约 {value} 天有效",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Math.floor(h / 24))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 27,
-          "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
-        }
-      ],
-      "translation": "Valid for about {value} days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.760af7198e4d",
-      "source": "当前：学校 MadModel 免费档 · {model}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "model",
-          "expression": "String(model)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 63,
-          "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
-        }
-      ],
-      "translation": "Current: school MadModel free tier · {model}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.7d44e665e640",
-      "source": "{value}。请求限流时请稍后重试。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(expireText(token))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 82,
-          "context": "isMad\n            ? i18n(\"components.ohmodelsourcecard.7d44e665e640\", { value: String(expireText(token)) })\n            : apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
-        }
-      ],
-      "translation": "{value}. Please retry later if requests are rate-limited.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.904cae8267a3",
-      "source": "约 {h} 小时有效",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "h",
-          "expression": "String(h)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 27,
-          "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
-        }
-      ],
-      "translation": "Valid for about {h} hours",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.a0e70984b929",
-      "source": "未填模型",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 63,
-          "context": "model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")"
-        }
-      ],
-      "translation": "No model set",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.a2b21883b5f3",
-      "source": "一键续签",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 67,
-          "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
-        }
-      ],
-      "translation": "One-click renew",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.b5ad43409b01",
-      "source": "自己的 API 的地址、Key 与模型在下方「小 OH · 自己的 API」里填写。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 85,
-          "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
-        }
-      ],
-      "translation": "Enter the endpoint, key, and model of your own API under “Little OH · Your own API” below.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.d11b082f9ce4",
-      "source": "已过期 · 点一键续签",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 25,
-          "context": "return i18n(\"components.ohmodelsourcecard.d11b082f9ce4\");"
-        }
-      ],
-      "translation": "Expired · tap one-click renew",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.d58d1914534e",
-      "source": "续签失败：{value}（可改用自己的 API）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(e instanceof Error ? e.message : String(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 51,
-          "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.d58d1914534e\", { value: String(e instanceof Error ? e.message : String(e)) }))"
-        }
-      ],
-      "translation": "Renewal failed: {value} (you can switch to your own API)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohmodelsourcecard.ef1b0e23a0a5",
-      "source": "自己的 API",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 77,
-          "context": "label: i18n(\"components.ohmodelsourcecard.ef1b0e23a0a5\")"
-        }
-      ],
-      "translation": "Your own API",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.ohmodelsourcecard.f3230e3c122f",
-      "source": "小 OH · 模型源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhModelSourceCard.tsx",
-          "line": 61,
-          "context": "{i18n(\"components.ohmodelsourcecard.f3230e3c122f\")}"
-        }
-      ],
-      "translation": "Little OH · Model source",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.02fe3492daa4",
-      "source": "（已跳转系统应用设置页）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 218,
-          "context": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
-        }
-      ],
-      "translation": "(Jumped to the system app settings page)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.0407dbdaf0dd",
-      "source": "打开系统设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 226,
-          "context": "{i18n(\"components.ohsettingspage.0407dbdaf0dd\")}"
-        }
-      ],
-      "translation": "Open System Settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.066c7402ec5f",
-      "source": "模型来源、自费 Key、模型名与「多模态（图片输入）」在插件的 设置面板里就地配置——插件页 → OneTHU Harness → 高级配置。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 269,
-          "context": "{i18n(\"components.ohsettingspage.066c7402ec5f\")}"
-        }
-      ],
-      "translation": "Model source, self-paid key, model name, and “Multimodal (image input)” are configured in place in the plugin’s settings panel — plugin page → OneTHU Harness → Advanced configuration.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.0e5b7545605e",
-      "source": "OH 模型配置 / 花费上限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 201,
-          "context": "{i18n(\"components.ohsettingspage.0e5b7545605e\")}"
-        }
-      ],
-      "translation": "OH model configuration / spending cap",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.1dda1d69edf9",
-      "source": "连接外部 MCP 服务器",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.ohsettingspage.1dda1d69edf9\");"
-        }
-      ],
-      "translation": "Connect external MCP servers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.2613429ed9e3",
-      "source": "模型 / 配额预算 / MCP / 命令与日志 / 权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 53,
-          "context": "return i18n(\"components.ohsettingspage.2613429ed9e3\");"
-        }
-      ],
-      "translation": "Model / quota budget / MCP / commands & logs / permissions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.26e02469dd36",
-      "source": "额度不足或过期时点重新签一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 49,
-          "context": "return i18n(\"components.ohsettingspage.26e02469dd36\");"
-        }
-      ],
-      "translation": "When quota runs low or the token expires, tap renew once more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.359213279505",
-      "source": "IM 通道（进阶）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 292,
-          "context": "{i18n(\"components.ohsettingspage.359213279505\")}"
-        }
-      ],
-      "translation": "IM channels (advanced)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.36a045ebcc6d",
-      "source": "高级配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 131,
-          "context": "item(\"advanced\", i18n(\"components.ohsettingspage.36a045ebcc6d\"))"
-        }
-      ],
-      "translation": "Advanced configuration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.3c02623c9a2b",
-      "source": "保活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 287,
-          "context": "{i18n(\"components.ohsettingspage.3c02623c9a2b\")}"
-        }
-      ],
-      "translation": "Keep alive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.3f0404bdc67a",
-      "source": "模型 / MCP / 日志",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 299,
-          "context": "{i18n(\"components.ohsettingspage.3f0404bdc67a\")}"
-        }
-      ],
-      "translation": "Model / MCP / logs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.444fd1f85256",
-      "source": "模型与多模态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 265,
-          "context": "{i18n(\"components.ohsettingspage.444fd1f85256\")}"
-        }
-      ],
-      "translation": "Model & multimodal",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.465962a0ceba",
-      "source": "让 OH 调用外部 MCP server 的工具（增删改在插件页高级档）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.ohsettingspage.465962a0ceba\");"
-        }
-      ],
-      "translation": "Let OH call tools on external MCP servers (add/remove on the plugin page’s advanced tier)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.4f0d5e092ff1",
-      "source": "免费额度",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 262,
-          "context": "{i18n(\"components.ohsettingspage.4f0d5e092ff1\")}"
-        }
-      ],
-      "translation": "Free quota",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.5a639744982a",
-      "source": "让本机其它助手连上 OneTHU（默认关闭）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 57,
-          "context": "return i18n(\"components.ohsettingspage.5a639744982a\");"
-        }
-      ],
-      "translation": "Let other assistants on this device connect to OneTHU (off by default)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.5ac4509019c2",
-      "source": "OH 的基础设置与高级配置入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 48,
-          "context": "return i18n(\"components.ohsettingspage.5ac4509019c2\");"
-        }
-      ],
-      "translation": "Basic settings for OH and the entry to advanced configuration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.605427ab6130",
-      "source": "模型 / 花费上限 / MCP / 日志在插件子页就地配置——插件页 → OneTHU Harness → 高级配置。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 202,
-          "context": "{i18n(\"components.ohsettingspage.605427ab6130\")}"
-        }
-      ],
-      "translation": "Model / spending cap / MCP / logs are configured in place on the plugin subpage — plugin page → OneTHU Harness → Advanced configuration.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.675459adb527",
-      "source": "OH 配置档位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 128,
-          "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
-        }
-      ],
-      "translation": "OH configuration tier",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.692873ddd8f4",
-      "source": "基础设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 130,
-          "context": "item(\"basic\", i18n(\"components.ohsettingspage.692873ddd8f4\"))"
-        }
-      ],
-      "translation": "Basic settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.6d47abc2d3c7",
-      "source": "IM 基础（扫码绑定 / 解绑）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 283,
-          "context": "{i18n(\"components.ohsettingspage.6d47abc2d3c7\")}"
-        }
-      ],
-      "translation": "IM basics (scan to bind / unbind)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.6e2846f3e5bb",
-      "source": "应用启动管理设手动管理并允许自启动/关联启动/后台活动",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 52,
-          "context": "return i18n(\"components.ohsettingspage.6e2846f3e5bb\");"
-        }
-      ],
-      "translation": "Set app launch management to manual and allow auto-launch / associated launch / background activity",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.72704d8e1e47",
-      "source": "悬浮球",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 259,
-          "context": "{i18n(\"components.ohsettingspage.72704d8e1e47\")}"
-        }
-      ],
-      "translation": "Floating ball",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.75be22d41cd1",
-      "source": "OneTHU Harness / 小OH 设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 48,
-          "context": "return i18n(\"components.ohsettingspage.75be22d41cd1\");"
-        }
-      ],
-      "translation": "OneTHU Harness / Little OH settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.898487493b0d",
-      "source": "OH 模型 / 多模态开关",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 50,
-          "context": "return i18n(\"components.ohsettingspage.898487493b0d\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 268,
-          "context": "{i18n(\"components.ohsettingspage.898487493b0d\")}"
-        }
-      ],
-      "translation": "OH model / multimodal switch",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.89fcbbfdca16",
-      "source": "语音",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 256,
-          "context": "{i18n(\"components.ohsettingspage.89fcbbfdca16\")}"
-        }
-      ],
-      "translation": "Voice",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.9f8a1c12cbdf",
-      "source": "模型来源、Key、模型名与多模态（图片输入）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 50,
-          "context": "return i18n(\"components.ohsettingspage.9f8a1c12cbdf\");"
-        }
-      ],
-      "translation": "Model source, key, model name, and multimodal (image input)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.a2b21883b5f3",
-      "source": "一键续签",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 182,
-          "context": "{i18n(\"components.ohsettingspage.a2b21883b5f3\")}"
-        }
-      ],
-      "translation": "One-click renew",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.af7a3fa54da7",
-      "source": "OH MCP 服务器",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 57,
-          "context": "return i18n(\"components.ohsettingspage.af7a3fa54da7\");"
-        }
-      ],
-      "translation": "OH MCP servers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.be90f17a88bf",
-      "source": "当前使用自费 API；切换模型源后检查免费档。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
-          "context": "!madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
-        }
-      ],
-      "translation": "Currently using a self-paid API; after switching model sources, check the free tier.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.cccadd30d14d",
-      "source": "打开插件设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 204,
-          "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 271,
-          "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
-        }
-      ],
-      "translation": "Open plugin settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.d096e4516aa5",
-      "source": "后台保活（华为 / 荣耀）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 52,
-          "context": "return i18n(\"components.ohsettingspage.d096e4516aa5\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 217,
-          "context": "{i18n(\"components.ohsettingspage.d096e4516aa5\")}"
-        }
-      ],
-      "translation": "Background keep-alive (Huawei / HONOR)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -45,7 +45,7 @@ export async function searchSkills(query = ""): Promise<Array<Pick<InstalledSkil
   const installed = await listSkills();
   if (experienceMode() !== "full" || revision !== experienceRevision()) return [];
   return installed.filter(s => s.enabled && s.compatibility !== "external-agent" && terms.every(term => `${s.name} ${s.description}`.toLocaleLowerCase().includes(term)))
-    .slice(0, 30).map(({ id, name, description }) => ({ id, name, description }));
+    .map(({ id, name, description }) => ({ id, name, description }));
 }
 async function ohAction(kind: string, args: Record<string, unknown>): Promise<unknown> {
   if (experienceMode() !== "full") throw new Error(t("skills.error.fullMode"));

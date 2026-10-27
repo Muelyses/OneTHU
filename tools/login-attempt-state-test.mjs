@@ -20,7 +20,7 @@ const stateDeclarations = stateNames.map((name) => {
   assert.ok(statement, `Production state ${name} must exist`);
   return statement.getText(clientsAst);
 }).join("\n");
-const functions = stateDeclarations + "\n" + ["currentFingerprint", "persist", "loadConsistentSessionSnapshot", "hasLiveSnapshot", "trySilentRelogin", "resumeSession", "performResumeSession", "resumeSessionForBoot", "logout"].map((name) => {
+const functions = stateDeclarations + "\n" + ["currentFingerprint", "currentSessionSnapshot", "prepareSharedTasksAfterLogin", "persist", "loadConsistentSessionSnapshot", "hasLiveSnapshot", "trySilentRelogin", "resumeSession", "performResumeSession", "resumeSessionForBoot", "logout"].map((name) => {
   const declaration = clientsAst.statements.find((statement) => ts.isFunctionDeclaration(statement) && statement.name?.text === name);
   assert.ok(declaration, `Production function ${name} must exist`);
   return declaration.getText(clientsAst);
@@ -47,14 +47,17 @@ function identityHarness({ initial = null, backup = null, failSave = false, fail
   const noNetwork = () => { networkCalls++; throw new Error("Unexpected network call in offline identity recovery"); };
   const dependencies = {
     store, session,
+    usesSharedRuntime: () => false,
+    probeLearnSession: async () => { networkCalls++; const ready=await probe();return {ready,csrf:ready?"fixture-csrf":null,page:"fixture",diagnostic:"fixture"}; },
     makeFingerprint: () => `stable-device-${++created}`,
     info: { resetStaticSessionCaches() {}, resume: probe ? async () => true : noNetwork },
     http: { jar: { serialize: () => "{}", hydrate: probe ? () => { hydrations++; } : noNetwork } },
+    learnHttp: { jar: { hydrate: probe ? () => {} : noNetwork } },
     fileWrite: async (name, value) => { if (failFile) throw new Error("File unavailable"); files.set(name, value); },
     fileRead: async (name) => { if (failFile) throw new Error("File unavailable"); return files.get(name) ?? backup; },
     fileDelete: async (name) => files.delete(name),
     logLine: async () => {},
-    learn: { resume: probe ? async () => { networkCalls++; return probe(); } : noNetwork },
+    learn: { applyCsrf() {}, resume: probe ? async () => { networkCalls++; return probe(); } : noNetwork },
     loadRemembered: async () => remembered,
     login: async () => { passwordLogins++; return { state: "ready" }; },
     require: (path) => {

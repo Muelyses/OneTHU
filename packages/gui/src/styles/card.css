@@ -25,11 +25,13 @@
   -webkit-backdrop-filter: var(--og-c-surface-blur);
 }
 
-/* 面阶：0 = 画布上的正面，1/2 = 卡内嵌套，3 = 井/次级块 */
+/* 面阶：0 = 画布上的正面，1/2 = 卡内嵌套，3 = 井/次级块
+   嵌套面比外层低一档圆角：同一张卡里 24px 外角 + 24px 内角会让内件"过圆"，
+   阶梯取值既不引入新刻度，也让同心关系可读。--r-* 修饰符在其后，可显式覆盖。 */
 .og-surface--l0 { --og-c-surface-fill: var(--og-card-fill); }
-.og-surface--l1 { --og-c-surface-fill: var(--og-surface-2); --og-c-surface-line: transparent; }
-.og-surface--l2 { --og-c-surface-fill: var(--og-surface-3); --og-c-surface-line: transparent; }
-.og-surface--l3 { --og-c-surface-fill: var(--og-surface-4); --og-c-surface-line: transparent; }
+.og-surface--l1 { --og-c-surface-fill: var(--og-surface-2); --og-c-surface-line: transparent; --og-c-surface-radius: var(--og-radius-lg); }
+.og-surface--l2 { --og-c-surface-fill: var(--og-surface-3); --og-c-surface-line: transparent; --og-c-surface-radius: var(--og-radius-lg); }
+.og-surface--l3 { --og-c-surface-fill: var(--og-surface-4); --og-c-surface-line: transparent; --og-c-surface-radius: var(--og-radius-lg); }
 
 /* 井：向下凹的块（代码块、输入区、空态底座） */
 .og-surface--sunken {

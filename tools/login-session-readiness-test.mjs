@@ -59,11 +59,12 @@ await check("2FA and trusted login share bounded learning-session preparation", 
   const source = readFileSync(new URL("../apps/desktop/src/lib/clients.ts", import.meta.url), "utf8");
   assert.equal((source.match(/await resumeLearnAfterLogin\(\)/g) ?? []).length, 2);
   let resumes = 0, roams = 0;
-  const learn = { resume: async () => ++resumes === 2 };
+  const learn = { applyCsrf() {} };
+  const probeLearnSession = async () => ({ready:++resumes===2,csrf:"fixture",page:"fixture",diagnostic:"fixture"});
   const loadInfoLib = async () => ({ libRoamLearn: async () => { roams++; return true; } });
   const code = productionFunction("apps/desktop/src/lib/clients.ts", "resumeLearnAfterLogin");
   const js = ts.transpileModule(code, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
-  const prepare = new Function("loadInfoLib", "learn", "logLine", `${js};return resumeLearnAfterLogin;`)(loadInfoLib, learn, async () => {});
+  const prepare = new Function("loadInfoLib", "learn", "logLine", "probeLearnSession", "nativeFetch", "learnHttp", "resumeGeneration", `${js};return resumeLearnAfterLogin;`)(loadInfoLib, learn, async () => {}, probeLearnSession, async()=>{}, {}, 0);
   await prepare();
   assert.deepEqual([resumes, roams], [2, 1]);
 });

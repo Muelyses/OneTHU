@@ -177,9 +177,9 @@ for (const width of [390, 320]) {
       desktopNav: Boolean(document.querySelector('.workbench-settings-nav')),
     }));
     check(navBox.select && !navBox.desktopNav, '390 设置栏目用下拉选择（不再横向 segment）');
-    await p.locator('.workbench-settings-phone-nav select').selectOption('外观与布局');
+    await p.locator('.workbench-settings-phone-nav select').selectOption('外观');
     await p.waitForTimeout(500);
-    check((await p.locator('.workbench-settings-title h2').innerText()) === '外观与布局', '390 设置栏目下拉可切换内容');
+    check((await p.locator('.workbench-settings-title h2').innerText()) === '外观', '390 设置栏目下拉可切换内容');
   } finally { await p.close(); }
 }
 {

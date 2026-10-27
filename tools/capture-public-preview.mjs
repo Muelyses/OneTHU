@@ -58,7 +58,7 @@ const call = async (page, path, name, args=[]) => page.evaluate(async ({path,nam
 }, { path, name, args });
 async function setup(width=390,height=844,mode='full',contextOptions={}) {
  const context = await browser.newContext({ viewport:{width,height}, deviceScaleFactor:2, hasTouch:width<900, locale:captureLocale, timezoneId:'Asia/Shanghai', ...contextOptions });
- const recordingStart = Date.now();const page = await context.newPage();page.__recordingStart=recordingStart;page.setDefaultTimeout(18000);
+ const recordingStart = Date.now();const page = await context.newPage();page.__recordingStart=recordingStart;page.setDefaultTimeout(Number(process.env.ONETHU_TEST_TIMEOUT ?? 18000));
  page.on('pageerror',e=>errors.push(e.message));
  await page.routeWebSocket('**/*', socket=>socket.close());
  await page.route('**/*',route=>{

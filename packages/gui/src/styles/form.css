@@ -110,7 +110,22 @@
 .og-input--sm .og-input-el { font-size: var(--og-text-label); }
 .og-input--lg .og-input-el { font-size: var(--og-text-subtitle); }
 
-.og-input-el::placeholder { color: var(--og-content-3); }
+/* 原生输入本体"无面无线"：app 层 `.field input:focus`（global.css:551）会给本体
+   补一圈 --md-sys-focus-ring，与壳的 :focus-within 环构成双环——点击瞬间内外环
+   同时亮、随后内环被后续规则撤掉（用户实测的"焦点环闪一下"）。
+   焦点环只允许壳拥有：(0,3,0) 压过 (0,2,1)，任何状态都不例外。 */
+.og-input .og-input-el,
+.og-input .og-input-el:focus,
+.og-input .og-input-el:focus-visible,
+.og-input .og-input-el:active {
+  outline: none;
+  box-shadow: none;
+  /* 遗留 `.field input/select` 自带 box-shadow 过渡；只把终值改 none 时，
+     聚焦瞬间旧值仍会被过渡动画播一遍（用户看到的"内环闪一下"）。
+     本体不参与任何盒阴影动画，焦点环只由壳承担。 */
+  transition-property: border-color, background-color, color;
+}
+.og-input .og-input-el::placeholder { color: var(--og-content-3); }
 .og-input-el:disabled { cursor: not-allowed; }
 
 textarea.og-input-el {

@@ -8,6 +8,11 @@ on:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
+      source_ref:
+        description: "可选：构建已冻结的源码 ref（用于打包流程修复）"
+        type: string
+        required: false
+        default: ""
       only_windows:
         description: "只跑 Windows job（日常验证 Windows 构建链用）"
         type: boolean
@@ -37,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.source_ref || github.ref }}
           submodules: recursive
           # 自建 runner 不 clean：保住 target/ 与 node_modules 的热缓存（clean 会 git clean -ffdx）
           clean: ${{ !(github.event_name == 'workflow_dispatch' && inputs.runner == 'self-hosted') }}
@@ -130,7 +136,7 @@ jobs:
       - name: Build harness sidecar (host-native)
         run: pnpm --filter @onethu/desktop build:harness
       - name: Build desktop bundles
-        run: pnpm --filter @onethu/desktop exec tauri build ${{ matrix.args }} ${{ (github.event_name == 'workflow_dispatch' && inputs.no_bundle) && '--no-bundle' || '' }}
+        run: pnpm --filter @onethu/desktop exec tauri build ${{ matrix.args }} ${{ runner.os == 'Windows' && !inputs.no_bundle && '--bundles nsis' || '' }} ${{ (github.event_name == 'workflow_dispatch' && inputs.no_bundle) && '--no-bundle' || '' }}
         env:
           RUSTC_WRAPPER: sccache
           SCCACHE_GHA_ENABLED: "true"
@@ -139,11 +145,14 @@ jobs:
       - name: Verify bundled resident runtime
         timeout-minutes: 2
         run: node tools/bundled-cli-startup-test.mjs
+      - name: Record frozen source
+        run: node -e "const fs=require('node:fs'),cp=require('node:child_process');fs.writeFileSync('release-source.json',JSON.stringify({source:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),version:require('./apps/desktop/package.json').version})+'\n')"
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: onethu-${{ matrix.os }}
           path: |
+            release-source.json
             apps/desktop/src-tauri/target/release/bundle/nsis/*.exe
             apps/desktop/src-tauri/target/release/onethu.exe
             apps/desktop/src-tauri/target/**/*.dmg

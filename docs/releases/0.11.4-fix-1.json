@@ -1,0 +1,29 @@
+{
+  "version": "0.11.4-fix-1",
+  "source": "ec2b8b341aeeeba0bcb3e0870399211f02785dc9",
+  "actionsRun": "40474318962",
+  "releaseUrl": "https://github.com/smartThise/OneTHU/releases/tag/v0.11.4-fix-1",
+  "assets": {
+    "macos": {
+      "name": "OneTHU_0.11.4-fix-1_aarch64.dmg",
+      "size": 61625244,
+      "sha256": "e60a9ff6ab4c7a612ebe69d9c6c9f359a44a2a5b19756c6e9553fa1a6fa86295",
+      "source": "ec2b8b341aeeeba0bcb3e0870399211f02785dc9"
+    },
+    "windows": {
+      "name": "OneTHU_0.11.4-fix-1_x64-setup.exe",
+      "size": 54408250,
+      "sha256": "197946c6007a2c00dc9cc08504516ef799bcdc0789061abf68171ba8fbd4ad00",
+      "source": "ec2b8b341aeeeba0bcb3e0870399211f02785dc9"
+    },
+    "android": {
+      "name": "OneTHU_0.11.4-fix-1_arm64.apk",
+      "size": 32293749,
+      "sha256": "85777cdec9b68b99bf162c1985c30db8a837d56518656bc3c1c3b22ee5c60a37",
+      "source": "ec2b8b341aeeeba0bcb3e0870399211f02785dc9",
+      "versionCode": 11014
+    }
+  },
+  "androidCertificateSha256": "cc14d735667bb8b5d3134e7dfdccf6a4d9353e1a2fce54503f4a29705423aa97",
+  "physicalWindowsOrAndroidDeviceTest": false
+}

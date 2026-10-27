@@ -38,4 +38,26 @@
 - 类型检查、7665 个词典键完整性、生产前端构建、二级课表与白板拟合回归。
 - 浏览器触摸模拟覆盖手机、平板横竖屏的设置滚动及首页课程状态。属于模拟环境验证；Windows 和 MatePad 真实设备验收仍需使用安装包复核。
 
-发布前最终核查发现一次接线遗漏：仅复用一级接口并不能获得二级课程。已补入实际二级合并，用「一级空数组、二级真实 HTML 夹具」及「二级失败」场景重新验收。前两轮构建仅用于验证，未公开。最终三端将从修正后的同一源码构建，安装包签名与摘要在发布完成后补入。
+## 最终构建与发布
+
+- 应用冻结源码：`ec2b8b341aeeeba0bcb3e0870399211f02785dc9`，tag `v0.11.4-fix-1`。
+- macOS：[Actions 40474318962](https://github.com/smartThise/OneTHU/actions/runs/40474318962) 的 macOS job 成功。
+- Windows：[Actions 40474318962](https://github.com/smartThise/OneTHU/actions/runs/40474318962) 成功。使用 NSIS EXE，产物附带实际 checkout 源码证明。发布前 Windows MSI 命名与首页二级接线核查触发过两轮构建；已修正并重新冻结为上述最终源码，旧验证包未公开。
+- Android：本地 ARM64 正式签名，versionCode `11014`，证书 SHA-256 `cc14d735667bb8b5d3134e7dfdccf6a4d9353e1a2fce54503f4a29705423aa97`，15 个 Logo 像素与自适应绑定通过核验，当前前端及壁纸原生命令已嵌入。
+- macOS 主程序、Harness、Node 为 ARM64；Windows 主程序、Harness、Node 为 x64。包内 CLI 版本、所有运行时文件摘要、开发面板排除均通过。
+- CLI/SDK 独立归档离线验证通过；SDK 的严格 NodeNext 消费者检查通过。
+- 触屏编辑浏览器检查的 22 个交互断言通过，浏览器关闭超过清理截止时间，进程随后退出。这项脚本未记为完整通过。其余手机课程和设置触摸检查完成。
+
+Windows MSI 对非数字预发布标记的限制在构建日志中得到确认；NSIS 对该标记的数字资源回退见 [Tauri 官方实现](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-bundler/src/bundle/windows/nsis/mod.rs)。
+
+[GitHub Release](https://github.com/smartThise/OneTHU/releases/tag/v0.11.4-fix-1) 与清华云盘沿用既有系统目录。安装包摘要如下；另提供独立 CLI、SDK、校验文件和更新清单。
+
+| 平台 | 字节数 | SHA-256 |
+| --- | ---: | --- |
+| macos | 61625244 | `e60a9ff6ab4c7a612ebe69d9c6c9f359a44a2a5b19756c6e9553fa1a6fa86295` |
+| windows | 54408250 | `197946c6007a2c00dc9cc08504516ef799bcdc0789061abf68171ba8fbd4ad00` |
+| android | 32293749 | `85777cdec9b68b99bf162c1985c30db8a837d56518656bc3c1c3b22ee5c60a37` |
+
+[最终公开产物证明](../releases/0.11.4-fix-1.json)。
+
+三端清华云盘系统目录已匿名完整下载，字节数与 SHA-256 均和 GitHub 资产、两源清单一致。生产 updater 的实际两源读取、GitHub 失败回退，以及原版发现 fix／已安装 fix 不重复提醒均通过。

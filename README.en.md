@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11.4 · Revolution**
+**0.11.4-fix-1 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -13,6 +13,10 @@ Your campus. In one place.
 </div>
 
 OneTHU is an unofficial Tsinghua campus application for macOS, Windows and Android. Version 0.11 unifies interaction with OneGUI while keeping themes, wallpapers and layouts customizable, with minimal, practical and full experience modes. Search and the OH capsule are available in all three. Full mode adds free whiteboards, staging and sharing, organizations, plugins, OneTHU Harness and Xiaoda.
+
+## 0.11.4-fix-1 repair
+
+Repairs Windows sign-in and resident startup, primary and secondary home courses, tablet settings scrolling and phone card heights. Existing 0.11.4 features are retained across all three platforms. [Release notes](docs/en/release-0.11.4-fix-1.md).
 
 ## 0.11.4 update
 

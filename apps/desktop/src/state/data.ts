@@ -34,7 +34,6 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
   logPageError(`TEACHER-ODD ${code}_${seq}`, new Error(`teacher="${teacher}" rawRow=${rawRow}`));
 };
 import { http, info, learn, logLine, session } from "../lib/clients.js";
-import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
 import { helper as infoHelper } from "../lib/infoLib.js";

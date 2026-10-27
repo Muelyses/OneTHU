@@ -13,6 +13,7 @@ import { getCloudEvents, getLocalEvents } from "./cloudCal.js";
 import { getExtHwSnapshot, toHomework } from "./exthw.js";
 import { ignoredHwList } from "./hwIgnore.js";
 import type { PlanEventEntry, PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
+import { ensureWidgetSchedule, getWidgetScheduleSnapshot, pickScheduleRows } from "./widgetSchedule.js";
 
 export function collectNotifyInputs(now = Date.now()): {
   schedule: PlanScheduleEntry[];
@@ -23,7 +24,13 @@ export function collectNotifyInputs(now = Date.now()): {
   const learn = getLearnSnapshot();
   const ext = getExtHwSnapshot();
 
-  const schedule: PlanScheduleEntry[] = (campus?.schedule ?? []).map((e) => ({
+  // 课表来源：campus 快照优先（它和作业/通知一起刷新，最新）；campus 没有课表时说明
+  // 学习服务那一路整包失败了（loadReal 第一句就要 learn 的学期），此时改读独立的
+  // 教务窗口快照——否则「网络学堂掉线、教务正常」时小组件一行课都画不出来。
+  const campusRows = campus?.schedule ?? [];
+  if (!campusRows.length) void ensureWidgetSchedule(now).catch(() => undefined);
+
+  const schedule: PlanScheduleEntry[] = pickScheduleRows(campusRows, getWidgetScheduleSnapshot()).map((e) => ({
     date: e.date,
     startTime: e.startTime ?? null,
     endTime: e.endTime ?? null,
